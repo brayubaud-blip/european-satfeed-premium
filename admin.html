@@ -5,375 +5,262 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080b12">
-  <title>ES+ — Owner Admin</title>
-
+  <title>ES+ — Administration</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
   <style>
-    :root {
-      --bg:#080b12;
-      --panel:#101722;
-      --line:#263143;
-      --white:#f4f5f7;
-      --muted:#929baa;
-      --yellow:#eaff00;
-      --red:#e3434b;
-      --green:#7ee787;
-    }
-
-    * { box-sizing:border-box; }
-
-    body {
-      margin:0;
-      background:var(--bg);
-      color:var(--white);
-      font-family:"DM Sans",sans-serif;
-    }
-
-    button,input,textarea,select { font:inherit; }
-    button { cursor:pointer; }
-
-    .top {
-      padding:18px 5%;
-      border-bottom:1px solid var(--line);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-    .brand {
-      font:900 25px "Barlow Condensed";
-      letter-spacing:1px;
-    }
-
-    .brand span { color:var(--yellow); }
-
-    .top small {
-      color:var(--muted);
-      font-size:10px;
-      letter-spacing:2px;
-    }
-
-    main {
-      max-width:1100px;
-      margin:auto;
-      padding:35px 5% 70px;
-    }
-
-    h1,h2,h3 {
-      font-family:"Barlow Condensed";
-      margin-top:0;
-    }
-
-    h1 {
-      font-size:48px;
-      margin-bottom:5px;
-    }
-
-    h1 span { color:var(--yellow); }
-
-    .sub {
-      color:var(--muted);
-      font-size:12px;
-      margin-bottom:30px;
-    }
-
-    .panel {
-      background:var(--panel);
-      border:1px solid var(--line);
-      padding:24px;
-      margin-bottom:20px;
-      border-radius:8px;
-    }
-
-    .panel h2 {
-      font-size:25px;
-      margin-bottom:18px;
-    }
-
-    label {
-      display:block;
-      font-size:11px;
-      font-weight:700;
-      color:#c5ccd6;
-      margin:14px 0 7px;
-    }
-
-    input,textarea,select {
-      width:100%;
-      background:#080d16;
-      border:1px solid var(--line);
-      color:white;
-      padding:12px;
-      border-radius:4px;
-      outline:none;
-    }
-
-    input:focus,textarea:focus,select:focus {
-      border-color:var(--yellow);
-    }
-
-    textarea {
-      min-height:75px;
-      resize:vertical;
-    }
-
-    .two {
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:14px;
-    }
-
-    .btn {
-      border:0;
-      padding:12px 17px;
-      font-size:11px;
-      font-weight:800;
-      letter-spacing:1px;
-      border-radius:3px;
-    }
-
-    .primary {
-      background:var(--yellow);
-      color:#080b12;
-    }
-
-    .secondary {
-      background:#202b3c;
-      color:white;
-      border:1px solid var(--line);
-    }
-
-    .danger {
-      background:#4a1d25;
-      color:#ffb6bd;
-      border:1px solid #76303c;
-    }
-
-    .actions {
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:18px;
-    }
-
-    .hidden { display:none!important; }
-
-    .status {
-      font-size:12px;
-      color:var(--muted);
-      margin-top:14px;
-      white-space:pre-wrap;
-    }
-
-    .status.good { color:var(--green); }
-    .status.bad { color:#ff858d; }
-
-    .toolbar {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      margin-bottom:15px;
-    }
-
-    .toolbar h2 { margin:0; }
-
-    .items {
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:13px;
-    }
-
-    .item {
-      border:1px solid var(--line);
-      background:#0a101a;
-      border-radius:5px;
-      overflow:hidden;
-    }
-
-    .item img {
-      width:100%;
-      height:150px;
-      object-fit:cover;
-      display:block;
-      background:#182337;
-    }
-
-    .item-body { padding:12px; }
-
-    .item h3 {
-      font-size:19px;
-      margin:0 0 5px;
-    }
-
-    .item p {
-      font-size:10px;
-      color:var(--muted);
-      margin:0 0 10px;
-    }
-
-    .tag {
-      font-size:9px;
-      color:var(--yellow);
-      letter-spacing:1px;
-    }
-
-    .item .actions { margin-top:10px; }
-    .item .btn { padding:9px 10px; font-size:9px; }
-
-    .hint {
-      color:var(--muted);
-      font-size:10px;
-      line-height:1.7;
-    }
-
-    @media(max-width:700px) {
-      main { padding-top:25px; }
-      .two { grid-template-columns:1fr; }
-      .items { grid-template-columns:repeat(2,1fr); }
-      .panel { padding:17px; }
-      h1 { font-size:39px; }
-    }
-
-    @media(max-width:430px) {
-      .items { grid-template-columns:1fr 1fr; }
-      .item img { height:120px; }
-      .top small { font-size:8px; }
+    :root{--bg:#080b12;--panel:#111925;--panel2:#172232;--line:#29384c;--yellow:#eaff00;--text:#f4f6fa;--muted:#9ba8ba;--red:#ff5263;--green:#65df9a}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font:14px "DM Sans",sans-serif}
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer}
+    .hidden{display:none!important}
+    .login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px}
+    .login{width:min(420px,100%);background:var(--panel);border:1px solid var(--line);padding:30px;border-radius:12px}
+    .logo{font:900 30px "Barlow Condensed";letter-spacing:1px}.logo span{color:var(--yellow)}
+    h1,h2,h3{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase}
+    .login h1{font-size:34px;margin:20px 0 5px}
+    .muted{color:var(--muted)}
+    label{display:block;color:var(--muted);font-size:12px;margin:14px 0 6px}
+    input,textarea,select{width:100%;background:#080e18;color:white;border:1px solid var(--line);border-radius:6px;padding:11px;outline:none}
+    input:focus,textarea:focus,select:focus{border-color:var(--yellow)}
+    textarea{min-height:90px;resize:vertical}
+    input[type=color]{height:44px;padding:4px}
+    input[type=checkbox]{width:auto;accent-color:var(--yellow)}
+    .btn{border:0;border-radius:6px;padding:11px 15px;font-weight:800;background:var(--yellow);color:#080b12}
+    .btn.secondary{background:#29384c;color:white}
+    .btn.danger{background:#54232d;color:#fff}
+    .btn.small{padding:7px 10px;font-size:12px}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+    .login .btn{width:100%;margin-top:18px}
+    #loginStatus,.status{margin-top:12px;color:var(--yellow);white-space:pre-wrap}
+    .app{min-height:100vh}
+    .topbar{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid var(--line);background:#0d131d;position:sticky;top:0;z-index:10}
+    .top-actions{display:flex;gap:10px;align-items:center}
+    .layout{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:calc(100vh - 68px)}
+    aside{padding:22px 14px;border-right:1px solid var(--line);background:#0d131d}
+    .nav-label{font-size:10px;color:#68778c;font-weight:800;letter-spacing:2px;padding:12px}
+    .nav-btn{display:block;width:100%;text-align:left;background:transparent;border:0;color:#bdc8d7;padding:13px 12px;border-radius:6px;margin:3px 0}
+    .nav-btn.active,.nav-btn:hover{background:#202c3d;color:var(--yellow)}
+    main{padding:28px;min-width:0;max-width:1500px;width:100%;margin:auto}
+    .page{display:none}.page.active{display:block}
+    .page-title{font-size:38px;margin:0 0 5px}
+    .page-intro{color:var(--muted);margin:0 0 24px}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:22px 0}
+    .stat,.panel{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:19px}
+    .stat small{color:var(--muted)}.stat strong{display:block;font:800 34px "Barlow Condensed";margin-top:8px}
+    .panel{margin-bottom:18px}.panel h2{font-size:23px;margin:0 0 15px}
+    .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .field{min-width:0}
+    .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .between{justify-content:space-between}
+    .table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;min-width:650px}
+    th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);vertical-align:middle}
+    th{font-size:11px;color:var(--muted);text-transform:uppercase}
+    .cover{width:58px;height:65px;object-fit:cover;border-radius:5px;background:#080e18}
+    .tag{display:inline-block;background:#26364b;padding:5px 8px;border-radius:4px;font-size:11px}
+    .preview{display:flex;gap:15px;align-items:center;flex-wrap:wrap}
+    .preview img{width:100px;height:100px;object-fit:cover;border:1px solid var(--line);border-radius:8px}
+    .category-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;border-bottom:1px solid var(--line)}
+    .help{font-size:12px;color:var(--muted);line-height:1.6}
+    .mobile-nav{display:none}
+    @media(max-width:850px){
+      .layout{grid-template-columns:1fr}
+      aside{display:flex;gap:5px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px}
+      .nav-label{display:none}.nav-btn{white-space:nowrap;width:auto;margin:0}
+      main{padding:18px}
+      .cards{grid-template-columns:1fr}
+      .grid2,.grid3{grid-template-columns:1fr}
+      .topbar{padding:0 14px}
     }
   </style>
 </head>
-
 <body>
 
-  <header class="top">
-    <div class="brand">EUROPEAN SATFEED <span>+</span></div>
-    <small>PRIVATE OWNER AREA</small>
+<section class="login-wrap" id="loginView">
+  <div class="login">
+    <div class="logo">ES<span>+</span> EUROPEAN SATFEED</div>
+    <h1>Admin access.</h1>
+    <p class="muted">Connecte-toi avec ton compte propriétaire.</p>
+    <form id="loginForm">
+      <label for="email">Adresse e-mail</label>
+      <input id="email" type="email" autocomplete="username" required>
+      <label for="password">Mot de passe</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+      <button class="btn" type="submit">SE CONNECTER</button>
+    </form>
+    <div id="loginStatus"></div>
+  </div>
+</section>
+
+<div class="app hidden" id="adminApp">
+  <header class="topbar">
+    <div class="logo">ES<span>+</span> CONTROL ROOM</div>
+    <div class="top-actions">
+      <a class="btn secondary small" href="index.html" target="_blank">VOIR LE SITE ↗</a>
+      <button class="btn danger small" id="logoutBtn">DÉCONNEXION</button>
+    </div>
   </header>
 
-  <main>
-    <h1>ADMIN <span>DASHBOARD.</span></h1>
-    <p class="sub">Manage your football archive. Owner access only.</p>
+  <div class="layout">
+    <aside>
+      <div class="nav-label">MANAGEMENT</div>
+      <button class="nav-btn active" data-page="dashboard">▦ Dashboard</button>
+      <button class="nav-btn" data-page="visual">✎ Éditeur visuel</button>
+      <button class="nav-btn" data-page="catalogue">▤ Catalogue</button>
+      <button class="nav-btn" data-page="categories">▧ Catégories</button>
+      <button class="nav-btn" data-page="settings">⚙ Paramètres</button>
+    </aside>
 
-    <section id="loginPanel" class="panel">
-      <h2>OWNER LOGIN</h2>
-
-      <form id="loginForm">
-        <label for="email">Email</label>
-        <input id="email" type="email" autocomplete="username" required>
-
-        <label for="password">Password</label>
-        <input id="password" type="password" autocomplete="current-password" required>
-
-        <div class="actions">
-          <button class="btn primary" type="submit">SIGN IN ↗</button>
+    <main>
+      <section class="page active" id="page-dashboard">
+        <h1 class="page-title">Dashboard.</h1>
+        <p class="page-intro">Vue générale de EUROPEAN SATFEED PREMIUM.</p>
+        <div class="cards">
+          <div class="stat"><small>Archives enregistrées</small><strong id="statTotal">—</strong></div>
+          <div class="stat"><small>Archives publiées</small><strong id="statPublished">—</strong></div>
+          <div class="stat"><small>Catégories</small><strong id="statCategories">—</strong></div>
         </div>
-      </form>
-
-      <p id="loginStatus" class="status"></p>
-    </section>
-
-    <div id="dashboard" class="hidden">
-
-      <section class="panel">
-        <div class="toolbar">
-          <h2>ARCHIVE MANAGER</h2>
-          <button id="logoutBtn" class="btn secondary">LOG OUT</button>
+        <div class="panel">
+          <h2>Bienvenue dans la Control Room</h2>
+          <p class="muted">Gère ici ton catalogue, l'apparence du site, tes liens et tes catégories.</p>
+          <div class="row">
+            <button class="btn" data-go="catalogue">GÉRER LE CATALOGUE</button>
+            <button class="btn secondary" data-go="visual">PERSONNALISER LE SITE</button>
+          </div>
+          <p class="help">Les changements enregistrés dans les paramètres sont stockés dans Supabase. Certains réglages nécessitent aussi leur prise en charge par le site public pour être visibles.</p>
         </div>
-
-        <p class="hint">
-          Ajoute une couverture, renseigne ses informations en français et en anglais,
-          puis choisis si elle doit être visible sur le site public.
-          Les catégories disponibles sont COMPS, FOLDERS, OLD, EDITS et COLLECTIONS.
-        </p>
+        <div class="panel">
+          <h2>Dernières archives</h2>
+          <div id="recentList" class="muted">Chargement…</div>
+        </div>
       </section>
 
-      <section class="panel">
-        <h2 id="formTitle">ADD A COVER</h2>
-
-        <form id="coverForm">
-          <input id="coverId" type="hidden">
-
-          <label for="coverImage">Image de couverture</label>
-          <input id="coverImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
-
-          <p class="hint">
-            Formats JPG, PNG, WEBP ou GIF. Choisis une image de ton appareil.
-          </p>
-
-          <div class="two">
-            <div>
-              <label for="titleFr">Titre français</label>
-              <input id="titleFr" required placeholder="Ex. UCL RUN">
-            </div>
-
-            <div>
-              <label for="titleEn">Titre anglais</label>
-              <input id="titleEn" required placeholder="Ex. UCL RUN">
-            </div>
+      <section class="page" id="page-visual">
+        <h1 class="page-title">Visual editor.</h1>
+        <p class="page-intro">Personnalise l'identité visuelle et les textes de ton site.</p>
+        <div class="panel">
+          <h2>Identité visuelle</h2>
+          <div class="grid2">
+            <div class="field"><label>Nom du site</label><input id="siteName" placeholder="EUROPEAN SATFEED PREMIUM"></div>
+            <div class="field"><label>Texte du logo</label><input id="logoText" placeholder="ES+"></div>
+            <div class="field"><label>Couleur principale</label><input id="accentColor" type="color" value="#eaff00"></div>
+            <div class="field"><label>Couleur de fond</label><input id="backgroundColor" type="color" value="#080b12"></div>
+            <div class="field"><label>URL du logo (image)</label><input id="logoUrl" type="url" placeholder="https://..."></div>
+            <div class="field"><label>URL de l'image de fond</label><input id="backgroundUrl" type="url" placeholder="https://..."></div>
           </div>
-
-          <div class="two">
-            <div>
-              <label for="descFr">Description française</label>
-              <textarea id="descFr" placeholder="Description de la collection"></textarea>
-            </div>
-
-            <div>
-              <label for="descEn">Description anglaise</label>
-              <textarea id="descEn" placeholder="Collection description"></textarea>
-            </div>
-          </div>
-
-          <div class="two">
-            <div>
-              <label for="category">Catégorie</label>
-              <select id="category">
-                <option value="comps">COMPS</option>
-                <option value="folders">FOLDERS</option>
-                <option value="old">OLD</option>
-                <option value="edits">EDITS</option>
-                <option value="collections">COLLECTIONS</option>
-              </select>
-            </div>
-
-            <div>
-              <label for="position">Position dans le catalogue</label>
-              <input id="position" type="number" value="0">
-            </div>
-          </div>
-
-          <label for="published">Publication</label>
-          <select id="published">
-            <option value="false">Brouillon — invisible au public</option>
-            <option value="true">Publié — visible au public</option>
-          </select>
-
-          <div class="actions">
-            <button class="btn primary" type="submit">SAVE COVER</button>
-            <button id="resetBtn" class="btn secondary" type="button">CLEAR FORM</button>
-          </div>
-
-          <p id="formStatus" class="status"></p>
-        </form>
-      </section>
-
-      <section class="panel">
-        <div class="toolbar">
-          <h2>YOUR COVERS</h2>
-          <button id="refreshBtn" class="btn secondary">REFRESH ↻</button>
         </div>
-
-        <div id="coverList" class="items"></div>
-        <p id="listStatus" class="status"></p>
+        <div class="panel">
+          <h2>Textes de la page</h2>
+          <div class="grid2">
+            <div class="field"><label>Titre principal</label><textarea id="heroTitle"></textarea></div>
+            <div class="field"><label>Description principale</label><textarea id="heroDescription"></textarea></div>
+            <div class="field"><label>Titre de l'archive</label><input id="archiveTitle"></div>
+            <div class="field"><label>Description de l'archive</label><textarea id="archiveDescription"></textarea></div>
+            <div class="field"><label>Titre Premium</label><input id="premiumTitle"></div>
+            <div class="field"><label>Description Premium</label><textarea id="premiumDescription"></textarea></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Aperçu rapide</h2>
+          <div class="preview">
+            <div id="brandPreview" class="logo">ES<span>+</span> EUROPEAN SATFEED</div>
+            <div><strong id="colorPreview">Couleur principale</strong><p class="help">L'aperçu reflète les couleurs choisies dans cet éditeur.</p></div>
+          </div>
+        </div>
+        <button class="btn" id="saveVisual">ENREGISTRER LES MODIFICATIONS</button>
+        <div class="status" id="visualStatus"></div>
       </section>
 
-    </div>
-  </main>
+      <section class="page" id="page-catalogue">
+        <h1 class="page-title">Catalogue.</h1>
+        <p class="page-intro">Ajoute et gère les archives affichées sur ton site.</p>
+        <div class="panel">
+          <h2 id="formTitle">Ajouter une archive</h2>
+          <form id="catalogueForm">
+            <input type="hidden" id="itemId">
+            <div class="grid2">
+              <div class="field"><label>Titre français</label><input id="titleFr" required></div>
+              <div class="field"><label>Titre anglais</label><input id="titleEn"></div>
+              <div class="field"><label>Description française</label><textarea id="descriptionFr"></textarea></div>
+              <div class="field"><label>Description anglaise</label><textarea id="descriptionEn"></textarea></div>
+              <div class="field"><label>Catégorie</label><select id="itemCategory" required></select></div>
+              <div class="field"><label>Position (plus petit = en premier)</label><input id="itemPosition" type="number" value="0"></div>
+            </div>
+            <label>Image de couverture</label>
+            <input id="coverFile" type="file" accept="image/*">
+            <label>Ou URL de couverture existante</label>
+            <input id="coverUrl" type="url" placeholder="https://...">
+            <div class="preview" style="margin-top:12px">
+              <img id="coverPreview" alt="Aperçu couverture" src="">
+              <label><input id="itemPublished" type="checkbox" checked> Publier sur le site</label>
+            </div>
+            <div class="row" style="margin-top:18px">
+              <button class="btn" type="submit" id="saveItem">ENREGISTRER L'ARCHIVE</button>
+              <button class="btn secondary" type="button" id="cancelEdit">ANNULER</button>
+            </div>
+          </form>
+          <div class="status" id="catalogueStatus"></div>
+        </div>
+        <div class="panel">
+          <div class="row between">
+            <h2>Bibliothèque d'archives</h2>
+            <button class="btn secondary small" id="refreshCatalogue">ACTUALISER</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Cover</th><th>Titre</th><th>Catégorie</th><th>Statut</th><th>Position</th><th>Actions</th></tr></thead>
+              <tbody id="catalogueRows"><tr><td colspan="6">Chargement…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="admin.js"></script>
+      <section class="page" id="page-categories">
+        <h1 class="page-title">Categories.</h1>
+        <p class="page-intro">Les catégories personnalisées sont enregistrées dans les paramètres du site.</p>
+        <div class="panel">
+          <h2>Ajouter une catégorie</h2>
+          <div class="grid2">
+            <div><label>Nom de la catégorie</label><input id="newCategory" placeholder="Ex : WORLD CUP"></div>
+            <div><label>Identifiant (anglais, sans espaces)</label><input id="newCategorySlug" placeholder="world-cup"></div>
+          </div>
+          <button class="btn" id="addCategory" style="margin-top:15px">AJOUTER LA CATÉGORIE</button>
+          <div class="status" id="categoryStatus"></div>
+        </div>
+        <div class="panel">
+          <h2>Catégories disponibles</h2>
+          <div id="categoryList"></div>
+          <p class="help">Supprimer une catégorie de cette liste ne supprime aucune archive. Les archives qui l'utilisent restent enregistrées, mais il faudra leur attribuer une autre catégorie pour les afficher dans les filtres.</p>
+        </div>
+      </section>
 
+      <section class="page" id="page-settings">
+        <h1 class="page-title">Settings.</h1>
+        <p class="page-intro">Configure les informations commerciales et les liens de ton site.</p>
+        <div class="panel">
+          <h2>Offre Premium</h2>
+          <div class="grid2">
+            <div><label>Prix affiché</label><input id="price" placeholder="4,20 €"></div>
+            <div><label>Texte après le prix</label><input id="priceLabel" placeholder="/ ACCESS"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Liens officiels</h2>
+          <label>Lien Payhip</label><input id="payhipUrl" type="url">
+          <label>Telegram public / aperçu</label><input id="telegramUrl" type="url">
+          <label>Support Telegram</label><input id="supportUrl" type="url">
+        </div>
+        <button class="btn" id="saveSettings">ENREGISTRER LES PARAMÈTRES</button>
+        <div class="status" id="settingsStatus"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="admin.js"></script>
 </body>
 </html>
