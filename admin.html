@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b12">
+  <title>ES+ — Owner Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#080b12;--panel:#101722;--line:#263143;
+      --white:#f4f5f7;--muted:#929baa;--yellow:#eaff00;
+      --red:#e3434b;--green:#7ee787;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--white);font-family:"DM Sans",sans-serif}
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer}
+    .top{padding:18px 5%;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+    .brand{font:900 25px "Barlow Condensed";letter-spacing:1px}
+    .brand span{color:var(--yellow)}
+    .top small{color:var(--muted);font-size:10px;letter-spacing:2px}
+    main{max-width:1100px;margin:auto;padding:35px 5% 70px}
+    h1,h2,h3{font-family:"Barlow Condensed";margin-top:0}
+    h1{font-size:48px;margin-bottom:5px}
+    h1 span{color:var(--yellow)}
+    .sub{color:var(--muted);font-size:12px;margin-bottom:30px}
+    .panel{background:var(--panel);border:1px solid var(--line);padding:24px;margin-bottom:20px;border-radius:8px}
+    .panel h2{font-size:25px;margin-bottom:18px}
+    label{display:block;font-size:11px;font-weight:700;color:#c5ccd6;margin:14px 0 7px}
+    input,textarea,select{width:100%;background:#080d16;border:1px solid var(--line);color:white;padding:12px;border-radius:4px;outline:none}
+    input:focus,textarea:focus,select:focus{border-color:var(--yellow)}
+    textarea{min-height:75px;resize:vertical}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .btn{border:0;padding:12px 17px;font-size:11px;font-weight:800;letter-spacing:1px;border-radius:3px}
+    .primary{background:var(--yellow);color:#080b12}
+    .secondary{background:#202b3c;color:white;border:1px solid var(--line)}
+    .danger{background:#4a1d25;color:#ffb6bd;border:1px solid #76303c}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .hidden{display:none!important}
+    .status{font-size:12px;color:var(--muted);margin-top:14px;white-space:pre-wrap}
+    .status.good{color:var(--green)}
+    .status.bad{color:#ff858d}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}
+    .toolbar h2{margin:0}
+    .items{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+    .item{border:1px solid var(--line);background:#0a101a;border-radius:5px;overflow:hidden}
+    .item img{width:100%;height:150px;object-fit:cover;display:block;background:#182337}
+    .item-body{padding:12px}
+    .item h3{font-size:19px;margin:0 0 5px}
+    .item p{font-size:10px;color:var(--muted);margin:0 0 10px}
+    .tag{font-size:9px;color:var(--yellow);letter-spacing:1px}
+    .item .actions{margin-top:10px}
+    .item .btn{padding:9px 10px;font-size:9px}
+    .hint{color:var(--muted);font-size:10px;line-height:1.7}
+    @media(max-width:700px){main{padding-top:25px}.two{grid-template-columns:1fr}.items{grid-template-columns:repeat(2,1fr)}.panel{padding:17px}h1{font-size:39px}}
+    @media(max-width:430px){.items{grid-template-columns:1fr 1fr}.item img{height:120px}.top small{font-size:8px}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="brand">EUROPEAN SATFEED <span>+</span></div>
+    <small>PRIVATE OWNER AREA</small>
+  </header>
+
+  <main>
+    <h1>ADMIN <span>DASHBOARD.</span></h1>
+    <p class="sub">Manage your football archive. Owner access only.</p>
+
+    <section id="loginPanel" class="panel">
+      <h2>OWNER LOGIN</h2>
+      <form id="loginForm">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="username" required>
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+        <div class="actions">
+          <button class="btn primary" type="submit">SIGN IN ↗</button>
+        </div>
+      </form>
+      <p id="loginStatus" class="status"></p>
+    </section>
+
+    <div id="dashboard" class="hidden">
+      <section class="panel">
+        <div class="toolbar">
+          <h2>ARCHIVE MANAGER</h2>
+          <button id="logoutBtn" class="btn secondary">LOG OUT</button>
+        </div>
+        <p class="hint">Ajoute une couverture, renseigne ses informations en français et en anglais, puis choisis si elle doit être visible sur le site public.</p>
+      </section>
+
+      <section class="panel">
+        <h2 id="formTitle">ADD A COVER</h2>
+        <form id="coverForm">
+          <input id="coverId" type="hidden">
+
+          <label for="coverImage">Image de couverture</label>
+          <input id="coverImage" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+          <p class="hint">Formats JPG, PNG, WEBP ou GIF. Choisis une image de ton appareil.</p>
+
+          <div class="two">
+            <div>
+              <label for="titleFr">Titre français</label>
+              <input id="titleFr" required placeholder="Ex. UCL RUN">
+            </div>
+            <div>
+              <label for="titleEn">Titre anglais</label>
+              <input id="titleEn" required placeholder="Ex. UCL RUN">
+            </div>
+          </div>
+
+          <div class="two">
+            <div>
+              <label for="descFr">Description française</label>
+              <textarea id="descFr" placeholder="Description de la collection"></textarea>
+            </div>
+            <div>
+              <label for="descEn">Description anglaise</label>
+              <textarea id="descEn" placeholder="Collection description"></textarea>
+            </div>
+          </div>
+
+          <div class="two">
+            <div>
+              <label for="category">Catégorie</label>
+              <select id="category">
+                <option value="comps">COMPS</option>
+                <option value="folders">FOLDERS</option>
+                <option value="old">OLD</option>
+                <option value="edits">EDITS</option>
+                <option value="clips">CLIPS</option>
+                <option value="collections">COLLECTIONS</option>
+                <option value="clubs">CLUBS</option>
+                <option value="national">NATIONAL TEAMS</option>
+              </select>
+            </div>
+            <div>
+              <label for="position">Position dans le catalogue</label>
+              <input id="position" type="number" value="0">
+            </div>
+          </div>
+
+          <label for="published">Publication</label>
+          <select id="published">
+            <option value="false">Brouillon — invisible au public</option>
+            <option value="true">Publié — visible au public</option>
+          </select>
+
+          <div class="actions">
+            <button class="btn primary" type="submit">SAVE COVER</button>
+            <button id="resetBtn" class="btn secondary" type="button">CLEAR FORM</button>
+          </div>
+          <p id="formStatus" class="status"></p>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="toolbar">
+          <h2>YOUR COVERS</h2>
+          <button id="refreshBtn" class="btn secondary">REFRESH ↻</button>
+        </div>
+        <div id="coverList" class="items"></div>
+        <p id="listStatus" class="status"></p>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
