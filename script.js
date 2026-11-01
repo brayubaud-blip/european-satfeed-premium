@@ -22,12 +22,11 @@ if (!status && grid) {
 }
 
 const categories = [
-  { id: "all", fr: "TOUT", en: "ALL" },
+  { id: "all", fr: "ALL", en: "ALL" },
   { id: "comps", fr: "COMPS", en: "COMPS" },
-  { id: "folders", fr: "DOSSIERS", en: "FOLDERS" },
-  { id: "old", fr: "ANCIENS", en: "OLD" },
+  { id: "folders", fr: "FOLDERS", en: "FOLDERS" },
+  { id: "old", fr: "OLD", en: "OLD" },
   { id: "edits", fr: "EDITS", en: "EDITS" },
-  { id: "clips", fr: "CLIPS", en: "CLIPS" },
   { id: "collections", fr: "COLLECTIONS", en: "COLLECTIONS" }
 ];
 
@@ -35,10 +34,10 @@ const translations = {
   fr: {
     loading: "Chargement du catalogue…",
     loaded: "{n} contenu(s) disponible(s).",
-    empty: "Aucun contenu disponible pour cette catégorie.",
+    empty: "Aucun contenu disponible dans cette catégorie.",
     error: "Impossible de charger le catalogue.",
     archiveLabel: "ARCHIVE",
-    footballArchive: "ARCHIVE FOOTBALL"
+    footballArchive: "FOOTBALL ARCHIVE"
   },
   en: {
     loading: "Loading catalogue…",
@@ -54,10 +53,13 @@ function tr(key) {
   return translations[language][key] || key;
 }
 
-function updateStatus(text, type = "") {
-  if (!status) return;
-  status.textContent = text;
-  status.className = "archive-status " + type;
+function updateStatus(text) {
+  if (status) status.textContent = text;
+}
+
+function normalizeCategory(category) {
+  // Ancienne catégorie CLIPS : désormais intégrée à EDITS.
+  return category === "clips" ? "edits" : category;
 }
 
 function renderFilters() {
@@ -67,9 +69,10 @@ function renderFilters() {
 
   categories.forEach(category => {
     const button = document.createElement("button");
+    button.type = "button";
     button.className = "filter";
     button.dataset.filter = category.id;
-    button.textContent = language === "fr" ? category.fr : category.en;
+    button.textContent = category[language];
 
     if (category.id === activeFilter) {
       button.classList.add("active");
@@ -91,7 +94,8 @@ function renderCards() {
   grid.replaceChildren();
 
   const items = catalogueItems.filter(item => {
-    return activeFilter === "all" || item.category === activeFilter;
+    return activeFilter === "all" ||
+      normalizeCategory(item.category) === activeFilter;
   });
 
   if (!items.length) {
@@ -108,14 +112,16 @@ function renderCards() {
 
     const img = document.createElement("img");
     img.src = item.image_url || item.image || "";
-    img.alt = item.title?.[language] || item.title?.fr || "Football archive";
+    img.alt =
+      item.title?.[language] ||
+      item.title?.fr ||
+      item.title ||
+      "Football archive";
     img.loading = "lazy";
 
     const tag = document.createElement("span");
     tag.className = "card-tag";
-    tag.textContent = item.category
-      ? item.category.toUpperCase()
-      : tr("archiveLabel");
+    tag.textContent = normalizeCategory(item.category || "archive").toUpperCase();
 
     cover.append(img, tag);
 
@@ -135,6 +141,7 @@ function renderCards() {
       item.title?.[language] ||
       item.title?.fr ||
       item.title?.en ||
+      item.title ||
       "Untitled";
 
     const description = document.createElement("p");
@@ -142,6 +149,7 @@ function renderCards() {
       item.description?.[language] ||
       item.description?.fr ||
       item.description?.en ||
+      item.description ||
       "";
 
     info.append(meta, title, description);
@@ -150,8 +158,7 @@ function renderCards() {
   });
 
   updateStatus(
-    tr("loaded").replace("{n}", items.length),
-    "good"
+    tr("loaded").replace("{n}", String(items.length))
   );
 }
 
@@ -176,7 +183,7 @@ async function loadSupabaseCatalogue() {
   return await response.json();
 }
 
-async function loadOldGitHubCovers() {
+async function loadGitHubCovers() {
   const response = await fetch(GITHUB_COVERS_URL);
 
   if (!response.ok) {
@@ -215,33 +222,41 @@ async function loadOldGitHubCovers() {
 async function loadCatalogue() {
   updateStatus(tr("loading"));
 
-  try {
-    const supabaseItems = await loadSupabaseCatalogue();
+  const results = await Promise.allSettled([
+    loadSupabaseCatalogue(),
+    loadGitHubCovers()
+  ]);
 
-    if (supabaseItems.length > 0) {
-      catalogueItems = supabaseItems;
-    } else {
-      // Garde les anciennes covers visibles tant que
-      // le catalogue Supabase ne contient aucun contenu publié.
-      catalogueItems = await loadOldGitHubCovers();
-    }
+  const supabaseItems =
+    results[0].status === "fulfilled" ? results[0].value : [];
 
-    activeFilter = "all";
-    renderFilters();
-    renderCards();
+  const githubItems =
+    results[1].status === "fulfilled" ? results[1].value : [];
 
-  } catch (error) {
-    console.error("Catalogue loading error:", error);
+  if (results[0].status === "rejected") {
+    console.error("Supabase:", results[0].reason);
+  }
 
-    try {
-      catalogueItems = await loadOldGitHubCovers();
-      activeFilter = "all";
-      renderFilters();
-      renderCards();
-    } catch (fallbackError) {
-      console.error("Fallback loading error:", fallbackError);
-      updateStatus(tr("error"), "bad");
-    }
+  if (results[1].status === "rejected") {
+    console.error("GitHub:", results[1].reason);
+  }
+
+  // Les nouvelles covers Supabase sont affichées en premier.
+  // Les anciennes covers GitHub restent visibles.
+  catalogueItems = [
+    ...supabaseItems.map(item => ({
+      ...item,
+      category: normalizeCategory(item.category)
+    })),
+    ...githubItems
+  ];
+
+  activeFilter = "all";
+  renderFilters();
+  renderCards();
+
+  if (!catalogueItems.length) {
+    updateStatus(tr("error"));
   }
 }
 
@@ -249,12 +264,11 @@ function setLanguage(lang) {
   language = lang;
   document.documentElement.lang = lang;
 
+  // Les éléments sans traduction configurée restent inchangés.
   document.querySelectorAll("[data-i18n]").forEach(element => {
     const key = element.dataset.i18n;
     const value = translations[lang][key];
 
-    // Ne touche pas aux textes dont la traduction
-    // n'est pas encore configurée.
     if (value) element.textContent = value;
   });
 
