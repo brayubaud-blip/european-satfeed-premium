@@ -1,6 +1,437 @@
-<div class="filters" id="filters">
-  <button class="filter active" data-filter="all" data-i18n="all">ALL</button>
-  <button class="filter" data-filter="clubs">CLUBS</button>
-  <button class="filter" data-filter="national">NATIONAL TEAMS</button>
-  <button class="filter" data-filter="edits">EDITS & CLIPS</button>
-</div>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b12">
+  <meta name="description" content="EUROPEAN SATFEED PREMIUM — Football archive, premium edits and high-quality content.">
+  <title>EUROPEAN SATFEED PREMIUM</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="topline">
+    <span class="pulse"></span>
+    <span data-i18n="topline">FOOTBALL CULTURE. ARCHIVED.</span>
+    <span class="topline-right">EST. 2026</span>
+  </div>
+
+  <header class="header">
+
+    <a class="brand" href="#home" aria-label="European Satfeed Premium home">
+      <span class="brand-mark">ES<span>+</span></span>
+      <span class="brand-name">EUROPEAN<br><b>SATFEED PREMIUM</b></span>
+    </a>
+
+    <nav id="nav">
+      <a href="#archive" data-i18n="navArchive">Archive</a>
+      <a href="#latest" data-i18n="navLatest">Latest drops</a>
+      <a href="#included" data-i18n="navIncluded">What's inside</a>
+      <a href="#premium" data-i18n="navPremium">Premium</a>
+      <a href="#faq" data-i18n="navFaq">FAQ</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="lang" id="langToggle" aria-label="Switch language">
+        FR <span>/</span> EN
+      </button>
+
+      <a class="header-cta"
+         href="https://payhip.com/NJredit10"
+         target="_blank"
+         rel="noopener"
+         data-i18n="join">
+        JOIN PREMIUM ↗
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
+        ☰
+      </button>
+    </div>
+
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+
+      <div class="hero-grid"></div>
+
+      <div class="hero-content">
+
+        <div class="eyebrow">
+          <span class="eyebrow-line"></span>
+          <span data-i18n="eyebrow">THE FOOTBALL ARCHIVE</span>
+        </div>
+
+        <h1>THE GAME.<br><span>BEYOND</span> THE PITCH.</h1>
+
+        <p class="hero-copy" data-i18n="heroCopy">
+          Une archive dédiée à la culture football : images, clips, edits et ressources soigneusement sélectionnés.
+        </p>
+
+        <div class="hero-buttons">
+          <a class="button button-yellow" href="#archive" data-i18n="explore">
+            EXPLORE THE ARCHIVE <span>↘</span>
+          </a>
+
+          <a class="button button-ghost"
+             href="https://t.me/EUROPEAN_PREM_TEASER"
+             target="_blank"
+             rel="noopener"
+             data-i18n="preview">
+            FREE PREVIEW ↗
+          </a>
+        </div>
+
+        <div class="hero-meta">
+          <span>
+            <b>01</b> /
+            <span data-i18n="heroMeta">A NEW WAY TO COLLECT FOOTBALL</span>
+          </span>
+          <span class="hero-scroll">SCROLL TO DISCOVER ↓</span>
+        </div>
+
+      </div>
+
+      <div class="hero-side">
+        <span>ES / PREMIUM</span>
+        <span class="side-line"></span>
+        <span>FOOTBALL ARCHIVE — 2026</span>
+      </div>
+
+      <div class="hero-stamp">
+        <span>EST.</span>
+        <b>ES+</b>
+        <span>PREMIUM</span>
+      </div>
+
+    </section>
+
+    <!-- TICKER -->
+    <section class="ticker" aria-label="Brand values">
+      <div class="ticker-track">
+        FOOTBALL ARCHIVE <i>✳</i>
+        PREMIUM CONTENT <i>✳</i>
+        FAST DROPS <i>✳</i>
+        FOOTBALL CULTURE <i>✳</i>
+        FOOTBALL ARCHIVE <i>✳</i>
+        PREMIUM CONTENT <i>✳</i>
+        FAST DROPS <i>✳</i>
+      </div>
+    </section>
+
+    <!-- ARCHIVE -->
+    <section class="section archive-section" id="archive">
+
+      <div class="section-head">
+
+        <div>
+          <div class="eyebrow">
+            <span class="eyebrow-line"></span>
+            <span data-i18n="archiveEyebrow">EXPLORE THE COLLECTION</span>
+          </div>
+
+          <h2 data-i18n="archiveTitle">
+            THE ARCHIVE<span class="yellow">.</span>
+          </h2>
+        </div>
+
+        <p data-i18n="archiveDesc">
+          Un aperçu des collections disponibles. Les fichiers complets sont réservés aux membres Premium.
+        </p>
+
+      </div>
+
+      <!-- Les catégories sont générées automatiquement par script.js -->
+      <div class="filters" id="filters"></div>
+
+      <!-- Les covers sont chargées depuis Supabase -->
+      <div class="archive-grid" id="archiveGrid"></div>
+
+      <div class="archive-bottom">
+        <span data-i18n="archiveFoot">
+          MORE COLLECTIONS ARE ADDED REGULARLY.
+        </span>
+        <span>ES+ / 2026</span>
+      </div>
+
+    </section>
+
+    <!-- LATEST DROPS -->
+    <section class="latest-section" id="latest">
+
+      <div class="latest-inner">
+
+        <div class="eyebrow">
+          <span class="eyebrow-line"></span>
+          <span data-i18n="latestEyebrow">FRESH FROM THE ARCHIVE</span>
+        </div>
+
+        <div class="latest-row">
+
+          <h2 data-i18n="latestTitle">
+            LATEST<br><span>DROPS.</span>
+          </h2>
+
+          <div class="latest-copy">
+
+            <p data-i18n="latestDesc">
+              Les nouveautés, les sélections récentes et les prochains ajouts. Reste connecté pour ne rien manquer.
+            </p>
+
+            <a href="https://t.me/EUROPEAN_PREM_TEASER"
+               target="_blank"
+               rel="noopener"
+               class="text-link"
+               data-i18n="followTelegram">
+              FOLLOW THE TELEGRAM CHANNEL ↗
+            </a>
+
+          </div>
+
+        </div>
+
+        <div class="drop-bar">
+          <span class="drop-number">DROP / 001</span>
+          <span data-i18n="dropText">NEW CONTENT. SAME PASSION.</span>
+
+          <span class="drop-status">
+            <i></i>
+            <span data-i18n="updating">REGULARLY UPDATED</span>
+          </span>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- WHAT'S INSIDE -->
+    <section class="section included-section" id="included">
+
+      <div class="section-head">
+
+        <div>
+          <div class="eyebrow">
+            <span class="eyebrow-line"></span>
+            <span data-i18n="includedEyebrow">THE PREMIUM EXPERIENCE</span>
+          </div>
+
+          <h2 data-i18n="includedTitle">
+            WHAT'S<br>INSIDE<span class="yellow">?</span>
+          </h2>
+        </div>
+
+        <p data-i18n="includedDesc">
+          Tout ce qu'il faut pour nourrir ta créativité et suivre la culture football.
+        </p>
+
+      </div>
+
+      <div class="features">
+
+        <article class="feature">
+          <span class="feature-no">01</span>
+          <div class="feature-icon">▧</div>
+          <h3 data-i18n="feature1Title">HIGH-QUALITY FOLDERS</h3>
+          <p data-i18n="feature1Desc">
+            Des dossiers organisés avec des images et ressources en haute qualité.
+          </p>
+        </article>
+
+        <article class="feature">
+          <span class="feature-no">02</span>
+          <div class="feature-icon">▶</div>
+          <h3 data-i18n="feature2Title">VIRAL CLIPS</h3>
+          <p data-i18n="feature2Desc">
+            Des clips football sélectionnés pour tes montages et tes idées.
+          </p>
+        </article>
+
+        <article class="feature">
+          <span class="feature-no">03</span>
+          <div class="feature-icon">✳</div>
+          <h3 data-i18n="feature3Title">FAST COMP DROPS</h3>
+          <p data-i18n="feature3Desc">
+            De nouvelles sélections et compilations publiées régulièrement.
+          </p>
+        </article>
+
+        <article class="feature">
+          <span class="feature-no">04</span>
+          <div class="feature-icon">＋</div>
+          <h3 data-i18n="feature4Title">REQUESTS & MORE</h3>
+          <p data-i18n="feature4Desc">
+            Possibilité de proposer des demandes et de découvrir d'autres contenus.
+          </p>
+        </article>
+
+      </div>
+
+    </section>
+
+    <!-- PREMIUM -->
+    <section class="premium-section" id="premium">
+
+      <div class="premium-noise"></div>
+
+      <div class="premium-content">
+
+        <div class="eyebrow">
+          <span class="eyebrow-line"></span>
+          <span data-i18n="premiumEyebrow">YOUR ACCESS STARTS HERE</span>
+        </div>
+
+        <h2>GO<br><span>PREMIUM.</span></h2>
+
+        <p data-i18n="premiumDesc">
+          Accède au contenu complet de EUROPEAN SATFEED PREMIUM et rejoins la communauté.
+        </p>
+
+        <div class="price">
+          <strong>4,20 €</strong>
+          <span data-i18n="oneTime">/ ACCESS</span>
+        </div>
+
+        <a class="button button-yellow premium-button"
+           href="https://payhip.com/NJredit10"
+           target="_blank"
+           rel="noopener">
+
+          <span data-i18n="getAccess">GET PREMIUM ACCESS</span>
+          <span>↗</span>
+
+        </a>
+
+        <p class="secure-note" data-i18n="secureNote">
+          Paiement via Payhip. Après l'achat, suis les instructions pour obtenir ton accès privé.
+        </p>
+
+      </div>
+
+      <div class="premium-aside">
+        <span>EUROPEAN<br>SATFEED<br>PREMIUM</span>
+        <b>ES+</b>
+        <span>MEMBERS ONLY</span>
+      </div>
+
+    </section>
+
+    <!-- FAQ -->
+    <section class="section faq-section" id="faq">
+
+      <div class="section-head">
+
+        <div>
+          <div class="eyebrow">
+            <span class="eyebrow-line"></span>
+            <span data-i18n="faqEyebrow">GOOD TO KNOW</span>
+          </div>
+
+          <h2>FAQ<span class="yellow">.</span></h2>
+        </div>
+
+        <p data-i18n="faqDesc">
+          Les réponses aux questions les plus fréquentes.
+        </p>
+
+      </div>
+
+      <div class="faq-list">
+
+        <details>
+          <summary data-i18n="q1">
+            Que comprend l'accès Premium ? <span>＋</span>
+          </summary>
+          <p data-i18n="a1">
+            L'accès aux dossiers et contenus complets proposés dans le canal privé, selon les publications disponibles.
+          </p>
+        </details>
+
+        <details>
+          <summary data-i18n="q2">
+            Comment obtenir l'accès après le paiement ? <span>＋</span>
+          </summary>
+          <p data-i18n="a2">
+            Effectue ton achat via Payhip, puis suis les instructions indiquées après le paiement. En cas de problème, contacte le support Telegram.
+          </p>
+        </details>
+
+        <details>
+          <summary data-i18n="q3">
+            Le contenu est-il gratuit ? <span>＋</span>
+          </summary>
+          <p data-i18n="a3">
+            Les aperçus sont publics. Les dossiers et contenus complets sont réservés aux membres Premium.
+          </p>
+        </details>
+
+        <details>
+          <summary data-i18n="q4">
+            Comment contacter le support ? <span>＋</span>
+          </summary>
+          <p data-i18n="a4">
+            Tu peux contacter le support sur Telegram : @Njr_edit_10.
+          </p>
+        </details>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+
+    <a class="brand footer-brand" href="#home">
+      <span class="brand-mark">ES<span>+</span></span>
+      <span class="brand-name">EUROPEAN<br><b>SATFEED PREMIUM</b></span>
+    </a>
+
+    <p data-i18n="footerLine">
+      FOOTBALL CULTURE, COLLECTED.
+    </p>
+
+    <div class="footer-links">
+
+      <a href="https://t.me/EUROPEAN_PREM_TEASER"
+         target="_blank"
+         rel="noopener">
+        TELEGRAM ↗
+      </a>
+
+      <a href="https://payhip.com/NJredit10"
+         target="_blank"
+         rel="noopener">
+        PAYHIP ↗
+      </a>
+
+      <a href="https://t.me/Njr_edit_10"
+         target="_blank"
+         rel="noopener">
+        SUPPORT ↗
+      </a>
+
+    </div>
+
+    <div class="copyright">
+      © 2026 EUROPEAN SATFEED PREMIUM
+      <span>BUILT FOR FOOTBALL CULTURE.</span>
+    </div>
+
+  </footer>
+
+  <script src="catalogue.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>
