@@ -394,9 +394,7 @@
 
   function prepareEditableElements() {
     document.querySelectorAll(
-      "h1,h2,h3,p,a,button,summary,.brand,.brand-mark,.brand img,.topline,.hero,.ticker," +
-      ".archive-section,.latest-section,.included-section," +
-      ".premium-section,.faq-section,.footer"
+      "h1,h2,h3,p,a,button,summary,.brand-mark,.brand img"
     ).forEach(element => {
       if (element.closest("#esp-admin,#esp-login,#esp-menu,.esp-toolbar")) return;
       element.dataset.espEditable = "true";
@@ -868,6 +866,32 @@
     }
   }
 
+  function openImageEditor(image) {
+    const current = image.currentSrc || image.src || "";
+    showMenu(`
+      <h3>MODIFIER L'IMAGE / LOGO</h3>
+      <img src="${escapeHTML(current)}" alt="" style="width:100%;max-height:180px;object-fit:contain;margin-bottom:12px">
+      <label>Remplacer par une image</label>
+      <input type="file" id="esp-image-file" accept="image/*">
+      <button class="esp-btn primary" id="esp-image-save">REMPLACER</button>
+      <button class="esp-btn" id="esp-image-cancel">ANNULER</button>
+    `);
+    $("#esp-image-cancel").onclick = closeMenu;
+    $("#esp-image-save").onclick = async () => {
+      const file = $("#esp-image-file").files?.[0];
+      if (!file) { message("Choisis une image."); return; }
+      try {
+        const url = await uploadImage(file);
+        image.src = url;
+        image.removeAttribute("srcset");
+        closeMenu();
+        message("Image remplacée. Vérifie le résultat sur le site.");
+      } catch (error) {
+        message("Remplacement impossible : " + error.message);
+      }
+    };
+  }
+
   function openSectionEditor(element) {
     const key = element.dataset.espKey;
 
@@ -1082,6 +1106,14 @@
       } else {
         message("Cette cover n'a pas pu être identifiée.");
       }
+      return;
+    }
+
+    const image = event.target.closest("img");
+    if (image && (image.closest(".brand") || image.closest(".hero"))) {
+      event.preventDefault();
+      event.stopPropagation();
+      openImageEditor(image);
       return;
     }
 
