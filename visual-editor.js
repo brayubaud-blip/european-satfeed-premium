@@ -741,9 +741,9 @@
 
   function bulkTitleFromFilename(filename) {
     return String(filename || "")
-      .replace(/\\.[^.]+$/, "")
+      .replace(/\.[^.]+$/, "")
       .replace(/[_-]+/g, " ")
-      .replace(/\\s+/g, " ")
+      .replace(/\s+/g, " ")
       .trim() || "Nouvelle cover";
   }
 
