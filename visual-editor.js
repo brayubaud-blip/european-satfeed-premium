@@ -1192,6 +1192,15 @@
 
   // Raccourci ordinateur : Ctrl + Maj + E.
   document.addEventListener("keydown", async event => {
+    if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "a") {
+      event.preventDefault();
+      try {
+        if (await checkOwner()) await openAdmin();
+        else showLogin();
+      } catch (error) { message(error.message); }
+      return;
+    }
+
     if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "e") {
       event.preventDefault();
 
