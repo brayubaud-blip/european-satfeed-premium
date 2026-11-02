@@ -569,6 +569,10 @@
       try {
         const meta = entry.meta;
         if (meta.action === "restore" && meta.row) {
+          if (Array.isArray(meta.removeIds) && meta.removeIds.length) {
+            const { error: tombstoneError } = await db.from("catalogue").delete().in("id", meta.removeIds);
+            if (tombstoneError) throw tombstoneError;
+          }
           const { error } = await db.from("catalogue").upsert(meta.row);
           if (error) throw error;
         } else if (meta.action === "deleteIds" && Array.isArray(meta.ids) && meta.ids.length) {
@@ -636,6 +640,8 @@
     const filter = $("#esp-filter")?.value || "all";
 
     const filtered = allItems.filter(item => {
+      const description = getText(item.description, "fr");
+      if (description.startsWith("__GITHUB_SOURCE_HIDDEN__|")) return false;
       const title = getText(item.title).toLowerCase();
       const category = String(item.category || "").toLowerCase();
 
@@ -700,7 +706,7 @@
 
     container.replaceChildren();
 
-    const hidden = allItems.filter(item => item.published === false);
+    const hidden = allItems.filter(item => item.published === false && !getText(item.description, "fr").startsWith("__GITHUB_SOURCE_HIDDEN__|"));
 
     if (!hidden.length) {
       container.textContent = "Aucune cover masquée.";
@@ -1005,43 +1011,46 @@
 
   async function deleteCover(item) {
     const title = getText(item.title) || "cette cover";
-
-    if (!confirm("Retirer « " + title + " » du catalogue public ?\n\nLa carte disparaîtra du site. Le fichier source sera conservé pour permettre un retour arrière.")) {
-      return;
-    }
+    if (!confirm("Retirer « " + title + " » du catalogue public ?\n\nLa carte disparaîtra du site. Le fichier image source sera conservé pour permettre un retour arrière.")) return;
 
     try {
+      const githubSourceUrl = String(item.image_url || "").includes("raw.githubusercontent.com")
+        ? item.image_url : (item.source === "github" ? item.image_url : "");
+      let tombstoneId = null;
+      if (githubSourceUrl) {
+        const marker = {
+          title: { fr: "Archive source retirée", en: "Source archive removed" },
+          description: {
+            fr: "__GITHUB_SOURCE_HIDDEN__|" + String(item.id || githubSourceUrl),
+            en: "__GITHUB_SOURCE_HIDDEN__|" + String(item.id || githubSourceUrl)
+          },
+          category: "clubs",
+          image_url: githubSourceUrl,
+          published: true,
+          position: -1
+        };
+        const { data: markerData, error: markerError } = await db.from("catalogue").insert(marker).select("id").single();
+        if (markerError) throw markerError;
+        tombstoneId = markerData.id;
+      }
+
       if (item.source === "github" || String(item.id).startsWith("github-")) {
-        await recordUndo("Retirer une cover GitHub du catalogue");
-        settings.deletedGithubCovers ||= [];
-        const key = String(item.id || "");
-        const url = item.image_url || "";
-        if (!settings.deletedGithubCovers.includes(key)) settings.deletedGithubCovers.push(key);
-        if (url && !settings.deletedGithubCovers.includes(url)) settings.deletedGithubCovers.push(url);
-        await saveSettings(true);
-        await window.ESP_CATALOGUE?.refresh?.();
-        message("Cover retirée du catalogue public. Le fichier GitHub original est conservé ; Retour arrière la restaurera.");
+        if (!tombstoneId) throw new Error("Impossible de créer le marqueur de retrait de cette cover GitHub.");
+        await recordUndo("Retirer une cover GitHub du catalogue", {
+          kind: "catalogue", action: "deleteIds", ids: [tombstoneId]
+        });
+        await refreshAdminAndPublic();
+        message("Cover retirée du catalogue public. Le fichier original reste conservé ; Retour arrière la restaurera.");
         return;
       }
 
-      await recordUndo("Supprimer une cover", {
-        kind: "catalogue", action: "restore", row: item
-      });
-      if (String(item.image_url || "").includes("raw.githubusercontent.com")) {
-        settings.deletedGithubCovers ||= [];
-        if (!settings.deletedGithubCovers.includes(item.image_url)) {
-          settings.deletedGithubCovers.push(item.image_url);
-        }
-        await saveSettings(true);
-      }
-      const { error } = await db.from("catalogue")
-        .delete()
-        .eq("id", item.id);
-
+      const undoMeta = { kind: "catalogue", action: "restore", row: item };
+      if (tombstoneId) undoMeta.removeIds = [tombstoneId];
+      await recordUndo("Supprimer une cover", undoMeta);
+      const { error } = await db.from("catalogue").delete().eq("id", item.id);
       if (error) throw error;
-
       await refreshAdminAndPublic();
-      message("Cover retirée du catalogue public. Le fichier image est conservé pour permettre une restauration.");
+      message("Cover retirée du catalogue public. Le fichier image source est conservé pour permettre une restauration.");
     } catch (error) {
       message("Suppression impossible : " + error.message);
     }
