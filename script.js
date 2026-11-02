@@ -1,4 +1,4 @@
-/* EUROPEAN SATFEED PREMIUM — CATALOGUE */
+/* EUROPEAN SATFEED PREMIUM — PUBLIC SITE */
 "use strict";
 
 (() => {
@@ -8,61 +8,150 @@
   const GITHUB_COVERS_URL =
     "https://api.github.com/repos/brayubaud-blip/european-satfeed-premium/contents/covers?ref=main";
 
+  const $ = (selector, root = document) => root.querySelector(selector);
+
   let language = document.documentElement.lang === "en" ? "en" : "fr";
   let activeFilter = "all";
   let catalogueItems = [];
   let loadingPromise = null;
 
-  const grid = document.getElementById("archiveGrid");
-  const filtersContainer = document.getElementById("filters");
-  let status = document.getElementById("archiveStatus");
-
-  if (!status && grid) {
-    status = document.createElement("p");
-    status.id = "archiveStatus";
-    status.className = "archive-status";
-    grid.after(status);
-  }
+  const grid = $("#archiveGrid");
+  const filtersContainer = $("#filters");
 
   const categories = [
-    { id: "all", fr: "ALL", en: "ALL" },
+    { id: "all", fr: "TOUT", en: "ALL" },
     { id: "comps", fr: "COMPS", en: "COMPS" },
     { id: "folders", fr: "FOLDERS", en: "FOLDERS" },
     { id: "old", fr: "OLD", en: "OLD" },
     { id: "edits", fr: "EDITS", en: "EDITS" },
-    { id: "collections", fr: "COLLECTIONS", en: "COLLECTIONS" },
-    { id: "clubs", fr: "CLUBS", en: "CLUBS" },
-    { id: "national teams", fr: "NATIONAL TEAMS", en: "NATIONAL TEAMS" }
+    { id: "collections", fr: "COLLECTIONS", en: "COLLECTIONS" }
   ];
 
-  const messages = {
+  const translations = {
     fr: {
+      topline: "FOOTBALL CULTURE. ARCHIVÉE.",
+      navArchive: "Archive",
+      navLatest: "Derniers drops",
+      navIncluded: "Contenu",
+      navPremium: "Premium",
+      navFaq: "FAQ",
+      join: "REJOINDRE PREMIUM ↗",
+      eyebrow: "L'ARCHIVE FOOTBALL",
+      heroCopy: "Une archive dédiée à la culture football : images, clips, edits et ressources soigneusement sélectionnés.",
+      explore: "EXPLORER L'ARCHIVE",
+      preview: "APERÇU GRATUIT ↗",
+      heroMeta: "UNE NOUVELLE FAÇON DE COLLECTIONNER LE FOOTBALL",
+      archiveEyebrow: "EXPLORER LA COLLECTION",
+      archiveTitle: "L'ARCHIVE.",
+      archiveDesc: "Un aperçu des collections disponibles. Les fichiers complets sont réservés aux membres Premium.",
+      archiveFoot: "DE NOUVELLES COLLECTIONS SONT AJOUTÉES RÉGULIÈREMENT.",
+      latestEyebrow: "NOUVEAUTÉS DE L'ARCHIVE",
+      latestTitle: "DERNIERS<br><span>DROPS.</span>",
+      latestDesc: "Les nouveautés, les sélections récentes et les prochains ajouts. Reste connecté pour ne rien manquer.",
+      followTelegram: "SUIVRE LE CANAL TELEGRAM ↗",
+      dropText: "NOUVEAU CONTENU. MÊME PASSION.",
+      updating: "MIS À JOUR RÉGULIÈREMENT",
+      includedEyebrow: "L'EXPÉRIENCE PREMIUM",
+      includedTitle: "QU'Y A-T-IL<br>DANS LE PACK ?",
+      includedDesc: "Tout ce qu'il faut pour nourrir ta créativité et suivre la culture football.",
+      feature1Title: "DOSSIERS HAUTE QUALITÉ",
+      feature1Desc: "Des dossiers organisés avec des images et ressources en haute qualité.",
+      feature2Title: "CLIPS VIRAUX",
+      feature2Desc: "Des clips football sélectionnés pour tes montages et tes idées.",
+      feature3Title: "COMP DROPS RAPIDES",
+      feature3Desc: "De nouvelles sélections et compilations publiées régulièrement.",
+      feature4Title: "DEMANDES & PLUS",
+      feature4Desc: "Possibilité de proposer des demandes et de découvrir d'autres contenus.",
+      premiumEyebrow: "TON ACCÈS COMMENCE ICI",
+      premiumDesc: "Accède au contenu complet de EUROPEAN SATFEED PREMIUM et rejoins la communauté.",
+      oneTime: "/ ACCÈS",
+      getAccess: "OBTENIR L'ACCÈS PREMIUM",
+      secureNote: "Paiement via Payhip. Après l'achat, suis les instructions pour obtenir ton accès privé.",
+      faqEyebrow: "BON À SAVOIR",
+      faqDesc: "Les réponses aux questions les plus fréquentes.",
+      q1: "Que comprend l'accès Premium ?",
+      a1: "L'accès aux dossiers et contenus complets proposés dans le canal privé, selon les publications disponibles.",
+      q2: "Comment obtenir l'accès après le paiement ?",
+      a2: "Effectue ton achat via Payhip, puis suis les instructions indiquées après le paiement. En cas de problème, contacte le support Telegram.",
+      q3: "Le contenu est-il gratuit ?",
+      a3: "Les aperçus sont publics. Les dossiers et contenus complets sont réservés aux membres Premium.",
+      q4: "Comment contacter le support ?",
+      a4: "Tu peux contacter le support sur Telegram : @Njr_edit_10.",
+      footerLine: "LA CULTURE FOOTBALL, COLLECTIONNÉE.",
       loading: "Chargement du catalogue…",
-      loaded: "{n} contenu(s) disponible(s).",
       empty: "Aucun contenu disponible dans cette catégorie.",
-      error: "Impossible de charger le catalogue.",
-      footballArchive: "FOOTBALL ARCHIVE"
+      error: "Impossible de charger le catalogue."
     },
     en: {
+      topline: "FOOTBALL CULTURE. ARCHIVED.",
+      navArchive: "Archive",
+      navLatest: "Latest drops",
+      navIncluded: "What's inside",
+      navPremium: "Premium",
+      navFaq: "FAQ",
+      join: "JOIN PREMIUM ↗",
+      eyebrow: "THE FOOTBALL ARCHIVE",
+      heroCopy: "An archive dedicated to football culture: carefully selected images, clips, edits and resources.",
+      explore: "EXPLORE THE ARCHIVE",
+      preview: "FREE PREVIEW ↗",
+      heroMeta: "A NEW WAY TO COLLECT FOOTBALL",
+      archiveEyebrow: "EXPLORE THE COLLECTION",
+      archiveTitle: "THE ARCHIVE.",
+      archiveDesc: "A preview of available collections. Full files are reserved for Premium members.",
+      archiveFoot: "MORE COLLECTIONS ARE ADDED REGULARLY.",
+      latestEyebrow: "FRESH FROM THE ARCHIVE",
+      latestTitle: "LATEST<br><span>DROPS.</span>",
+      latestDesc: "New content, recent selections and upcoming additions. Stay connected.",
+      followTelegram: "FOLLOW THE TELEGRAM CHANNEL ↗",
+      dropText: "NEW CONTENT. SAME PASSION.",
+      updating: "REGULARLY UPDATED",
+      includedEyebrow: "THE PREMIUM EXPERIENCE",
+      includedTitle: "WHAT'S<br>INSIDE?",
+      includedDesc: "Everything you need to fuel your creativity and follow football culture.",
+      feature1Title: "HIGH-QUALITY FOLDERS",
+      feature1Desc: "Organized folders with high-quality images and resources.",
+      feature2Title: "VIRAL CLIPS",
+      feature2Desc: "Selected football clips for your edits and ideas.",
+      feature3Title: "FAST COMP DROPS",
+      feature3Desc: "New selections and compilations published regularly.",
+      feature4Title: "REQUESTS & MORE",
+      feature4Desc: "Suggest requests and discover more content.",
+      premiumEyebrow: "YOUR ACCESS STARTS HERE",
+      premiumDesc: "Access the full EUROPEAN SATFEED PREMIUM content and join the community.",
+      oneTime: "/ ACCESS",
+      getAccess: "GET PREMIUM ACCESS",
+      secureNote: "Payment via Payhip. After purchase, follow the instructions to get your private access.",
+      faqEyebrow: "GOOD TO KNOW",
+      faqDesc: "Answers to frequently asked questions.",
+      q1: "What is included in Premium access?",
+      a1: "Access to the full folders and content shared in the private channel, depending on available posts.",
+      q2: "How do I get access after payment?",
+      a2: "Purchase through Payhip and follow the instructions after payment. Contact Telegram support if you need help.",
+      q3: "Is the content free?",
+      a3: "Previews are public. Full folders and content are reserved for Premium members.",
+      q4: "How can I contact support?",
+      a4: "You can contact support on Telegram: @Njr_edit_10.",
+      footerLine: "FOOTBALL CULTURE, COLLECTED.",
       loading: "Loading catalogue…",
-      loaded: "{n} item(s) available.",
       empty: "No content available in this category.",
-      error: "Unable to load the catalogue.",
-      footballArchive: "FOOTBALL ARCHIVE"
+      error: "Unable to load the catalogue."
     }
   };
 
-  function tr(key) {
-    return messages[language]?.[key] || key;
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;",
+      '"': "&quot;", "'": "&#39;"
+    })[char]);
   }
 
-  function updateStatus(value) {
-    if (status) status.textContent = value;
-  }
+  function normalizeCategory(value) {
+    const category = String(value || "unclassified")
+      .trim().toLowerCase();
 
-  function normalizeCategory(category) {
-    const value = String(category || "").trim().toLowerCase();
-    return value === "clips" ? "edits" : value;
+    if (category === "clips") return "edits";
+    if (category === "national") return "national teams";
+    return category;
   }
 
   function localized(value) {
@@ -70,14 +159,36 @@
     return value?.[language] || value?.fr || value?.en || "";
   }
 
-  function escapeHTML(value) {
-    return String(value ?? "").replace(/[&<>"']/g, char => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    })[char]);
+  function t(key) {
+    return translations[language]?.[key] ?? translations.fr[key] ?? key;
+  }
+
+  function updateTranslations() {
+    document.querySelectorAll("[data-i18n]").forEach(element => {
+      const key = element.dataset.i18n;
+      const value = t(key);
+      if (value) element.innerHTML = value;
+    });
+
+    const toggle = $("#langToggle");
+    if (toggle) {
+      toggle.innerHTML = language === "fr"
+        ? "FR <span>/</span> EN"
+        : "EN <span>/</span> FR";
+    }
+  }
+
+  function updateStatus(message) {
+    let status = $("#archiveStatus");
+
+    if (!status && grid) {
+      status = document.createElement("p");
+      status.id = "archiveStatus";
+      status.className = "archive-status";
+      grid.after(status);
+    }
+
+    if (status) status.textContent = message;
   }
 
   function renderFilters() {
@@ -111,20 +222,22 @@
 
     grid.replaceChildren();
 
-    const items = catalogueItems.filter(item =>
-      activeFilter === "all" ||
-      normalizeCategory(item.category) === activeFilter
-    );
+    const visible = catalogueItems.filter(item => {
+      if (item.published === false) return false;
 
-    if (!items.length) {
-      updateStatus(tr("empty"));
+      const category = normalizeCategory(item.category);
+      return activeFilter === "all" || category === activeFilter;
+    });
+
+    if (!visible.length) {
+      updateStatus(t("empty"));
       return;
     }
 
-    items.forEach(item => {
+    visible.forEach(item => {
       const card = document.createElement("article");
       card.className = "archive-card";
-      card.dataset.catalogueId = String(item.id ?? "");
+      card.dataset.catalogueId = String(item.id);
       card.dataset.catalogueSource = item.source || "supabase";
 
       const cover = document.createElement("div");
@@ -135,14 +248,16 @@
       img.alt = localized(item.title) || "Football archive";
       img.loading = "lazy";
 
-      img.onerror = () => {
+      img.addEventListener("error", () => {
         img.style.display = "none";
         cover.classList.add("image-error");
-      };
+      });
 
       const tag = document.createElement("span");
       tag.className = "card-tag";
-      tag.textContent = normalizeCategory(item.category || "archive").toUpperCase();
+      tag.textContent = normalizeCategory(item.category)
+        .replace("national teams", "archive")
+        .toUpperCase();
 
       cover.append(img, tag);
 
@@ -151,10 +266,9 @@
 
       const meta = document.createElement("div");
       meta.className = "card-meta";
-
-      const type = document.createElement("span");
-      type.textContent = tr("footballArchive");
-      meta.append(type);
+      meta.textContent = language === "fr"
+        ? "ARCHIVE FOOTBALL"
+        : "FOOTBALL ARCHIVE";
 
       const title = document.createElement("h3");
       title.className = "catalogue-title";
@@ -169,16 +283,24 @@
       grid.append(card);
     });
 
-    updateStatus(tr("loaded").replace("{n}", String(items.length)));
+    updateStatus(
+      language === "fr"
+        ? `${visible.length} contenu(s) disponible(s).`
+        : `${visible.length} item(s) available.`
+    );
   }
 
   async function loadSupabaseCatalogue() {
-    const url =
-      `${SUPABASE_URL}/rest/v1/catalogue` +
-      "?select=id,title,description,category,image_url,published,position" +
-      "&published=eq.true&order=position.asc";
+    const query = new URL(`${SUPABASE_URL}/rest/v1/catalogue`);
 
-    const response = await fetch(url, {
+    query.searchParams.set(
+      "select",
+      "id,title,description,category,image_url,published,position"
+    );
+    query.searchParams.set("published", "eq.true");
+    query.searchParams.set("order", "position.asc");
+
+    const response = await fetch(query, {
       headers: {
         apikey: SUPABASE_KEY,
         Authorization: `Bearer ${SUPABASE_KEY}`
@@ -187,7 +309,7 @@
     });
 
     if (!response.ok) {
-      throw new Error("Supabase catalogue error: " + response.status);
+      throw new Error(`Supabase catalogue: ${response.status}`);
     }
 
     return response.json();
@@ -200,7 +322,7 @@
     });
 
     if (!response.ok) {
-      throw new Error("GitHub covers error: " + response.status);
+      throw new Error(`GitHub covers: ${response.status}`);
     }
 
     const files = await response.json();
@@ -219,11 +341,11 @@
           (file.name.match(/photo_(\d+)/i) || [])[1] || index + 1;
 
         return {
-          id: "github-" + file.name,
+          id: `github-${file.name}`,
           source: "github",
           title: {
-            fr: "COVER " + number,
-            en: "COVER " + number
+            fr: `COVER ${number}`,
+            en: `COVER ${number}`
           },
           description: { fr: "", en: "" },
           category: "unclassified",
@@ -239,7 +361,7 @@
     if (loadingPromise) return loadingPromise;
 
     loadingPromise = (async () => {
-      updateStatus(tr("loading"));
+      updateStatus(t("loading"));
 
       const results = await Promise.allSettled([
         loadSupabaseCatalogue(),
@@ -252,15 +374,16 @@
       const githubItems =
         results[1].status === "fulfilled" ? results[1].value : [];
 
-      if (results[0].status === "rejected") {
-        console.error("Supabase catalogue:", results[0].reason);
-      }
+      results.forEach((result, index) => {
+        if (result.status === "rejected") {
+          console.error(
+            index === 0 ? "Supabase error:" : "GitHub error:",
+            result.reason
+          );
+        }
+      });
 
-      if (results[1].status === "rejected") {
-        console.error("GitHub covers:", results[1].reason);
-      }
-
-      const existingImageUrls = new Set(
+      const knownUrls = new Set(
         supabaseItems.map(item => item.image_url).filter(Boolean)
       );
 
@@ -270,17 +393,19 @@
           source: "supabase",
           category: normalizeCategory(item.category)
         })),
-        ...githubItems.filter(item =>
-          !existingImageUrls.has(item.image_url)
-        )
+        ...githubItems.filter(item => !knownUrls.has(item.image_url))
       ];
+
+      catalogueItems.sort((a, b) =>
+        Number(a.position || 0) - Number(b.position || 0)
+      );
+
+      window.catalogue = catalogueItems;
 
       renderFilters();
       renderCards();
 
-      if (!catalogueItems.length) {
-        updateStatus(tr("error"));
-      }
+      if (!catalogueItems.length) updateStatus(t("error"));
 
       return catalogueItems;
     })();
@@ -292,56 +417,45 @@
     }
   }
 
-  function setLanguage(lang) {
-    if (!["fr", "en"].includes(lang)) return;
+  function setLanguage(nextLanguage) {
+    if (!["fr", "en"].includes(nextLanguage)) return;
 
-    language = lang;
-    document.documentElement.lang = lang;
-
-    const toggle = document.getElementById("langToggle");
-
-    if (toggle) {
-      toggle.innerHTML = lang === "fr"
-        ? "FR <span>/</span> EN"
-        : "EN <span>/</span> FR";
-    }
-
+    language = nextLanguage;
+    document.documentElement.lang = language;
+    updateTranslations();
     renderFilters();
     renderCards();
   }
 
-  const langToggle = document.getElementById("langToggle");
+  $("#langToggle")?.addEventListener("click", () => {
+    setLanguage(language === "fr" ? "en" : "fr");
+  });
 
-  if (langToggle) {
-    langToggle.addEventListener("click", () => {
-      setLanguage(language === "fr" ? "en" : "fr");
-    });
-  }
+  const menuToggle = $("#menuToggle");
+  const nav = $("#nav");
 
-  const menuToggle = document.getElementById("menuToggle");
-  const nav = document.getElementById("nav");
+  menuToggle?.addEventListener("click", () => {
+    nav?.classList.toggle("open");
+  });
 
-  if (menuToggle && nav) {
-    menuToggle.addEventListener("click", () => {
-      nav.classList.toggle("open");
-    });
-
-    nav.querySelectorAll("a").forEach(link => {
-      link.addEventListener("click", () => nav.classList.remove("open"));
-    });
-  }
+  nav?.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => nav.classList.remove("open"));
+  });
 
   window.ESP_CATALOGUE = {
     refresh: loadCatalogue,
-    getItems: () => catalogueItems,
-    getCategories: () => categories.filter(category => category.id !== "all"),
+    getItems: () => catalogueItems.slice(),
+    getCategories: () => categories.filter(item => item.id !== "all"),
     setLanguage,
-    getLanguage: () => language
+    getLanguage: () => language,
+    render: renderCards
   };
 
+  updateTranslations();
   renderFilters();
+
   loadCatalogue().catch(error => {
     console.error(error);
-    updateStatus(tr("error"));
+    updateStatus(t("error"));
   });
 })();
