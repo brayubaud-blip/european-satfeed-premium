@@ -426,7 +426,7 @@
 
   function prepareEditableElements() {
     document.querySelectorAll(
-      "h1,h2,h3,p,a,button,summary,.brand-mark,.brand img"
+      "h1,h2,h3,p,a,button,summary,.brand-name,.brand-mark,.brand img"
     ).forEach(element => {
       if (element.closest("#esp-admin,#esp-login,#esp-menu,.esp-toolbar")) return;
       element.dataset.espEditable = "true";
@@ -1136,6 +1136,7 @@
       const file = $("#esp-image-file").files?.[0];
       if (!file) { message("Choisis une image."); return; }
       try {
+        await recordUndo("Remplacer une image");
         const url = await uploadImage(file);
         image.src = url;
         image.removeAttribute("srcset");
@@ -1195,12 +1196,17 @@
   }
 
   function openSectionEditor(element) {
-    const key = element.dataset.espKey;
+    const isGlobalBackground = element === document.body;
+    const key = isGlobalBackground ? "global:body" : (element.dataset.espKey ||= elementKey(element));
+    const backgroundColor = isGlobalBackground
+      ? (settings.global?.backgroundColor || getComputedStyle(element).backgroundColor)
+      : getComputedStyle(element).backgroundColor;
 
     showMenu(`
       <h3>APPARENCE DE LA SECTION</h3>
       <label>Couleur du fond</label>
-      <input type="color" id="esp-section-color" value="${toHex(getComputedStyle(element).backgroundColor)}">
+      <input type="color" id="esp-section-color" value="${toHex(backgroundColor)}">
+      <p class="esp-muted">${isGlobalBackground ? "Fond général de tout le site" : "Fond de cette section"}</p>
       <label>Image de fond</label>
       <input type="file" id="esp-section-image" accept="image/*">
       <button class="esp-btn" id="esp-section-remove-image" type="button">RETIRER L'IMAGE DE FOND</button>
@@ -1218,16 +1224,22 @@
       try { await recordUndo("Modifier le fond d'une section"); }
       catch (error) { message("Impossible de créer le point de retour : " + error.message); return; }
       const color = $("#esp-section-color").value;
-      element.style.backgroundColor = color;
-      settings.styles[key] ||= {};
-      settings.styles[key].backgroundColor = color;
-
       const opacity = Math.max(10, Math.min(100, Number($("#esp-section-opacity").value || 100))) / 100;
       const glow = $("#esp-section-glow").value;
-      element.style.opacity = opacity;
-      element.style.boxShadow = "0 0 35px " + glow + "55";
-      settings.styles[key].opacity = String(opacity);
-      settings.styles[key].boxShadow = element.style.boxShadow;
+      if (isGlobalBackground) {
+        settings.global ||= {};
+        settings.global.backgroundColor = color;
+        document.documentElement.style.setProperty("--bg", color);
+        document.body.style.backgroundColor = color;
+      } else {
+        element.style.backgroundColor = color;
+        settings.styles[key] ||= {};
+        settings.styles[key].backgroundColor = color;
+        element.style.opacity = opacity;
+        element.style.boxShadow = "0 0 35px " + glow + "55";
+        settings.styles[key].opacity = String(opacity);
+        settings.styles[key].boxShadow = element.style.boxShadow;
+      }
       const file = $("#esp-section-image").files?.[0];
 
       try {
@@ -1239,7 +1251,16 @@
           element.style.backgroundSize = "cover";
           element.style.backgroundPosition = "center";
 
-          settings.styles[key].backgroundImage = backgroundImage;
+          if (isGlobalBackground) {
+            settings.global ||= {};
+            settings.global.backgroundImage = backgroundImage;
+            settings.global.backgroundSize = "cover";
+            settings.global.backgroundPosition = "center";
+            document.body.style.backgroundAttachment = "fixed";
+          } else {
+            settings.styles[key] ||= {};
+            settings.styles[key].backgroundImage = backgroundImage;
+          }
         }
 
         await saveSettings(true);
@@ -1253,7 +1274,12 @@
       try {
         await recordUndo("Retirer une image de fond");
         element.style.backgroundImage = "none";
-        if (settings.styles[key]) delete settings.styles[key].backgroundImage;
+        if (isGlobalBackground) {
+          settings.global ||= {};
+          delete settings.global.backgroundImage;
+        } else if (settings.styles[key]) {
+          delete settings.styles[key].backgroundImage;
+        }
         await saveSettings(true);
         message("Image de fond retirée.");
       } catch (error) {
