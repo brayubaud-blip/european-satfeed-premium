@@ -1873,7 +1873,7 @@
   if (publicAddCover) {
     publicAddCover.addEventListener("click", async () => {
       try {
-        if (!(await checkOwner())) {
+        if (!(await checkOwner()) || !editing || admin.classList.contains("open")) {
           showLogin();
           return;
         }
