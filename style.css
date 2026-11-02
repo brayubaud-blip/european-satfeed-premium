@@ -1221,3 +1221,54 @@ body.lightbox-open { overflow:hidden; }
   .hero-stamp b {font-size:23px;}
 }
 
+/* VISITOR FAVORITES — PER-BROWSER SAVED STATE */
+.cover-favorite {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  min-height:38px;
+  margin-top:14px;
+  padding:8px 10px;
+  border:1px solid #303b4d;
+  border-radius:5px;
+  background:#0a101b;
+  color:#aab4c3;
+  font:800 10px "DM Sans",sans-serif;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:background .2s ease,border-color .2s ease,color .2s ease,transform .2s ease;
+}
+.cover-favorite:hover,.cover-favorite:focus-visible {
+  border-color:var(--yellow);
+  color:var(--yellow);
+  outline:none;
+}
+.cover-favorite:active {transform:scale(.985);}
+.favorite-star {
+  font-size:17px;
+  line-height:1;
+  color:#aab4c3;
+}
+.cover-favorite.is-favorite {
+  background:#eaff0014;
+  border-color:#eaff0070;
+  color:var(--yellow);
+}
+.cover-favorite.is-favorite .favorite-star {
+  color:var(--yellow);
+}
+@media(max-width:650px) {
+  .cover-favorite {
+    min-height:40px;
+    margin-top:11px;
+    padding:8px 6px;
+    gap:6px;
+    font-size:9px;
+    letter-spacing:.6px;
+  }
+  .favorite-star {font-size:18px;}
+}
+
