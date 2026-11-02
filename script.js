@@ -23,6 +23,53 @@
   let viewerItems = [];
   let viewerIndex = 0;
   let lightbox = null;
+  const FAVORITES_STORAGE_KEY = "esp-cover-favorites";
+  let favoriteIds = (() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || "[]");
+      return new Set(Array.isArray(stored) ? stored.map(String) : []);
+    } catch (_) {
+      return new Set();
+    }
+  })();
+
+  function favoriteKey(item) {
+    return String(item.source || "supabase") + ":" + String(item.id);
+  }
+
+  function saveFavoriteIds() {
+    try {
+      localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...favoriteIds]));
+      return true;
+    } catch (error) {
+      console.warn("Impossible d'enregistrer les favoris sur cet appareil :", error);
+      return false;
+    }
+  }
+
+  function favoriteLabel(isFavorite) {
+    if (language === "fr") return isFavorite ? t("favorited") : t("favorite");
+    return isFavorite ? t("favorited") : t("favorite");
+  }
+
+  function toggleFavorite(item, button) {
+    const key = favoriteKey(item);
+    if (favoriteIds.has(key)) favoriteIds.delete(key);
+    else favoriteIds.add(key);
+
+    if (!saveFavoriteIds()) {
+      if (favoriteIds.has(key)) favoriteIds.delete(key);
+      else favoriteIds.add(key);
+      return;
+    }
+
+    const active = favoriteIds.has(key);
+    button.classList.toggle("is-favorite", active);
+    button.setAttribute("aria-pressed", String(active));
+    button.setAttribute("aria-label", favoriteLabel(active));
+    button.querySelector(".favorite-label").textContent = favoriteLabel(active);
+    button.querySelector(".favorite-star").textContent = active ? "★" : "☆";
+  }
 
   const grid = $("#archiveGrid");
   const filtersContainer = $("#filters");
@@ -60,6 +107,8 @@
       archiveEyebrow: "EXPLORER LA COLLECTION",
       archiveTitle: "L'ARCHIVE.",
       archiveDesc: "Un aperçu des collections disponibles. Les fichiers complets sont réservés aux membres Premium.",
+      favorite: "Favoris",
+      favorited: "Dans les favoris",
       addCoverAdmin: "+ AJOUTER UNE COVER",
       archiveFoot: "DE NOUVELLES COLLECTIONS SONT AJOUTÉES RÉGULIÈREMENT.",
       latestEyebrow: "NOUVEAUTÉS DE L'ARCHIVE",
@@ -115,6 +164,8 @@
       archiveEyebrow: "EXPLORE THE COLLECTION",
       archiveTitle: "THE ARCHIVE.",
       archiveDesc: "A preview of available collections. Full files are reserved for Premium members.",
+      favorite: "Favorite",
+      favorited: "Added to favorites",
       addCoverAdmin: "+ ADD A COVER",
       archiveFoot: "MORE COLLECTIONS ARE ADDED REGULARLY.",
       latestEyebrow: "FRESH FROM THE ARCHIVE",
@@ -411,7 +462,23 @@
       description.className = "catalogue-description";
       description.textContent = localized(item.description);
 
-      info.append(meta, title, description);
+      const favorite = document.createElement("button");
+      const isFavorite = favoriteIds.has(favoriteKey(item));
+      favorite.type = "button";
+      favorite.className = "cover-favorite" + (isFavorite ? " is-favorite" : "");
+      favorite.setAttribute("aria-pressed", String(isFavorite));
+      favorite.setAttribute("aria-label", favoriteLabel(isFavorite));
+      favorite.innerHTML = '<span class="favorite-star" aria-hidden="true">' +
+        (isFavorite ? "★" : "☆") + '</span><span class="favorite-label">' +
+        favoriteLabel(isFavorite) + '</span>';
+      favorite.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleFavorite(item, favorite);
+      });
+      favorite.addEventListener("keydown", event => event.stopPropagation());
+
+      info.append(meta, title, description, favorite);
       card.append(cover, info);
       grid.append(card);
     });
