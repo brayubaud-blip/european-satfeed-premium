@@ -449,6 +449,11 @@
       if (saved.letterSpacing) element.style.letterSpacing = saved.letterSpacing;
       if (saved.opacity) element.style.opacity = saved.opacity;
       if (saved.boxShadow) element.style.boxShadow = saved.boxShadow;
+      if (saved.transform) element.style.transform = saved.transform;
+      if (saved.width) element.style.width = saved.width;
+      if (saved.padding) element.style.padding = saved.padding;
+      if (saved.borderRadius) element.style.borderRadius = saved.borderRadius;
+      if (saved.display) element.style.display = saved.display;
 
       if (saved.backgroundImage) {
         element.style.backgroundImage = saved.backgroundImage;
@@ -787,6 +792,11 @@
       <input type="color" id="esp-text-bg" value="${toHex(getComputedStyle(element).backgroundColor)}">
       <label>Espacement des lettres (px)</label>
       <input type="number" min="-3" max="20" step="0.5" id="esp-text-spacing" value="${parseFloat(getComputedStyle(element).letterSpacing) || 0}">
+      <label>Déplacement horizontal (px)</label><input type="number" id="esp-move-x" value="0">
+      <label>Déplacement vertical (px)</label><input type="number" id="esp-move-y" value="0">
+      <label>Largeur (px, 0 = automatique)</label><input type="number" min="0" max="2000" id="esp-element-width" value="0">
+      <label>Espacement intérieur (px)</label><input type="number" min="0" max="200" id="esp-element-padding" value="0">
+      <button class="esp-btn" id="esp-hide-element">MASQUER CET ÉLÉMENT</button>
       <button class="esp-btn primary" id="esp-apply-text">APPLIQUER</button>
       <button class="esp-btn" id="esp-cancel-text">ANNULER</button>
     `);
@@ -804,18 +814,25 @@
       const weight = $("#esp-text-weight").value;
       const bg = $("#esp-text-bg").value;
       const spacing = Number($("#esp-text-spacing").value || 0);
+      const moveX = Number($("#esp-move-x").value || 0);
+      const moveY = Number($("#esp-move-y").value || 0);
+      const width = Number($("#esp-element-width").value || 0);
+      const padding = Number($("#esp-element-padding").value || 0);
       element.style.color = color;
       element.style.fontSize = size + "px";
       element.style.fontWeight = weight;
       element.style.letterSpacing = spacing + "px";
       if (font) element.style.fontFamily = font;
       if (bg) element.style.backgroundColor = bg;
+      element.style.transform = "translate(" + moveX + "px," + moveY + "px)";
+      element.style.width = width ? width + "px" : "";
+      element.style.padding = padding ? padding + "px" : "";
       settings.styles[key] ||= {};
       Object.assign(settings.styles[key], {
         color, fontSize: size + "px", fontWeight: weight,
-        letterSpacing: spacing + "px",
-        ...(font ? {fontFamily: font} : {}),
-        backgroundColor: bg
+        letterSpacing: spacing + "px", transform: element.style.transform,
+        width: element.style.width, padding: element.style.padding,
+        ...(font ? {fontFamily:font} : {}), backgroundColor:bg
       });
 
       if (isLink) {
@@ -839,6 +856,15 @@
       saveSettings(true).catch(error =>
         message("Erreur de sauvegarde : " + error.message)
       );
+    };
+    $("#esp-hide-element").onclick = async () => {
+      if (!confirm("Masquer cet élément du site ?")) return;
+      element.style.display = "none";
+      settings.styles[key] ||= {};
+      settings.styles[key].display = "none";
+      closeMenu();
+      try { await saveSettings(true); message("Élément masqué."); }
+      catch (error) { message("Erreur : " + error.message); }
     };
   }
 
