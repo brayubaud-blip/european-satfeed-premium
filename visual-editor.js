@@ -394,7 +394,7 @@
 
   function prepareEditableElements() {
     document.querySelectorAll(
-      "h1,h2,h3,p,a,button,summary,.topline,.hero,.ticker," +
+      "h1,h2,h3,p,a,button,summary,.brand,.brand-mark,.brand img,.topline,.hero,.ticker," +
       ".archive-section,.latest-section,.included-section," +
       ".premium-section,.faq-section,.footer"
     ).forEach(element => {
@@ -444,6 +444,12 @@
 
       if (saved.color) element.style.color = saved.color;
       if (saved.backgroundColor) element.style.backgroundColor = saved.backgroundColor;
+      if (saved.fontSize) element.style.fontSize = saved.fontSize;
+      if (saved.fontFamily) element.style.fontFamily = saved.fontFamily;
+      if (saved.fontWeight) element.style.fontWeight = saved.fontWeight;
+      if (saved.letterSpacing) element.style.letterSpacing = saved.letterSpacing;
+      if (saved.opacity) element.style.opacity = saved.opacity;
+      if (saved.boxShadow) element.style.boxShadow = saved.boxShadow;
 
       if (saved.backgroundImage) {
         element.style.backgroundImage = saved.backgroundImage;
@@ -607,13 +613,16 @@
       <input type="number" min="0" id="esp-cover-position"
         value="${Number(item?.position ?? allItems.length)}">
 
-      <button class="esp-btn primary" id="esp-cover-save">
-        ENREGISTRER
-      </button>
+      <button class="esp-btn primary" id="esp-cover-save">ENREGISTRER</button>
+      ${item ? '<button class="esp-btn" id="esp-cover-hide">' + (item.published === false ? 'REPUBLIER' : 'MASQUER') + '</button><button class="esp-btn danger" id="esp-cover-delete">SUPPRIMER LA COVER</button>' : ''}
       <button class="esp-btn" id="esp-cover-cancel">ANNULER</button>
     `);
 
     $("#esp-cover-cancel").onclick = closeMenu;
+    if (item) {
+      $("#esp-cover-hide").onclick = async () => { await togglePublished(item); closeMenu(); };
+      $("#esp-cover-delete").onclick = async () => { closeMenu(); await deleteCover(item); };
+    }
 
     $("#esp-cover-save").onclick = async () => {
       const button = $("#esp-cover-save");
@@ -757,6 +766,24 @@
       ` : ""}
       <label>Couleur du texte</label>
       <input type="color" id="esp-text-color" value="${toHex(getComputedStyle(element).color)}">
+      <label>Taille du texte (px)</label>
+      <input type="number" min="8" max="160" id="esp-text-size" value="${parseFloat(getComputedStyle(element).fontSize) || 16}">
+      <label>Police</label>
+      <select id="esp-text-font">
+        <option value="">Conserver la police actuelle</option>
+        <option value="DM Sans">DM Sans</option>
+        <option value="Barlow Condensed">Barlow Condensed</option>
+        <option value="Arial">Arial</option>
+        <option value="Georgia">Georgia</option>
+      </select>
+      <label>Graisse</label>
+      <select id="esp-text-weight">
+        <option value="400">Normale</option><option value="600">Semi-gras</option><option value="800">Gras</option><option value="900">Extra-gras</option>
+      </select>
+      <label>Couleur de fond</label>
+      <input type="color" id="esp-text-bg" value="${toHex(getComputedStyle(element).backgroundColor)}">
+      <label>Espacement des lettres (px)</label>
+      <input type="number" min="-3" max="20" step="0.5" id="esp-text-spacing" value="${parseFloat(getComputedStyle(element).letterSpacing) || 0}">
       <button class="esp-btn primary" id="esp-apply-text">APPLIQUER</button>
       <button class="esp-btn" id="esp-cancel-text">ANNULER</button>
     `);
@@ -769,9 +796,24 @@
       settings.texts[key] = value;
 
       const color = $("#esp-text-color").value;
+      const size = Math.max(8, Math.min(160, Number($("#esp-text-size").value || 16)));
+      const font = $("#esp-text-font").value;
+      const weight = $("#esp-text-weight").value;
+      const bg = $("#esp-text-bg").value;
+      const spacing = Number($("#esp-text-spacing").value || 0);
       element.style.color = color;
+      element.style.fontSize = size + "px";
+      element.style.fontWeight = weight;
+      element.style.letterSpacing = spacing + "px";
+      if (font) element.style.fontFamily = font;
+      if (bg) element.style.backgroundColor = bg;
       settings.styles[key] ||= {};
-      settings.styles[key].color = color;
+      Object.assign(settings.styles[key], {
+        color, fontSize: size + "px", fontWeight: weight,
+        letterSpacing: spacing + "px",
+        ...(font ? {fontFamily: font} : {}),
+        backgroundColor: bg
+      });
 
       if (isLink) {
         const rawUrl = $("#esp-link-value").value.trim();
@@ -835,6 +877,10 @@
       <input type="color" id="esp-section-color" value="${toHex(getComputedStyle(element).backgroundColor)}">
       <label>Image de fond</label>
       <input type="file" id="esp-section-image" accept="image/*">
+      <label>Opacité de la section (%)</label>
+      <input type="number" min="10" max="100" id="esp-section-opacity" value="${Math.round((Number(getComputedStyle(element).opacity) || 1) * 100)}">
+      <label>Effet lumineux (glow)</label>
+      <input type="color" id="esp-section-glow" value="#eaff00">
       <button class="esp-btn primary" id="esp-section-save">ENREGISTRER</button>
       <button class="esp-btn" id="esp-section-cancel">FERMER</button>
     `);
@@ -847,6 +893,12 @@
       settings.styles[key] ||= {};
       settings.styles[key].backgroundColor = color;
 
+      const opacity = Math.max(10, Math.min(100, Number($("#esp-section-opacity").value || 100))) / 100;
+      const glow = $("#esp-section-glow").value;
+      element.style.opacity = opacity;
+      element.style.boxShadow = "0 0 35px " + glow + "55";
+      settings.styles[key].opacity = String(opacity);
+      settings.styles[key].boxShadow = element.style.boxShadow;
       const file = $("#esp-section-image").files?.[0];
 
       try {
@@ -928,7 +980,7 @@
       admin.classList.remove("open");
       editing = true;
       document.body.classList.add("esp-editing");
-      toolbar.style.display = "flex";
+      toolbar.style.display = "none";
       await loadCatalogueAdmin();
       await loadSettings();
       prepareEditableElements();
@@ -947,13 +999,9 @@
   };
 
   $("#esp-view-site").onclick = () => { admin.classList.remove("open"); editing = true; document.body.classList.add("esp-editing"); toolbar.style.display = "flex"; prepareEditableElements(); message("Mode édition activé : clique directement sur un texte, une cover ou une section du site pour la modifier."); };
-  $("#esp-open-admin").onclick = openAdmin;
 
-  $("#esp-exit-edit").onclick = () => {
-    editing = false;
-    document.body.classList.remove("esp-editing");
-    toolbar.style.display = "none";
-  };
+
+
 
   $("#esp-add-cover").onclick = () => openCoverEditor();
 
@@ -1049,7 +1097,7 @@
     const section = event.target.closest(
       ".topline,.header,.hero,.ticker,.archive-section," +
       ".latest-section,.included-section,.premium-section," +
-      ".faq-section,.footer"
+      ".faq-section,.footer,.header,.brand,.brand-mark,img"
     );
 
     if (section) {
