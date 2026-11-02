@@ -328,6 +328,7 @@
     settings.texts ||= {};
     settings.styles ||= {};
     settings.links ||= {};
+    settings.images ||= {};
 
     applySettings();
   }
@@ -459,6 +460,10 @@
     Object.entries(settings.links || {}).forEach(([key, url]) => {
       const element = findElement(key);
       if (element?.tagName === "A") element.href = url;
+    });
+    Object.entries(settings.images || {}).forEach(([key, url]) => {
+      const element = findElement(key);
+      if (element?.tagName === "IMG") element.src = url;
     });
   }
 
@@ -884,8 +889,12 @@
         const url = await uploadImage(file);
         image.src = url;
         image.removeAttribute("srcset");
+        const key = image.dataset.espKey ||= elementKey(image);
+        settings.images ||= {};
+        settings.images[key] = url;
+        await saveSettings(true);
         closeMenu();
-        message("Image remplacée. Vérifie le résultat sur le site.");
+        message("Image remplacée et enregistrée.");
       } catch (error) {
         message("Remplacement impossible : " + error.message);
       }
