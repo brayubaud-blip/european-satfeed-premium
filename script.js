@@ -3,7 +3,7 @@
 
 (() => {
   const SUPABASE_URL = "https://afipejmgjkigcbohsxkt.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_MWi4yR-uw_TfrXJJrKdS1Q_783VTF6Z";
+  const SUPABASE_KEY = "sb_publishable_MWi4yR-uw_TfrxJJrKdS1Q_783VTF6Z";
 
   const GITHUB_COVERS_URL =
     "https://api.github.com/repos/brayubaud-blip/european-satfeed-premium/contents/covers?ref=main";
