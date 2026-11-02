@@ -742,6 +742,14 @@
     ).join("");
   }
 
+  function newCatalogueId() {
+    if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, char => {
+      const random = Math.random() * 16 | 0;
+      return (char === "x" ? random : (random & 3 | 8)).toString(16);
+    });
+  }
+
   function openCoverEditor(item = null) {
     editingItemId = item?.id ?? null;
 
@@ -839,7 +847,10 @@
             .eq("id", item.id);
         } else {
           // Keep the original GitHub image untouched; create an editable catalogue record.
-          result = await db.from("catalogue").insert(changes).select("id").single();
+          result = await db.from("catalogue").insert({
+            id: newCatalogueId(),
+            ...changes
+          }).select("id").single();
         }
 
         if (result.error) throw result.error;
@@ -937,6 +948,7 @@
           const imageUrl = await uploadImage(file);
           const title = bulkTitleFromFilename(file.name);
           const row = {
+            id: newCatalogueId(),
             title: { fr: title, en: title },
             description: { fr: "", en: "" },
             category,
@@ -987,7 +999,7 @@
 
   async function duplicateCover(item) {
     try {
-      const copy = { title:item.title, description:item.description, category:item.category, image_url:item.image_url, published:false, position:allItems.length };
+      const copy = { id:newCatalogueId(), title:item.title, description:item.description, category:item.category, image_url:item.image_url, published:false, position:allItems.length };
       const { data, error } = await db.from("catalogue").insert(copy).select("id").single();
       if (error) throw error;
       await recordUndo("Dupliquer une cover", {
@@ -1026,6 +1038,7 @@
       let tombstoneId = null;
       if (githubSourceUrl) {
         const marker = {
+          id: newCatalogueId(),
           title: { fr: "Archive source retirée", en: "Source archive removed" },
           description: {
             fr: "__GITHUB_SOURCE_HIDDEN__|" + String(item.id || githubSourceUrl),
