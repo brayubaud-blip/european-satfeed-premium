@@ -841,8 +841,9 @@
       <h3>${item ? "MODIFIER LA COVER" : "AJOUTER UNE COVER"}</h3>
       <p class="esp-muted">Saisis le contenu une seule fois en ${languageName}. L'autre langue sera générée automatiquement à l'enregistrement.</p>
 
-      <label>Image</label>
-      <input type="file" id="esp-cover-file" accept="image/*">
+      <label>Image${item ? "" : "s"}</label>
+      <input type="file" id="esp-cover-file" accept="image/*" ${item ? "" : "multiple"}>
+      ${item ? "" : '<p id="esp-cover-file-count" class="esp-muted">Tu peux sélectionner plusieurs images : une cover sera créée pour chaque fichier. Les noms des fichiers serviront de titres.</p>'}
 
       <label>Titre (${currentLanguage.toUpperCase()})</label>
       <input id="esp-cover-title" value="${escapeHTML(titleValue)}">
@@ -866,6 +867,16 @@
     `);
 
     $("#esp-cover-cancel").onclick = closeMenu;
+    const coverFileInput = $("#esp-cover-file");
+    if (!item && coverFileInput) {
+      coverFileInput.addEventListener("change", () => {
+        const count = coverFileInput.files?.length || 0;
+        const counter = $("#esp-cover-file-count");
+        if (counter) counter.textContent = count
+          ? count + " image(s) sélectionnée(s). Une cover par fichier."
+          : "Tu peux sélectionner plusieurs images : une cover sera créée pour chaque fichier. Les noms des fichiers serviront de titres.";
+      });
+    }
     if (item) {
       $("#esp-cover-hide").onclick = async () => { await togglePublished(item); closeMenu(); };
       $("#esp-cover-delete").onclick = async () => { closeMenu(); await deleteCover(item); };
@@ -875,11 +886,89 @@
 
     $("#esp-cover-save").onclick = async () => {
       const button = $("#esp-cover-save");
-      const file = $("#esp-cover-file").files?.[0];
+      const selectedFiles = Array.from($("#esp-cover-file").files || []);
+      const file = selectedFiles[0];
       const titleValue = $("#esp-cover-title").value.trim();
       const descriptionValue = $("#esp-cover-description").value.trim();
       const category = $("#esp-cover-category").value;
       const status = $("#esp-cover-translation-status");
+
+      if (selectedFiles.length > 1 && !item) {
+        if (selectedFiles.length > 100) {
+          message("Maximum 100 images par ajout. Tu peux faire plusieurs lots.");
+          return;
+        }
+        const validFiles = selectedFiles.filter(image =>
+          image.type.startsWith("image/") && image.size <= 12 * 1024 * 1024
+        );
+        if (!validFiles.length) {
+          message("Aucune image valide. Chaque fichier doit être une image de 12 Mo maximum.");
+          return;
+        }
+
+        button.disabled = true;
+        button.textContent = "IMPORT EN COURS…";
+        status.textContent = "Préparation de " + validFiles.length + " cover(s)…";
+        const createdIds = [];
+        const failures = [];
+        let position = Math.max(0, Number($("#esp-cover-position").value || allItems.length));
+        let imported = 0;
+
+        try {
+          const translatedDescription = await translateCoverText(descriptionValue, currentLanguage);
+          const description = currentLanguage === "fr"
+            ? { fr: descriptionValue, en: translatedDescription }
+            : { fr: translatedDescription, en: descriptionValue };
+
+          for (let index = 0; index < validFiles.length; index++) {
+            const imageFile = validFiles[index];
+            try {
+              const imageUrl = await uploadImage(imageFile);
+              const generatedTitle = bulkTitleFromFilename(imageFile.name);
+              const row = {
+                id: newCatalogueId(),
+                title: { fr: generatedTitle, en: generatedTitle },
+                description,
+                category,
+                image_url: imageUrl,
+                position: position++,
+                published: true
+              };
+              const { data, error } = await db.from("catalogue")
+                .insert(row).select("id").single();
+              if (error) throw error;
+              createdIds.push(data.id);
+              imported++;
+            } catch (error) {
+              failures.push(imageFile.name + " : " + (error.message || "Erreur inconnue"));
+            }
+            status.textContent = "Import : " + (index + 1) + "/" + validFiles.length
+              + " · Réussies : " + imported + " · Erreurs : " + failures.length;
+          }
+
+          if (createdIds.length) {
+            await recordUndo("Ajouter " + createdIds.length + " covers", {
+              kind: "catalogue", action: "deleteIds", ids: createdIds
+            });
+            await refreshAdminAndPublic();
+            closeMenu();
+            message(imported + " cover(s) ajoutée(s)." +
+              (failures.length ? " " + failures.length + " fichier(s) en échec." : ""));
+            if (failures.length) console.warn("Échecs d'ajout des covers :", failures);
+          } else {
+            status.textContent = "Aucune cover importée. Vérifie les fichiers et réessaie.";
+            message("Aucune cover n'a pu être ajoutée.");
+            button.disabled = false;
+            button.textContent = "RÉESSAYER";
+          }
+        } catch (error) {
+          status.textContent = "Import interrompu : " + (error.message || "Erreur inconnue");
+          message("L'ajout multiple a échoué : " + error.message);
+          button.disabled = false;
+          button.textContent = "RÉESSAYER";
+        }
+        return;
+      }
 
       if (!titleValue) {
         message("Ajoute un titre.");
