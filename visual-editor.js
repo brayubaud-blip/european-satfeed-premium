@@ -6,7 +6,6 @@
   const SUPABASE_KEY = "sb_publishable_MWi4yR-uw_TfrxJJrKdS1Q_783VTF6Z";
   const OWNER_UID = "1f2e7add-fe3d-4792-8c8c-9708e584b9d6";
   const BUCKET = "covers";
-  const adminLinkRequested = new URLSearchParams(window.location.search).get("admin") === "1";
 
   if (!window.supabase?.createClient) {
     console.error("Supabase JS n'est pas chargé.");
@@ -210,7 +209,8 @@
           <div class="esp-muted">Gestion complète du site</div>
         </div>
         <div class="esp-row" style="flex:0 1 auto">
-          <button class="esp-btn primary" id="esp-view-site">VOIR LE SITE & MODIFIER</button>
+          <button class="esp-btn" id="esp-admin-close">RETOUR AU SITE</button>
+          <button class="esp-btn primary" id="esp-view-site">ACTIVER LE MODE ÉDITION</button>
           <button class="esp-btn danger" id="esp-logout">DÉCONNEXION</button>
         </div>
       </header>
@@ -1820,25 +1820,11 @@
         throw new Error("Ce compte n'est pas autorisé.");
       }
 
-      if (adminLinkRequested) {
-        login.classList.remove("open");
-        editing = false;
-        document.body.classList.remove("esp-editing");
-        editControls.style.display = "none";
-        await openAdmin();
-        return;
-      }
-
       login.classList.remove("open");
-      admin.classList.remove("open");
-      editing = true;
-      document.body.classList.add("esp-editing");
-      toolbar.style.display = "none";
-      await loadCatalogueAdmin();
-      await loadSettings();
-      prepareEditableElements();
-      editControls.style.display = "flex";
-      message("Mode édition direct activé. Clique sur ↶ RETOUR ARRIÈRE pour annuler la dernière modification.");
+      editing = false;
+      document.body.classList.remove("esp-editing");
+      editControls.style.display = "none";
+      await openAdmin();
     } catch (error) {
       output.textContent = error.message;
     }
@@ -1853,7 +1839,24 @@
     editControls.style.display = "none";
   };
 
-  $("#esp-view-site").onclick = async () => { admin.classList.remove("open"); editing = true; document.body.classList.add("esp-editing"); toolbar.style.display = "none"; await loadCatalogueAdmin(); await loadSettings(); prepareEditableElements(); editControls.style.display = "flex"; };
+  $("#esp-admin-close").onclick = () => {
+    admin.classList.remove("open");
+    editing = false;
+    document.body.classList.remove("esp-editing");
+    editControls.style.display = "none";
+    toolbar.style.display = "none";
+  };
+
+  $("#esp-view-site").onclick = async () => {
+    admin.classList.remove("open");
+    editing = true;
+    document.body.classList.add("esp-editing");
+    toolbar.style.display = "none";
+    await loadCatalogueAdmin();
+    await loadSettings();
+    prepareEditableElements();
+    editControls.style.display = "flex";
+  };
 
 
 
@@ -2032,9 +2035,11 @@
     }
   }, true);
 
-  // Raccourci ordinateur : Ctrl + Maj + E.
+  // Raccourci secret ordinateur : Ctrl + Maj + E ouvre l'administration
+  // sans activer le mode édition, afin de garder la navigation normale.
   document.addEventListener("keydown", async event => {
-    if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "a") {
+    const key = event.key.toLowerCase();
+    if (event.ctrlKey && event.shiftKey && (key === "e" || key === "a")) {
       event.preventDefault();
       try {
         if (await checkOwner()) await openAdmin();
@@ -2043,35 +2048,10 @@
       return;
     }
 
-    if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "e") {
-      event.preventDefault();
-
-      try {
-        if (!(await checkOwner())) {
-          showLogin();
-          return;
-        }
-        if (editing) {
-          finishDirectEditing();
-          message("Mode édition terminé. Tu peux naviguer normalement sur le site.");
-          return;
-        }
-        admin.classList.remove("open");
-        editing = true;
-        document.body.classList.add("esp-editing");
-        await loadCatalogueAdmin();
-        await loadSettings();
-        prepareEditableElements();
-        editControls.style.display = "flex";
-        message("Mode édition activé.");
-      } catch (error) {
-        message(error.message);
-      }
-    }
-
     if (event.key === "Escape") {
       closeMenu();
       login.classList.remove("open");
+      admin.classList.remove("open");
     }
   });
 
@@ -2095,16 +2075,8 @@
         event.preventDefault();
 
         checkOwner().then(authorized => {
-          if (authorized) {
-            admin.classList.remove("open");
-            editing = true;
-            document.body.classList.add("esp-editing");
-            toolbar.style.display = "none";
-            Promise.all([loadCatalogueAdmin(), loadSettings()]).then(() => {
-              prepareEditableElements();
-              editControls.style.display = "flex";
-            });
-          } else showLogin();
+          if (authorized) openAdmin();
+          else showLogin();
         }).catch(error => message(error.message));
       }
     });
@@ -2145,25 +2117,9 @@
     }
   });
 
-  checkOwner().then(async authorized => {
-    if (adminLinkRequested) {
-      if (authorized) {
-        await openAdmin();
-      } else {
-        showLogin();
-      }
-      return;
-    }
-
-    if (authorized) {
-      await loadCatalogueAdmin();
-      await loadSettings();
-      editing = true;
-      document.body.classList.add("esp-editing");
-      editControls.style.display = "flex";
-      prepareEditableElements();
-    }
-  }).catch(error => {
+  // Au chargement, le propriétaire conserve la navigation normale.
+  // L'administration ne s'ouvre qu'avec le raccourci secret ou les 5 taps mobile.
+  checkOwner().catch(error => {
     console.warn("ADMIN :", error.message);
   });
 })();
