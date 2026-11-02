@@ -245,11 +245,8 @@
 
   const toolbar = document.createElement("div");
   toolbar.className = "esp-toolbar";
-  toolbar.innerHTML = `
-    <button id="esp-add-direct-cover">+ AJOUTER UNE COVER</button>
-    <button id="esp-open-admin">OUTILS AVANCÉS</button>
-    <button id="esp-exit-edit">TERMINER</button>
-  `;
+  toolbar.hidden = true;
+  toolbar.style.display = "none";
   document.body.append(toolbar);
 
   const menu = document.createElement("div");
@@ -893,7 +890,7 @@
     }
 
     admin.classList.add("open");
-    toolbar.style.display = "flex";
+    toolbar.style.display = "none";
 
     try {
       await loadCatalogueAdmin();
@@ -950,7 +947,6 @@
   };
 
   $("#esp-view-site").onclick = () => { admin.classList.remove("open"); editing = true; document.body.classList.add("esp-editing"); toolbar.style.display = "flex"; prepareEditableElements(); message("Mode édition activé : clique directement sur un texte, une cover ou une section du site pour la modifier."); };
-  $("#esp-add-direct-cover").onclick = () => openCoverEditor(null);
   $("#esp-open-admin").onclick = openAdmin;
 
   $("#esp-exit-edit").onclick = () => {
