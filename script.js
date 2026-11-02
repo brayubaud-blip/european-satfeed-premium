@@ -1,5 +1,6 @@
-
 /* EUROPEAN SATFEED PREMIUM — CATALOGUE */
+"use strict";
+
 const SUPABASE_URL = "https://afipejmgjkigcbohsxkt.supabase.co";
 const SUPABASE_KEY = "sb_publishable_MWi4yR-uw_TfrXJJrKdS1Q_783VTF6Z";
 
@@ -9,6 +10,7 @@ const GITHUB_COVERS_URL =
 let language = "fr";
 let activeFilter = "all";
 let catalogueItems = [];
+let loadingCatalogue = false;
 
 const grid = document.getElementById("archiveGrid");
 const filtersContainer = document.getElementById("filters");
@@ -168,7 +170,8 @@ async function loadSupabaseCatalogue() {
     headers: {
       apikey: SUPABASE_KEY,
       Authorization: `Bearer ${SUPABASE_KEY}`
-    }
+    },
+    cache: "no-store"
   });
 
   if (!response.ok) {
@@ -179,13 +182,18 @@ async function loadSupabaseCatalogue() {
 }
 
 async function loadGitHubCovers() {
-  const response = await fetch(GITHUB_COVERS_URL);
+  const response = await fetch(GITHUB_COVERS_URL, {
+    headers: { Accept: "application/vnd.github+json" },
+    cache: "no-store"
+  });
 
   if (!response.ok) {
     throw new Error("GitHub covers error: " + response.status);
   }
 
   const files = await response.json();
+
+  if (!Array.isArray(files)) return [];
 
   return files
     .filter(file =>
@@ -202,7 +210,10 @@ async function loadGitHubCovers() {
       return {
         id: "github-" + file.name,
         source: "github",
-        title: { fr: "COVER " + number, en: "COVER " + number },
+        title: {
+          fr: "COVER " + number,
+          en: "COVER " + number
+        },
         description: { fr: "", en: "" },
         category: "unclassified",
         image_url: file.download_url,
@@ -214,51 +225,57 @@ async function loadGitHubCovers() {
 }
 
 async function loadCatalogue() {
+  if (loadingCatalogue) return catalogueItems;
+
+  loadingCatalogue = true;
   updateStatus(tr("loading"));
 
-  const results = await Promise.allSettled([
-    loadSupabaseCatalogue(),
-    loadGitHubCovers()
-  ]);
+  try {
+    const results = await Promise.allSettled([
+      loadSupabaseCatalogue(),
+      loadGitHubCovers()
+    ]);
 
-  const supabaseItems =
-    results[0].status === "fulfilled" ? results[0].value : [];
+    const supabaseItems =
+      results[0].status === "fulfilled" ? results[0].value : [];
 
-  const githubItems =
-    results[1].status === "fulfilled" ? results[1].value : [];
+    const githubItems =
+      results[1].status === "fulfilled" ? results[1].value : [];
 
-  if (results[0].status === "rejected") {
-    console.error("Supabase:", results[0].reason);
+    if (results[0].status === "rejected") {
+      console.error("Supabase:", results[0].reason);
+    }
+
+    if (results[1].status === "rejected") {
+      console.error("GitHub:", results[1].reason);
+    }
+
+    const existingImageUrls = new Set(
+      supabaseItems.map(item => item.image_url).filter(Boolean)
+    );
+
+    catalogueItems = [
+      ...supabaseItems.map(item => ({
+        ...item,
+        source: "supabase",
+        category: normalizeCategory(item.category)
+      })),
+      ...githubItems.filter(item =>
+        !existingImageUrls.has(item.image_url)
+      )
+    ];
+
+    renderFilters();
+    renderCards();
+
+    if (!catalogueItems.length) {
+      updateStatus(tr("error"));
+    }
+
+    return catalogueItems;
+  } finally {
+    loadingCatalogue = false;
   }
-
-  if (results[1].status === "rejected") {
-    console.error("GitHub:", results[1].reason);
-  }
-
-  const existingImageUrls = new Set(
-    supabaseItems.map(item => item.image_url).filter(Boolean)
-  );
-
-  catalogueItems = [
-    ...supabaseItems.map(item => ({
-      ...item,
-      source: "supabase",
-      category: normalizeCategory(item.category)
-    })),
-    ...githubItems.filter(item => !existingImageUrls.has(item.image_url))
-  ];
-
-  renderFilters();
-  renderCards();
-
-  if (!catalogueItems.length) updateStatus(tr("error"));
-
-  window.ESP_CATALOGUE = {
-    refresh: loadCatalogue,
-    getItems: () => catalogueItems,
-    getCategories: () => categories.filter(category => category.id !== "all"),
-    setLanguage: setLanguage
-  };
 }
 
 function setLanguage(lang) {
@@ -273,6 +290,7 @@ function setLanguage(lang) {
   });
 
   const toggle = document.getElementById("langToggle");
+
   if (toggle) {
     toggle.innerHTML = lang === "fr"
       ? "FR <span>/</span> EN"
@@ -304,5 +322,16 @@ if (menuToggle && nav) {
   });
 }
 
+window.ESP_CATALOGUE = {
+  refresh: loadCatalogue,
+  getItems: () => catalogueItems,
+  getCategories: () => categories.filter(category => category.id !== "all"),
+  setLanguage,
+  getLanguage: () => language
+};
+
 renderFilters();
-loadCatalogue();
+loadCatalogue().catch(error => {
+  console.error(error);
+  updateStatus(tr("error"));
+});
