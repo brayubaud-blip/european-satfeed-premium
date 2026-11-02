@@ -246,8 +246,9 @@
   const toolbar = document.createElement("div");
   toolbar.className = "esp-toolbar";
   toolbar.innerHTML = `
-    <button id="esp-open-admin">GESTION DES COVERS / ADMIN</button>
-    <button id="esp-exit-edit">QUITTER ÉDITION</button>
+    <button id="esp-add-direct-cover">+ AJOUTER UNE COVER</button>
+    <button id="esp-open-admin">OUTILS AVANCÉS</button>
+    <button id="esp-exit-edit">TERMINER</button>
   `;
   document.body.append(toolbar);
 
@@ -927,7 +928,14 @@
       }
 
       login.classList.remove("open");
-      await openAdmin();
+      admin.classList.remove("open");
+      editing = true;
+      document.body.classList.add("esp-editing");
+      toolbar.style.display = "flex";
+      await loadCatalogueAdmin();
+      await loadSettings();
+      prepareEditableElements();
+      message("Mode édition direct activé. Tu es sur le site : clique sur un texte, une cover ou une section pour la modifier.");
     } catch (error) {
       output.textContent = error.message;
     }
@@ -942,6 +950,7 @@
   };
 
   $("#esp-view-site").onclick = () => { admin.classList.remove("open"); editing = true; document.body.classList.add("esp-editing"); toolbar.style.display = "flex"; prepareEditableElements(); message("Mode édition activé : clique directement sur un texte, une cover ou une section du site pour la modifier."); };
+  $("#esp-add-direct-cover").onclick = () => openCoverEditor(null);
   $("#esp-open-admin").onclick = openAdmin;
 
   $("#esp-exit-edit").onclick = () => {
@@ -1094,8 +1103,13 @@
         event.preventDefault();
 
         checkOwner().then(authorized => {
-          if (authorized) openAdmin();
-          else showLogin();
+          if (authorized) {
+            admin.classList.remove("open");
+            editing = true;
+            document.body.classList.add("esp-editing");
+            toolbar.style.display = "flex";
+            Promise.all([loadCatalogueAdmin(), loadSettings()]).then(prepareEditableElements);
+          } else showLogin();
         }).catch(error => message(error.message));
       }
     });
