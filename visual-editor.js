@@ -657,11 +657,12 @@
 
         let result;
 
-        if (item) {
+        if (item && item.source !== "github") {
           result = await db.from("catalogue")
             .update(changes)
             .eq("id", item.id);
         } else {
+          // Keep the original GitHub image untouched; create an editable catalogue record.
           result = await db.from("catalogue").insert(changes);
         }
 
@@ -1009,8 +1010,25 @@
         String(entry.id) === String(card.dataset.catalogueId)
       );
 
-      if (item) openCoverEditor(item);
-      else message("Cette cover provient de GitHub. Importe-la dans Supabase depuis la gestion du catalogue pour la modifier.");
+      if (item) {
+        openCoverEditor(item);
+      } else if (card.dataset.catalogueSource === "github") {
+        const image = card.querySelector(".cover img");
+        const title = card.querySelector(".catalogue-title");
+        const tag = card.querySelector(".card-tag");
+        openCoverEditor({
+          id: card.dataset.catalogueId,
+          source: "github",
+          title: { fr: title?.textContent || "", en: title?.textContent || "" },
+          description: { fr: "", en: "" },
+          category: (tag?.textContent || "unclassified").toLowerCase(),
+          image_url: image?.currentSrc || image?.src || "",
+          published: true,
+          position: window.ESP_CATALOGUE?.getItems?.().length || 0
+        });
+      } else {
+        message("Cette cover n'a pas pu être identifiée.");
+      }
       return;
     }
 
