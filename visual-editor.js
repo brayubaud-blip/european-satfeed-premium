@@ -545,6 +545,7 @@
       images: settings.images || {},
       logos: settings.logos || {},
       heroStamp: settings.heroStamp || {},
+      deletedGithubCovers: settings.deletedGithubCovers || [],
       global: settings.global || {}
     }));
   }
@@ -591,10 +592,12 @@
     settings.images = snapshot.images || {};
     settings.logos = snapshot.logos || {};
     settings.heroStamp = snapshot.heroStamp || {};
+    settings.deletedGithubCovers = snapshot.deletedGithubCovers || [];
     settings.global = snapshot.global || {};
     try {
       await saveSettings(true);
       applySettings();
+      await window.ESP_CATALOGUE?.refresh?.();
       message("Dernière modification annulée : " + (entry.label || "modification") + ".");
     } catch (error) {
       settings.undoStack.push(entry);
@@ -993,11 +996,24 @@
   async function deleteCover(item) {
     const title = getText(item.title) || "cette cover";
 
-    if (!confirm(`Supprimer la fiche « ${title} » ?\n\nLe fichier image ne sera pas supprimé du stockage.`)) {
+    if (!confirm("Retirer « " + title + " » du catalogue public ?\n\nLa carte disparaîtra du site. Le fichier source sera conservé pour permettre un retour arrière.")) {
       return;
     }
 
     try {
+      if (item.source === "github" || String(item.id).startsWith("github-")) {
+        await recordUndo("Retirer une cover GitHub du catalogue");
+        settings.deletedGithubCovers ||= [];
+        const key = String(item.id || "");
+        const url = item.image_url || "";
+        if (!settings.deletedGithubCovers.includes(key)) settings.deletedGithubCovers.push(key);
+        if (url && !settings.deletedGithubCovers.includes(url)) settings.deletedGithubCovers.push(url);
+        await saveSettings(true);
+        await window.ESP_CATALOGUE?.refresh?.();
+        message("Cover retirée du catalogue public. Le fichier GitHub original est conservé ; Retour arrière la restaurera.");
+        return;
+      }
+
       await recordUndo("Supprimer une cover", {
         kind: "catalogue", action: "restore", row: item
       });
@@ -1008,7 +1024,7 @@
       if (error) throw error;
 
       await refreshAdminAndPublic();
-      message("Fiche supprimée. Le fichier image est conservé.");
+      message("Cover retirée du catalogue public. Le fichier image est conservé pour permettre une restauration.");
     } catch (error) {
       message("Suppression impossible : " + error.message);
     }
