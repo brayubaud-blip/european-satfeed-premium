@@ -204,7 +204,11 @@
     categories.forEach(category => {
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'filter'; button.dataset.filter = category.id;
-      const count = catalogueItems.filter(item => item.published !== false && (category.id === 'all' || normalizeCategory(item.category) === category.id)).length;
+      const count = catalogueItems.filter(item => {
+        const description = typeof item.description === "string" ? item.description : (item.description?.fr || "");
+        if (description.startsWith("__GITHUB_SOURCE_HIDDEN__|")) return false;
+        return item.published !== false && (category.id === "all" || normalizeCategory(item.category) === category.id);
+      }).length;
       button.innerHTML = '<span>' + category[language] + '</span><small>' + count + '</small>';
       if (category.id === activeFilter) button.classList.add('active');
       button.addEventListener('click', () => { activeFilter = category.id; renderFilters(); renderCards(); });
