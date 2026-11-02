@@ -10,7 +10,13 @@
 
   const $ = (selector, root = document) => root.querySelector(selector);
 
-  let language = document.documentElement.lang === "en" ? "en" : "fr";
+  let language = (() => {
+    try {
+      const saved = localStorage.getItem("esp-language");
+      if (saved === "en" || saved === "fr") return saved;
+    } catch (_) {}
+    return document.documentElement.lang === "en" ? "en" : "fr";
+  })();
   let activeFilter = "all";
   let catalogueItems = [];
   let loadingPromise = null;
@@ -577,9 +583,11 @@
 
     language = nextLanguage;
     document.documentElement.lang = language;
+    try { localStorage.setItem("esp-language", language); } catch (_) {}
     updateTranslations();
     refreshCatalogueControls();
     renderCards();
+    if (lightbox && !lightbox.hidden) renderLightboxItem();
   }
 
   [searchInput, teamSelect, seasonSelect, creatorSelect].forEach(control => control && control.addEventListener('input', renderCards));
