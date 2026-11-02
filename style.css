@@ -1331,8 +1331,7 @@ body.lightbox-open { overflow:hidden; }
   box-shadow:0 18px 55px #000c,0 0 24px #eaff000c;
   backdrop-filter:blur(18px);
 }
-.language-menu:before {
-  content:"LANGUAGE / LANGUE";
+.language-menu-heading {
   grid-column:1/-1;
   padding:2px 4px 7px;
   color:#8794a7;
