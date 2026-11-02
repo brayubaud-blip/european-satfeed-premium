@@ -1031,7 +1031,7 @@
     document.body.classList.remove("esp-editing");
   };
 
-  $("#esp-view-site").onclick = () => { admin.classList.remove("open"); editing = true; document.body.classList.add("esp-editing"); toolbar.style.display = "flex"; prepareEditableElements(); message("Mode édition activé : clique directement sur un texte, une cover ou une section du site pour la modifier."); };
+  $("#esp-view-site").onclick = () => { admin.classList.remove("open"); editing = true; document.body.classList.add("esp-editing"); toolbar.style.display = "none"; prepareEditableElements(); message("Mode édition activé : clique directement sur un texte, une cover ou une section du site pour la modifier."); };
 
 
 
@@ -1155,8 +1155,14 @@
       event.preventDefault();
 
       try {
-        if (await checkOwner()) await openAdmin();
-        else showLogin();
+        if (await checkOwner()) {
+          admin.classList.remove("open");
+          editing = true;
+          document.body.classList.add("esp-editing");
+          await loadCatalogueAdmin();
+          await loadSettings();
+          prepareEditableElements();
+        } else showLogin();
       } catch (error) {
         message(error.message);
       }
@@ -1192,7 +1198,7 @@
             admin.classList.remove("open");
             editing = true;
             document.body.classList.add("esp-editing");
-            toolbar.style.display = "flex";
+            toolbar.style.display = "none";
             Promise.all([loadCatalogueAdmin(), loadSettings()]).then(prepareEditableElements);
           } else showLogin();
         }).catch(error => message(error.message));
@@ -1213,7 +1219,6 @@
 
   checkOwner().then(async authorized => {
     if (authorized) {
-      toolbar.style.display = "flex";
       await loadCatalogueAdmin();
       await loadSettings();
     }
