@@ -374,6 +374,30 @@
       });
   }
 
+  async function loadDeletedGithubCoverKeys() {
+    try {
+      const query = new URL(`${SUPABASE_URL}/rest/v1/site_settings`);
+      query.searchParams.set("select", "content");
+      const response = await fetch(query, {
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`
+        },
+        cache: "no-store"
+      });
+      if (!response.ok) throw new Error(`site_settings: ${response.status}`);
+      const rows = await response.json();
+      const keys = new Set();
+      (rows || []).forEach(row => {
+        const hidden = row?.content?.visual?.deletedGithubCovers;
+        if (Array.isArray(hidden)) hidden.forEach(value => keys.add(String(value)));
+      });
+      return keys;
+    } catch (error) {
+      console.warn("Impossible de lire les covers GitHub retirées :", error);
+      return new Set();
+    }
+  }
   async function loadCatalogue() {
     if (loadingPromise) return loadingPromise;
 
@@ -403,6 +427,7 @@
       const knownUrls = new Set(
         supabaseItems.map(item => item.image_url).filter(Boolean)
       );
+      const deletedGithubKeys = await loadDeletedGithubCoverKeys();
 
       catalogueItems = [
         ...supabaseItems.map(item => ({
@@ -410,7 +435,12 @@
           source: "supabase",
           category: normalizeCategory(item.category)
         })),
-        ...githubItems.filter(item => !knownUrls.has(item.image_url))
+        ...githubItems.filter(item =>
+          !knownUrls.has(item.image_url) &&
+          !deletedGithubKeys.has(String(item.id)) &&
+          !deletedGithubKeys.has(String(item.github_file)) &&
+          !deletedGithubKeys.has(String(item.image_url))
+        )
       ];
 
       catalogueItems.sort((a, b) =>
