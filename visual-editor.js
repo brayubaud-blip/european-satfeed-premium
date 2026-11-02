@@ -512,6 +512,7 @@
         element.replaceChildren(logoImage);
       }
     });
+    applyHeroStampSettings();
     if (settings.global?.mainColor) document.documentElement.style.setProperty("--yellow", settings.global.mainColor);
     if (settings.global?.backgroundColor) {
       document.documentElement.style.setProperty("--bg", settings.global.backgroundColor);
@@ -532,6 +533,7 @@
       links: settings.links || {},
       images: settings.images || {},
       logos: settings.logos || {},
+      heroStamp: settings.heroStamp || {},
       global: settings.global || {}
     }));
   }
@@ -577,6 +579,7 @@
     settings.links = snapshot.links || {};
     settings.images = snapshot.images || {};
     settings.logos = snapshot.logos || {};
+    settings.heroStamp = snapshot.heroStamp || {};
     settings.global = snapshot.global || {};
     try {
       await saveSettings(true);
@@ -1165,6 +1168,140 @@
     }
   }
 
+
+  function applyHeroStampSettings() {
+    const stamp = document.querySelector(".hero-stamp");
+    const saved = settings.heroStamp || {};
+    if (!stamp) return;
+    if (saved.imageUrl) {
+      stamp.replaceChildren();
+      const image = document.createElement("img");
+      image.src = saved.imageUrl;
+      image.alt = "European Satfeed Premium";
+      image.style.cssText = "position:absolute;inset:10%;width:80%;height:80%;object-fit:contain;";
+      stamp.append(image);
+    } else if (Object.keys(saved).length) {
+      stamp.innerHTML = '<span class="esp-stamp-top">EST.</span><b class="esp-stamp-center">ES+</b><span class="esp-stamp-bottom">PREMIUM</span>';
+      const top = stamp.querySelector(".esp-stamp-top");
+      const center = stamp.querySelector(".esp-stamp-center");
+      const bottom = stamp.querySelector(".esp-stamp-bottom");
+      top.textContent = saved.topText ?? "EST.";
+      center.textContent = saved.centerText ?? "ES+";
+      bottom.textContent = saved.bottomText ?? "PREMIUM";
+      top.style.color = saved.smallColor || "#aab2bf";
+      bottom.style.color = saved.smallColor || "#aab2bf";
+      center.style.color = saved.centerColor || "#eaff00";
+      top.style.fontSize = (saved.smallSize || 8) + "px";
+      bottom.style.fontSize = (saved.smallSize || 8) + "px";
+      center.style.fontSize = (saved.centerSize || 37) + "px";
+      stamp.style.fontFamily = saved.fontFamily || "Barlow Condensed";
+    }
+    if (saved.diameter) { stamp.style.width = saved.diameter + "px"; stamp.style.height = saved.diameter + "px"; }
+    if (saved.borderColor) stamp.style.borderColor = saved.borderColor;
+    if (saved.borderWidth !== undefined) stamp.style.borderWidth = saved.borderWidth + "px";
+    if (saved.backgroundColor) stamp.style.backgroundColor = saved.backgroundColor;
+    if (saved.rotation !== undefined) stamp.style.transform = "rotate(" + saved.rotation + "deg)";
+    if (saved.glowColor) stamp.style.boxShadow = "0 0 28px " + saved.glowColor + "66";
+    if (saved.right !== undefined) stamp.style.right = saved.right + "%";
+    if (saved.bottom !== undefined) stamp.style.bottom = saved.bottom + "%";
+  }
+
+  function openHeroStampEditor(stamp) {
+    const saved = settings.heroStamp || {};
+    const current = stamp.querySelector(".esp-stamp-center") || stamp.querySelector("b");
+    const top = stamp.querySelector(".esp-stamp-top") || stamp.querySelector("span:first-of-type");
+    const bottom = stamp.querySelector(".esp-stamp-bottom") || stamp.querySelector("span:last-of-type");
+    const html = [
+      "<h3>MODIFIER LE LOGO CIRCULAIRE</h3>",
+      "<p class='esp-muted'>Ce panneau modifie le logo EST. / ES+ / PREMIUM de la bannière, pas le petit logo du menu.</p>",
+      "<label>Texte supérieur</label><input id='esp-seal-top' type='text'>",
+      "<label>Texte central</label><input id='esp-seal-center' type='text'>",
+      "<label>Texte inférieur</label><input id='esp-seal-bottom' type='text'>",
+      "<label>Couleur du texte central</label><input id='esp-seal-center-color' type='color'>",
+      "<label>Couleur des textes secondaires</label><input id='esp-seal-small-color' type='color'>",
+      "<label>Taille du texte central (px)</label><input id='esp-seal-center-size' type='number' min='12' max='100'>",
+      "<label>Taille des textes secondaires (px)</label><input id='esp-seal-small-size' type='number' min='6' max='40'>",
+      "<label>Police</label><select id='esp-seal-font'><option value='Barlow Condensed'>Barlow Condensed</option><option value='DM Sans'>DM Sans</option><option value='Arial'>Arial</option><option value='Georgia'>Georgia</option></select>",
+      "<label>Diamètre du cercle (px)</label><input id='esp-seal-diameter' type='number' min='60' max='500'>",
+      "<label>Couleur du contour</label><input id='esp-seal-border' type='color'>",
+      "<label>Épaisseur du contour (px)</label><input id='esp-seal-border-width' type='number' min='0' max='12'>",
+      "<label>Couleur de fond</label><input id='esp-seal-background' type='color'>",
+      "<label>Rotation (degrés)</label><input id='esp-seal-rotation' type='number' min='-180' max='180'>",
+      "<label>Position droite (%)</label><input id='esp-seal-right' type='number' min='0' max='90'>",
+      "<label>Position bas (%)</label><input id='esp-seal-bottom' type='number' min='0' max='90'>",
+      "<label>Couleur du halo lumineux</label><input id='esp-seal-glow' type='color'>",
+      "<label>Ou remplacer par une image complète</label><input id='esp-seal-image' type='file' accept='image/*'>",
+      "<button class='esp-btn primary' id='esp-seal-save'>ENREGISTRER</button>",
+      "<button class='esp-btn' id='esp-seal-reset'>RESTAURER LE LOGO ORIGINAL</button>",
+      "<button class='esp-btn' id='esp-seal-cancel'>ANNULER</button>"
+    ].join("");
+    showMenu(html);
+    $("#esp-seal-top").value = saved.topText ?? top?.textContent ?? "EST.";
+    $("#esp-seal-center").value = saved.centerText ?? current?.textContent ?? "ES+";
+    $("#esp-seal-bottom").value = saved.bottomText ?? bottom?.textContent ?? "PREMIUM";
+    $("#esp-seal-center-color").value = saved.centerColor || "#eaff00";
+    $("#esp-seal-small-color").value = saved.smallColor || "#aab2bf";
+    $("#esp-seal-center-size").value = saved.centerSize || 37;
+    $("#esp-seal-small-size").value = saved.smallSize || 8;
+    $("#esp-seal-font").value = saved.fontFamily || "Barlow Condensed";
+    $("#esp-seal-diameter").value = saved.diameter || Math.round(stamp.getBoundingClientRect().width) || 165;
+    $("#esp-seal-border").value = saved.borderColor || "#ffffff";
+    $("#esp-seal-border-width").value = saved.borderWidth ?? 1;
+    $("#esp-seal-background").value = saved.backgroundColor || "#080b12";
+    $("#esp-seal-rotation").value = saved.rotation ?? 12;
+    $("#esp-seal-right").value = saved.right ?? 18;
+    $("#esp-seal-bottom").value = saved.bottom ?? 15;
+    $("#esp-seal-glow").value = saved.glowColor || "#eaff00";
+    $("#esp-seal-cancel").onclick = closeMenu;
+    $("#esp-seal-save").onclick = async () => {
+      try {
+        await recordUndo("Modifier le logo circulaire");
+        const file = $("#esp-seal-image").files?.[0];
+        const next = {
+          topText: $("#esp-seal-top").value,
+          centerText: $("#esp-seal-center").value,
+          bottomText: $("#esp-seal-bottom").value,
+          centerColor: $("#esp-seal-center-color").value,
+          smallColor: $("#esp-seal-small-color").value,
+          centerSize: Math.max(12, Math.min(100, Number($("#esp-seal-center-size").value || 37))),
+          smallSize: Math.max(6, Math.min(40, Number($("#esp-seal-small-size").value || 8))),
+          fontFamily: $("#esp-seal-font").value,
+          diameter: Math.max(60, Math.min(500, Number($("#esp-seal-diameter").value || 165))),
+          borderColor: $("#esp-seal-border").value,
+          borderWidth: Math.max(0, Math.min(12, Number($("#esp-seal-border-width").value || 0))),
+          backgroundColor: $("#esp-seal-background").value,
+          rotation: Math.max(-180, Math.min(180, Number($("#esp-seal-rotation").value || 0))),
+          right: Math.max(0, Math.min(90, Number($("#esp-seal-right").value || 18))),
+          bottom: Math.max(0, Math.min(90, Number($("#esp-seal-bottom").value || 15))),
+          glowColor: $("#esp-seal-glow").value
+        };
+        if (file) next.imageUrl = await uploadImage(file);
+        else if (saved.imageUrl) next.imageUrl = saved.imageUrl;
+        settings.heroStamp = next;
+        applyHeroStampSettings();
+        await saveSettings(true);
+        closeMenu();
+        message("Logo circulaire modifié et enregistré.");
+      } catch (error) {
+        message("Impossible d'enregistrer le logo : " + error.message);
+      }
+    };
+    $("#esp-seal-reset").onclick = async () => {
+      try {
+        await recordUndo("Restaurer le logo circulaire");
+        delete settings.heroStamp;
+        stamp.innerHTML = "<span>EST.</span><b>ES+</b><span>PREMIUM</span>";
+        stamp.removeAttribute("style");
+        await saveSettings(true);
+        closeMenu();
+        message("Le logo circulaire original est restauré.");
+      } catch (error) {
+        message("Impossible de restaurer le logo : " + error.message);
+      }
+    };
+  }
+
+
   function openImageEditor(image) {
     const current = image.currentSrc || image.src || "";
     showMenu(`
@@ -1504,6 +1641,14 @@
       return;
     }
 
+    const heroStamp = event.target.closest(".hero-stamp");
+    if (heroStamp) {
+      event.preventDefault();
+      event.stopPropagation();
+      openHeroStampEditor(heroStamp);
+      return;
+    }
+
     const logo = event.target.closest(".brand-mark");
     if (logo) {
       event.preventDefault();
@@ -1532,7 +1677,7 @@
     const section = event.target.closest(
       ".topline,.header,.hero,.ticker,.archive-section," +
       ".latest-section,.included-section,.premium-section," +
-      ".faq-section,.footer,.header,.brand,.brand-mark,img,main,body"
+      ".faq-section,.footer,.header,.brand,main,body"
     );
 
     if (section) {
