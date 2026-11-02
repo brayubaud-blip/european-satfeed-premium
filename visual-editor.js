@@ -233,6 +233,7 @@
             <div>
               <h3>TOUTES LES COVERS</h3>
               <p class="esp-muted">Gère tes covers depuis une seule liste.</p>
+              <button class="esp-btn primary" type="button" id="esp-add-cover-inline">+ AJOUTER UNE COVER</button>
             </div>
           </div>
 
@@ -781,31 +782,63 @@
     });
   }
 
+
+  async function translateCoverText(text, fromLanguage) {
+    const clean = String(text || "").trim();
+    if (!clean) return "";
+    const source = fromLanguage === "en" ? "en" : "fr";
+    const target = source === "fr" ? "en" : "fr";
+    const chunks = [];
+    let remaining = clean;
+    while (remaining.length > 0) {
+      let cut = Math.min(350, remaining.length);
+      if (cut < remaining.length) {
+        const lastSpace = remaining.lastIndexOf(" ", cut);
+        if (lastSpace > 100) cut = lastSpace;
+      }
+      chunks.push(remaining.slice(0, cut).trim());
+      remaining = remaining.slice(cut).trim();
+    }
+
+    const translated = [];
+    for (const chunk of chunks) {
+      const params = new URLSearchParams({
+        q: chunk,
+        langpair: source + "|" + target
+      });
+      const response = await fetch("https://api.mymemory.translated.net/get?" + params.toString());
+      if (!response.ok) throw new Error("Le service de traduction est indisponible (" + response.status + ").");
+      const data = await response.json();
+      if (Number(data.responseStatus) !== 200 || !data.responseData?.translatedText) {
+        throw new Error(data.responseDetails || "La traduction automatique n'a pas abouti.");
+      }
+      const decoded = document.createElement("textarea");
+      decoded.innerHTML = data.responseData.translatedText;
+      translated.push(decoded.value);
+    }
+    return translated.join(" ");
+  }
+
   function openCoverEditor(item = null) {
     editingItemId = item?.id ?? null;
 
-    const titleFr = getText(item?.title, "fr");
-    const titleEn = getText(item?.title, "en");
-    const descFr = getText(item?.description, "fr");
-    const descEn = getText(item?.description, "en");
+    const currentLanguage = window.ESP_CATALOGUE?.getLanguage?.() || "fr";
+    const titleValue = getText(item?.title, currentLanguage);
+    const descriptionValue = getText(item?.description, currentLanguage);
+    const languageName = currentLanguage === "en" ? "anglais" : "français";
 
     showMenu(`
       <h3>${item ? "MODIFIER LA COVER" : "AJOUTER UNE COVER"}</h3>
+      <p class="esp-muted">Saisis le contenu une seule fois en ${languageName}. L'autre langue sera générée automatiquement à l'enregistrement.</p>
 
       <label>Image</label>
       <input type="file" id="esp-cover-file" accept="image/*">
 
-      <label>Titre français</label>
-      <input id="esp-cover-title-fr" value="${escapeHTML(titleFr)}">
+      <label>Titre (${currentLanguage.toUpperCase()})</label>
+      <input id="esp-cover-title" value="${escapeHTML(titleValue)}">
 
-      <label>Titre anglais</label>
-      <input id="esp-cover-title-en" value="${escapeHTML(titleEn)}">
-
-      <label>Description française</label>
-      <textarea id="esp-cover-desc-fr">${escapeHTML(descFr)}</textarea>
-
-      <label>Description anglaise</label>
-      <textarea id="esp-cover-desc-en">${escapeHTML(descEn)}</textarea>
+      <label>Description (${currentLanguage.toUpperCase()})</label>
+      <textarea id="esp-cover-description">${escapeHTML(descriptionValue)}</textarea>
 
       <label>Catégorie</label>
       <select id="esp-cover-category">
@@ -816,7 +849,8 @@
       <input type="number" min="0" id="esp-cover-position"
         value="${Number(item?.position ?? allItems.length)}">
 
-      <button class="esp-btn primary" id="esp-cover-save">ENREGISTRER</button>
+      <p id="esp-cover-translation-status" class="esp-muted" aria-live="polite"></p>
+      <button class="esp-btn primary" id="esp-cover-save">ENREGISTRER ET TRADUIRE</button>
       ${item ? '<button class="esp-btn" id="esp-cover-duplicate">DUPLIQUER</button><button class="esp-btn" id="esp-cover-hide">' + (item.published === false ? 'REPUBLIER' : 'MASQUER') + '</button><button class="esp-btn danger" id="esp-cover-delete">SUPPRIMER LA COVER</button>' : ''}
       <button class="esp-btn" id="esp-cover-cancel">ANNULER</button>
     `);
@@ -832,35 +866,39 @@
     $("#esp-cover-save").onclick = async () => {
       const button = $("#esp-cover-save");
       const file = $("#esp-cover-file").files?.[0];
-
-      const titleFrValue = $("#esp-cover-title-fr").value.trim();
-      const titleEnValue = $("#esp-cover-title-en").value.trim();
+      const titleValue = $("#esp-cover-title").value.trim();
+      const descriptionValue = $("#esp-cover-description").value.trim();
       const category = $("#esp-cover-category").value;
+      const status = $("#esp-cover-translation-status");
 
-      if (!titleFrValue) {
-        message("Ajoute au moins un titre français.");
+      if (!titleValue) {
+        message("Ajoute un titre.");
         return;
       }
 
       button.disabled = true;
-      button.textContent = "ENREGISTREMENT…";
+      button.textContent = "TRADUCTION EN COURS…";
+      status.textContent = "Création de la version française et anglaise…";
 
       try {
+        const otherLanguage = currentLanguage === "fr" ? "en" : "fr";
+        const translatedTitle = await translateCoverText(titleValue, currentLanguage);
+        const translatedDescription = await translateCoverText(descriptionValue, currentLanguage);
+
+        const title = currentLanguage === "fr"
+          ? { fr: titleValue, en: translatedTitle }
+          : { fr: translatedTitle, en: titleValue };
+        const description = currentLanguage === "fr"
+          ? { fr: descriptionValue, en: translatedDescription }
+          : { fr: translatedDescription, en: descriptionValue };
+
         let imageUrl = item?.image_url || "";
-
         if (file) imageUrl = await uploadImage(file);
-
         if (!imageUrl) throw new Error("Sélectionne une image.");
 
         const changes = {
-          title: {
-            fr: titleFrValue,
-            en: titleEnValue || titleFrValue
-          },
-          description: {
-            fr: $("#esp-cover-desc-fr").value.trim(),
-            en: $("#esp-cover-desc-en").value.trim()
-          },
+          title,
+          description,
           category,
           image_url: imageUrl,
           position: Math.max(0, Number($("#esp-cover-position").value || 0)),
@@ -868,16 +906,12 @@
         };
 
         let result;
-
         if (item && item.source !== "github") {
           await recordUndo("Modifier une cover", {
             kind: "catalogue", action: "restore", row: item
           });
-          result = await db.from("catalogue")
-            .update(changes)
-            .eq("id", item.id);
+          result = await db.from("catalogue").update(changes).eq("id", item.id);
         } else {
-          // Keep the original GitHub image untouched; create an editable catalogue record.
           result = await db.from("catalogue").insert({
             id: newCatalogueId(),
             ...changes
@@ -886,17 +920,18 @@
 
         if (result.error) throw result.error;
         if (!item || item.source === "github") {
-          await recordUndo("Ajouter une cover", {
+          await recordUndo(item ? "Modifier une cover GitHub" : "Ajouter une cover", {
             kind: "catalogue", action: "deleteIds", ids: [result.data.id]
           });
         }
 
         closeMenu();
         await refreshAdminAndPublic();
-        message(item ? "Cover modifiée." : "Cover ajoutée.");
+        message("Cover enregistrée. Les versions française et anglaise sont prêtes.");
       } catch (error) {
         button.disabled = false;
         button.textContent = "RÉESSAYER";
+        status.textContent = error.message;
         message("Erreur : " + error.message);
       }
     };
@@ -1808,6 +1843,10 @@
 
 
   $("#esp-add-cover").addEventListener("click", () => {
+    switchTab("catalogue");
+    openCoverEditor(null);
+  });
+  $("#esp-add-cover-inline").addEventListener("click", () => {
     switchTab("catalogue");
     openCoverEditor(null);
   });
