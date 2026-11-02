@@ -87,14 +87,24 @@
       background:#0d121c;border:1px solid #293447;
       padding:16px;margin:12px 0;border-radius:5px;
     }
+    .esp-catalogue-addbar {
+      position:sticky;top:8px;z-index:20;display:flex;align-items:center;
+      gap:12px;padding:10px;margin:0 0 14px;background:#080b12ee;
+      border:1px solid #eaff00;border-radius:5px;backdrop-filter:blur(10px);
+    }
+    .esp-catalogue-addbar span {font-size:11px;color:#aab2bf}
     .esp-add-cover-main {
-      display:block;width:100%;min-height:54px;margin:0 0 14px;
+      display:block;flex:0 0 auto;min-width:280px;min-height:54px;margin:0;
       font-size:15px;letter-spacing:.4px;text-align:center;
       background:#eaff00;color:#080b12;border:2px solid #eaff00;
       box-shadow:0 0 18px #eaff0026;
     }
     .esp-add-cover-main:hover {
       filter:brightness(1.08);transform:translateY(-1px);
+    }
+    @media(max-width:700px) {
+      .esp-catalogue-addbar {align-items:stretch;flex-direction:column}
+      .esp-add-cover-main {width:100%;min-width:0}
     }
     .esp-row {
       display:flex;gap:12px;align-items:center;flex-wrap:wrap;
@@ -132,13 +142,23 @@
       background:#eaff00;color:#080b12;border:0;
       padding:10px;font-weight:800;cursor:pointer;
     }
-    #esp-undo-control {
-      display:none;position:fixed;z-index:999970;top:108px;right:18px;
-      padding:9px 13px;background:#101927;color:#eaff00;
-      border:1px solid #eaff00;border-radius:4px;font:800 11px "DM Sans",Arial,sans-serif;
-      cursor:pointer;box-shadow:0 5px 22px #0009;
+    #esp-edit-controls button {
+      padding:11px 14px;background:#101927;color:#eaff00;
+      border:1px solid #eaff00;border-radius:4px;
+      font:800 11px "DM Sans",Arial,sans-serif;cursor:pointer;
+      box-shadow:0 5px 22px #0009;white-space:nowrap;
     }
-    #esp-undo-control:hover {background:#eaff00;color:#080b12}
+    #esp-edit-controls button:hover {background:#eaff00;color:#080b12}
+    #esp-edit-controls #esp-finish-edit-control {
+      background:#eaff00;color:#080b12;border-color:#eaff00;
+    }
+    #esp-edit-controls #esp-finish-edit-control:hover {
+      background:#fff;color:#080b12;border-color:#fff;
+    }
+    @media(max-width:560px) {
+      #esp-edit-controls {top:80px!important;right:10px!important;left:10px;justify-content:flex-end}
+      #esp-edit-controls button {font-size:10px;padding:9px}
+    }
     body.esp-editing .premium-aside {
       outline:1px dashed #eaff00;outline-offset:7px;cursor:pointer;
     }
@@ -202,9 +222,12 @@
       </nav>
 
       <section id="esp-tab-catalogue">
-        <button class="esp-btn primary esp-add-cover-main" type="button" id="esp-add-cover">
-          + AJOUTER UNE NOUVELLE COVER
-        </button>
+        <div class="esp-catalogue-addbar">
+          <button class="esp-btn primary esp-add-cover-main" type="button" id="esp-add-cover">
+            + AJOUTER UNE NOUVELLE COVER
+          </button>
+          <span>Ajout individuel · ou utilise l'import multiple juste en dessous</span>
+        </div>
         <div class="esp-panel">
           <div class="esp-row">
             <div>
@@ -286,11 +309,19 @@
   toolbar.style.display = "none";
   document.body.append(toolbar);
 
+  const editControls = document.createElement("div");
+  editControls.id = "esp-edit-controls";
+  editControls.style.cssText = "display:none;position:fixed;z-index:999970;top:108px;right:18px;gap:8px;align-items:center;flex-wrap:wrap;max-width:calc(100vw - 24px);";
   const undoControl = document.createElement("button");
   undoControl.id = "esp-undo-control";
   undoControl.type = "button";
   undoControl.textContent = "↶ RETOUR ARRIÈRE";
-  document.body.append(undoControl);
+  const finishEditControl = document.createElement("button");
+  finishEditControl.id = "esp-finish-edit-control";
+  finishEditControl.type = "button";
+  finishEditControl.textContent = "TERMINER L'ÉDITION";
+  editControls.append(undoControl, finishEditControl);
+  document.body.append(editControls);
 
   const menu = document.createElement("div");
   menu.id = "esp-menu";
@@ -442,7 +473,7 @@
     document.querySelectorAll(
       "h1,h2,h3,p,a,button,summary,.brand-name,.brand-mark,.brand img"
     ).forEach(element => {
-      if (element.closest("#esp-admin,#esp-login,#esp-menu,.esp-toolbar")) return;
+      if (element.closest("#esp-admin,#esp-login,#esp-menu,.esp-toolbar,#esp-edit-controls")) return;
       element.dataset.espEditable = "true";
       element.dataset.espKey ||= elementKey(element);
     });
@@ -1755,7 +1786,7 @@
       await loadCatalogueAdmin();
       await loadSettings();
       prepareEditableElements();
-      undoControl.style.display = "block";
+      editControls.style.display = "flex";
       message("Mode édition direct activé. Clique sur ↶ RETOUR ARRIÈRE pour annuler la dernière modification.");
     } catch (error) {
       output.textContent = error.message;
@@ -1768,10 +1799,10 @@
     toolbar.style.display = "none";
     editing = false;
     document.body.classList.remove("esp-editing");
-    undoControl.style.display = "none";
+    editControls.style.display = "none";
   };
 
-  $("#esp-view-site").onclick = async () => { admin.classList.remove("open"); editing = true; document.body.classList.add("esp-editing"); toolbar.style.display = "none"; await loadCatalogueAdmin(); await loadSettings(); prepareEditableElements(); undoControl.style.display = "block"; };
+  $("#esp-view-site").onclick = async () => { admin.classList.remove("open"); editing = true; document.body.classList.add("esp-editing"); toolbar.style.display = "none"; await loadCatalogueAdmin(); await loadSettings(); prepareEditableElements(); editControls.style.display = "flex"; };
 
 
 
@@ -1840,6 +1871,7 @@
   document.addEventListener("click", event => {
     if (!owner || !editing || admin.classList.contains("open")) return;
 
+    if (event.target.closest("#esp-edit-controls")) return;
     if (event.target.closest("#esp-admin,#esp-login,#esp-menu,.esp-toolbar")) return;
 
     const card = event.target.closest(".archive-card");
@@ -1944,15 +1976,23 @@
       event.preventDefault();
 
       try {
-        if (await checkOwner()) {
-          admin.classList.remove("open");
-          editing = true;
-          document.body.classList.add("esp-editing");
-          await loadCatalogueAdmin();
-          await loadSettings();
-          prepareEditableElements();
-          undoControl.style.display = "block";
-        } else showLogin();
+        if (!(await checkOwner())) {
+          showLogin();
+          return;
+        }
+        if (editing) {
+          finishDirectEditing();
+          message("Mode édition terminé. Tu peux naviguer normalement sur le site.");
+          return;
+        }
+        admin.classList.remove("open");
+        editing = true;
+        document.body.classList.add("esp-editing");
+        await loadCatalogueAdmin();
+        await loadSettings();
+        prepareEditableElements();
+        editControls.style.display = "flex";
+        message("Mode édition activé.");
       } catch (error) {
         message(error.message);
       }
@@ -1991,7 +2031,7 @@
             toolbar.style.display = "none";
             Promise.all([loadCatalogueAdmin(), loadSettings()]).then(() => {
               prepareEditableElements();
-              undoControl.style.display = "block";
+              editControls.style.display = "flex";
             });
           } else showLogin();
         }).catch(error => message(error.message));
@@ -1999,7 +2039,19 @@
     });
   }
 
-  undoControl.onclick = undoLastChange;
+  function finishDirectEditing() {
+    editing = false;
+    document.body.classList.remove("esp-editing");
+    editControls.style.display = "none";
+    closeMenu();
+  }
+
+  finishEditControl.addEventListener("click", finishDirectEditing);
+  undoControl.addEventListener("click", event => {
+    event.preventDefault();
+    event.stopPropagation();
+    undoLastChange();
+  });
   document.addEventListener("keydown", event => {
     if (owner && editing && (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
       const active = document.activeElement;
@@ -2017,7 +2069,7 @@
       toolbar.style.display = "none";
       editing = false;
       document.body.classList.remove("esp-editing");
-      undoControl.style.display = "none";
+      editControls.style.display = "none";
     }
   });
 
@@ -2027,7 +2079,7 @@
       await loadSettings();
       editing = true;
       document.body.classList.add("esp-editing");
-      undoControl.style.display = "block";
+      editControls.style.display = "flex";
       prepareEditableElements();
     }
   }).catch(error => {
