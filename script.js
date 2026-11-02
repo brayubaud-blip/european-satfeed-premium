@@ -69,6 +69,12 @@
     button.setAttribute("aria-label", favoriteLabel(active));
     button.querySelector(".favorite-label").textContent = favoriteLabel(active);
     button.querySelector(".favorite-star").textContent = active ? "★" : "☆";
+    if (!active && activeFilter === "favorites") {
+      renderFilters();
+      renderCards();
+    } else {
+      renderFilters();
+    }
   }
 
   const grid = $("#archiveGrid");
@@ -263,13 +269,19 @@
   function renderFilters() {
     if (!filtersContainer) return;
     filtersContainer.replaceChildren();
-    categories.forEach(category => {
+    const filterCategories = [
+      ...categories,
+      { id: "favorites", fr: "FAVORIS", en: "FAVORITES" }
+    ];
+    filterCategories.forEach(category => {
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'filter'; button.dataset.filter = category.id;
       const count = catalogueItems.filter(item => {
         const description = typeof item.description === "string" ? item.description : (item.description?.fr || "");
         if (description.startsWith("__GITHUB_SOURCE_HIDDEN__|")) return false;
-        return item.published !== false && (category.id === "all" || normalizeCategory(item.category) === category.id);
+        if (item.published === false) return false;
+        if (category.id === "favorites") return favoriteIds.has(favoriteKey(item));
+        return category.id === "all" || normalizeCategory(item.category) === category.id;
       }).length;
       button.innerHTML = '<span>' + category[language] + '</span><small>' + count + '</small>';
       if (category.id === activeFilter) button.classList.add('active');
@@ -395,7 +407,8 @@
       if (item.published === false) return false;
       const category = normalizeCategory(item.category);
       if (['clubs', 'national teams', 'national'].includes(category)) return false;
-      if (activeFilter !== 'all' && category !== activeFilter) return false;
+      if (activeFilter !== 'all' && activeFilter !== 'favorites' && category !== activeFilter) return false;
+      if (activeFilter === 'favorites' && !favoriteIds.has(favoriteKey(item))) return false;
       if (selectedTeam && teamOf(item) !== selectedTeam) return false;
       if (selectedSeason && String(seasonOf(item)) !== selectedSeason) return false;
       if (selectedCreator && creatorOf(item) !== selectedCreator) return false;
