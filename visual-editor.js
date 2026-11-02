@@ -591,7 +591,7 @@
   async function loadCatalogueAdmin() {
     const { data, error } = await db
       .from("catalogue")
-      .select("id,title,description,category,image_url,published,position")
+      .select("*")
       .order("position", { ascending: true });
 
     if (error) throw error;
