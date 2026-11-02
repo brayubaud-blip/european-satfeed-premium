@@ -575,7 +575,17 @@
           const { error } = await db.from("catalogue").delete().in("id", meta.ids);
           if (error) throw error;
         }
+        const snapshot = entry.snapshot || {};
+        settings.texts = snapshot.texts || {};
+        settings.styles = snapshot.styles || {};
+        settings.links = snapshot.links || {};
+        settings.images = snapshot.images || {};
+        settings.logos = snapshot.logos || {};
+        settings.heroStamp = snapshot.heroStamp || {};
+        settings.deletedGithubCovers = snapshot.deletedGithubCovers || [];
+        settings.global = snapshot.global || {};
         await saveSettings(true);
+        applySettings();
         await refreshAdminAndPublic();
         message("Dernière action sur le catalogue annulée.");
         return;
@@ -1017,6 +1027,13 @@
       await recordUndo("Supprimer une cover", {
         kind: "catalogue", action: "restore", row: item
       });
+      if (String(item.image_url || "").includes("raw.githubusercontent.com")) {
+        settings.deletedGithubCovers ||= [];
+        if (!settings.deletedGithubCovers.includes(item.image_url)) {
+          settings.deletedGithubCovers.push(item.image_url);
+        }
+        await saveSettings(true);
+      }
       const { error } = await db.from("catalogue")
         .delete()
         .eq("id", item.id);
@@ -1617,6 +1634,12 @@
   };
 
   $("#esp-save-appearance").onclick = async () => {
+    try {
+      await recordUndo("Modifier l'apparence générale");
+    } catch (error) {
+      message("Impossible de créer le point de retour : " + error.message);
+      return;
+    }
     const main = $("#esp-main-color").value;
     const background = $("#esp-bg-color").value;
 
