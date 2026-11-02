@@ -317,15 +317,11 @@
   undoControl.id = "esp-undo-control";
   undoControl.type = "button";
   undoControl.textContent = "↶ RETOUR ARRIÈRE";
-  const catalogueControl = document.createElement("button");
-  catalogueControl.id = "esp-open-catalogue-control";
-  catalogueControl.type = "button";
-  catalogueControl.textContent = "CATALOGUE";
   const finishEditControl = document.createElement("button");
   finishEditControl.id = "esp-finish-edit-control";
   finishEditControl.type = "button";
   finishEditControl.textContent = "TERMINER L'ÉDITION";
-  editControls.append(undoControl, catalogueControl, finishEditControl);
+  editControls.append(undoControl, finishEditControl);
   document.body.append(editControls);
 
   const menu = document.createElement("div");
@@ -358,6 +354,11 @@
     return !!session?.user && session.user.id === OWNER_UID;
   }
 
+  function syncPublicAddCover() {
+    const button = $("#publicAddCover");
+    if (button) button.hidden = !owner;
+  }
+
   function showLogin() {
     login.classList.add("open");
   }
@@ -377,6 +378,7 @@
     if (error) throw error;
 
     owner = isOwnerSession(data.session);
+    syncPublicAddCover();
 
     if (!owner) {
       admin.classList.remove("open");
@@ -478,7 +480,7 @@
     document.querySelectorAll(
       "h1,h2,h3,p,a,button,summary,.brand-name,.brand-mark,.brand img"
     ).forEach(element => {
-      if (element.closest("#esp-admin,#esp-login,#esp-menu,.esp-toolbar,#esp-edit-controls,#siteAdminAccess")) return;
+      if (element.closest("#esp-admin,#esp-login,#esp-menu,.esp-toolbar,#esp-edit-controls") || element.id === "publicAddCover") return;
       element.dataset.espEditable = "true";
       element.dataset.espKey ||= elementKey(element);
     });
@@ -1774,28 +1776,6 @@
     });
   }
 
-  const publicAdminAccess = $("#siteAdminAccess");
-  if (publicAdminAccess) {
-    publicAdminAccess.addEventListener("click", async () => {
-      try {
-        if (!(await checkOwner())) {
-          showLogin();
-          return;
-        }
-        admin.classList.remove("open");
-        editing = true;
-        document.body.classList.add("esp-editing");
-        await loadCatalogueAdmin();
-        await loadSettings();
-        prepareEditableElements();
-        editControls.style.display = "flex";
-        message("Mode admin activé. Utilise le bouton CATALOGUE pour gérer tes covers.");
-      } catch (error) {
-        message("Accès admin impossible : " + error.message);
-      }
-    });
-  }
-
   async function openAdmin() {
     if (!(await checkOwner())) {
       showLogin();
@@ -1872,6 +1852,22 @@
     switchTab("catalogue");
     openCoverEditor(null);
   });
+  const publicAddCover = $("#publicAddCover");
+  if (publicAddCover) {
+    publicAddCover.addEventListener("click", async () => {
+      try {
+        if (!(await checkOwner())) {
+          showLogin();
+          return;
+        }
+        await loadCatalogueAdmin();
+        await loadSettings();
+        openCoverEditor(null);
+      } catch (error) {
+        message("Impossible d'ouvrir l'ajout de cover : " + error.message);
+      }
+    });
+  }
   $("#esp-add-cover-inline").addEventListener("click", () => {
     switchTab("catalogue");
     openCoverEditor(null);
@@ -1936,7 +1932,7 @@
   document.addEventListener("click", event => {
     if (!owner || !editing || admin.classList.contains("open")) return;
 
-    if (event.target.closest("#esp-edit-controls,#siteAdminAccess")) return;
+    if (event.target.closest("#esp-edit-controls") || event.target.closest("#publicAddCover")) return;
     if (event.target.closest("#esp-admin,#esp-login,#esp-menu,.esp-toolbar")) return;
 
     const card = event.target.closest(".archive-card");
@@ -2111,14 +2107,6 @@
     closeMenu();
   }
 
-  catalogueControl.addEventListener("click", async () => {
-    try {
-      await openAdmin();
-    } catch (error) {
-      message("Impossible d'ouvrir le catalogue admin : " + error.message);
-    }
-  });
-
   finishEditControl.addEventListener("click", finishDirectEditing);
   undoControl.addEventListener("click", event => {
     event.preventDefault();
@@ -2136,6 +2124,7 @@
 
   db.auth.onAuthStateChange((_event, session) => {
     owner = isOwnerSession(session);
+    syncPublicAddCover();
 
     if (!owner) {
       admin.classList.remove("open");
