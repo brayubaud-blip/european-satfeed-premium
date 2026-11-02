@@ -513,7 +513,16 @@
       }
     });
     if (settings.global?.mainColor) document.documentElement.style.setProperty("--yellow", settings.global.mainColor);
-    if (settings.global?.backgroundColor) document.documentElement.style.setProperty("--bg", settings.global.backgroundColor);
+    if (settings.global?.backgroundColor) {
+      document.documentElement.style.setProperty("--bg", settings.global.backgroundColor);
+      document.body.style.backgroundColor = settings.global.backgroundColor;
+    }
+    if (settings.global?.backgroundImage) {
+      document.body.style.backgroundImage = settings.global.backgroundImage;
+      document.body.style.backgroundSize = settings.global.backgroundSize || "cover";
+      document.body.style.backgroundPosition = settings.global.backgroundPosition || "center";
+      document.body.style.backgroundAttachment = "fixed";
+    }
   }
 
   function cloneEditorState() {
@@ -1486,6 +1495,7 @@
           await loadCatalogueAdmin();
           await loadSettings();
           prepareEditableElements();
+          undoControl.style.display = "block";
         } else showLogin();
       } catch (error) {
         message(error.message);
@@ -1523,7 +1533,10 @@
             editing = true;
             document.body.classList.add("esp-editing");
             toolbar.style.display = "none";
-            Promise.all([loadCatalogueAdmin(), loadSettings()]).then(prepareEditableElements);
+            Promise.all([loadCatalogueAdmin(), loadSettings()]).then(() => {
+              prepareEditableElements();
+              undoControl.style.display = "block";
+            });
           } else showLogin();
         }).catch(error => message(error.message));
       }
@@ -1556,6 +1569,10 @@
     if (authorized) {
       await loadCatalogueAdmin();
       await loadSettings();
+      editing = true;
+      document.body.classList.add("esp-editing");
+      undoControl.style.display = "block";
+      prepareEditableElements();
     }
   }).catch(error => {
     console.warn("ADMIN :", error.message);
