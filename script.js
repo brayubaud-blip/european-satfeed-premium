@@ -17,6 +17,13 @@
 
   const grid = $("#archiveGrid");
   const filtersContainer = $("#filters");
+  const searchInput = $("#catalogueSearch");
+  const teamSelect = $("#teamFilter");
+  const seasonSelect = $("#seasonFilter");
+  const creatorSelect = $("#creatorFilter");
+  const teamOf = item => item.team || item.club || item.team_name || "";
+  const seasonOf = item => item.season || item.year || "";
+  const creatorOf = item => item.creator || item.author || "";
 
   const categories = [
     { id: "all", fr: "TOUT", en: "ALL" },
@@ -80,7 +87,7 @@
       footerLine: "LA CULTURE FOOTBALL, COLLECTIONNÉE.",
       loading: "Chargement du catalogue…",
       empty: "Aucun contenu disponible dans cette catégorie.",
-      error: "Impossible de charger le catalogue."
+      error: "Impossible de charger le catalogue.", browseCategories: "CATÉGORIES", searchPlaceholder: "Rechercher dans l’archive...", allTeams: "Toutes les équipes", allSeasons: "Toutes les saisons", allCreators: "Tous les créateurs", noResults: "Aucun résultat pour cette recherche."
     },
     en: {
       topline: "FOOTBALL CULTURE. ARCHIVED.",
@@ -134,7 +141,7 @@
       footerLine: "FOOTBALL CULTURE, COLLECTED.",
       loading: "Loading catalogue…",
       empty: "No content available in this category.",
-      error: "Unable to load the catalogue."
+      error: "Unable to load the catalogue.", browseCategories: "CATEGORIES", searchPlaceholder: "Search the archive...", allTeams: "All teams", allSeasons: "All seasons", allCreators: "All creators", noResults: "No results for this search."
     }
   };
 
@@ -193,28 +200,29 @@
 
   function renderFilters() {
     if (!filtersContainer) return;
-
     filtersContainer.replaceChildren();
-
     categories.forEach(category => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "filter";
-      button.dataset.filter = category.id;
-      button.textContent = category[language];
-
-      if (category.id === activeFilter) {
-        button.classList.add("active");
-      }
-
-      button.addEventListener("click", () => {
-        activeFilter = category.id;
-        renderFilters();
-        renderCards();
-      });
-
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'filter'; button.dataset.filter = category.id;
+      const count = catalogueItems.filter(item => item.published !== false && (category.id === 'all' || normalizeCategory(item.category) === category.id)).length;
+      button.innerHTML = '<span>' + category[language] + '</span><small>' + count + '</small>';
+      if (category.id === activeFilter) button.classList.add('active');
+      button.addEventListener('click', () => { activeFilter = category.id; renderFilters(); renderCards(); });
       filtersContainer.append(button);
     });
+  }
+  function fillSelect(select, values, label) {
+    if (!select) return;
+    const previous = select.value;
+    select.replaceChildren(new Option(label, ''));
+    [...new Set(values.map(value => String(value || '').trim()).filter(Boolean))].sort((x,y) => x.localeCompare(y, undefined, {numeric:true})).forEach(value => select.add(new Option(value, value)));
+    if ([...select.options].some(option => option.value === previous)) select.value = previous;
+  }
+  function refreshCatalogueControls() {
+    fillSelect(teamSelect, catalogueItems.map(teamOf), t('allTeams'));
+    fillSelect(seasonSelect, catalogueItems.map(seasonOf), t('allSeasons'));
+    fillSelect(creatorSelect, catalogueItems.map(creatorOf), t('allCreators'));
+    renderFilters();
   }
 
   function renderCards() {
@@ -222,15 +230,24 @@
 
     grid.replaceChildren();
 
+    const query = (searchInput && searchInput.value || '').trim().toLocaleLowerCase();
+    const selectedTeam = teamSelect && teamSelect.value || '';
+    const selectedSeason = seasonSelect && seasonSelect.value || '';
+    const selectedCreator = creatorSelect && creatorSelect.value || '';
     const visible = catalogueItems.filter(item => {
       if (item.published === false) return false;
-
       const category = normalizeCategory(item.category);
-      return activeFilter === "all" || category === activeFilter;
+      if (['clubs', 'national teams', 'national'].includes(category)) return false;
+      if (activeFilter !== 'all' && category !== activeFilter) return false;
+      if (selectedTeam && teamOf(item) !== selectedTeam) return false;
+      if (selectedSeason && String(seasonOf(item)) !== selectedSeason) return false;
+      if (selectedCreator && creatorOf(item) !== selectedCreator) return false;
+      const haystack = [localized(item.title), localized(item.description), category, teamOf(item), seasonOf(item), creatorOf(item)].join(' ').toLocaleLowerCase();
+      return !query || haystack.includes(query);
     });
 
     if (!visible.length) {
-      updateStatus(t("empty"));
+      updateStatus(query || selectedTeam || selectedSeason || selectedCreator ? t('noResults') : t('empty'));
       return;
     }
 
@@ -402,7 +419,7 @@
 
       window.catalogue = catalogueItems;
 
-      renderFilters();
+      refreshCatalogueControls();
       renderCards();
 
       if (!catalogueItems.length) updateStatus(t("error"));
@@ -423,9 +440,12 @@
     language = nextLanguage;
     document.documentElement.lang = language;
     updateTranslations();
-    renderFilters();
+    refreshCatalogueControls();
     renderCards();
   }
+
+  [searchInput, teamSelect, seasonSelect, creatorSelect].forEach(control => control && control.addEventListener('input', renderCards));
+  [teamSelect, seasonSelect, creatorSelect].forEach(control => control && control.addEventListener('change', renderCards));
 
   $("#langToggle")?.addEventListener("click", () => {
     setLanguage(language === "fr" ? "en" : "fr");
