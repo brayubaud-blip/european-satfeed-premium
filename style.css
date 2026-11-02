@@ -1,152 +1,125 @@
+/* ==========================================
+   EUROPEAN SATFEED PREMIUM
+   CATALOGUE + VISUAL EDITOR
+   ========================================== */
 
-/* EUROPEAN SATFEED PREMIUM — CATALOGUE SPACING */
-.archive-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
-  align-items: start;
-}
-
-.archive-card {
-  max-width: 100%;
-  overflow: hidden;
-}
-
-.cover {
-  height: 220px;
-}
-
-.card-info {
-  padding: 17px 18px 19px;
-}
-
-.card-info h3 {
-  font-size: 21px;
-  line-height: 1.1;
-}
-
-.card-info p {
-  min-height: 38px;
-}
-
-.filters {
-  gap: 10px;
-  margin-bottom: 28px;
-}
-
-.filter {
-  padding: 10px 16px;
-}
-
-@media (min-width: 1400px) {
-  .archive-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 27px;
-  }
-
-  .cover {
-    height: 230px;
-  }
-}
-
-@media (max-width: 900px) {
-  .archive-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 17px;
-  }
-
-  .cover {
-    height: 210px;
-  }
-}
-
-@media (max-width: 650px) {
-  .archive-grid {
-    gap: 12px;
-  }
-
-  .cover {
-    height: 175px;
-  }
-
-  .card-info {
-    padding: 12px;
-  }
-}
-
-@media (max-width: 380px) {
-  .archive-grid {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-
-  .cover {
-    height: 230px;
-  }
-}
-
-/* VISUAL EDITOR */
-body.esp-editing {
-  cursor: crosshair;
-}
-
-body.esp-editing .archive-card {
-  outline: 1px dashed var(--yellow);
-  outline-offset: 3px;
-}
-
-body.esp-editing [data-esp-key]:hover {
-  outline: 1px dashed var(--yellow);
-  outline-offset: 3px;
-}
-/* =====================================
-   CATALOGUE — COVERS PLUS PETITES
-   ===================================== */
+/* CATALOGUE */
 
 .archive-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 26px;
+    align-items: start;
     max-width: 1200px;
     margin-inline: auto;
 }
 
 .archive-card {
     min-width: 0;
-    border-radius: 12px;
+    max-width: 100%;
     overflow: hidden;
+    border-radius: 12px;
+    transition: transform .25s ease, border-color .25s ease;
 }
+
+.archive-card:hover {
+    transform: translateY(-4px);
+}
+
+/* IMAGES */
 
 .cover {
     height: 205px;
+    overflow: hidden;
+    position: relative;
 }
 
+.cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .35s ease;
+}
+
+.archive-card:hover .cover img {
+    transform: scale(1.035);
+}
+
+/* INFORMATIONS DES COVERS */
+
 .card-info {
-    padding: 13px;
+    padding: 15px 16px 17px;
 }
 
 .card-info h3 {
-    font-size: 18px;
-    line-height: 1.3;
+    font-size: 19px;
+    line-height: 1.25;
+    margin-bottom: 8px;
 }
 
 .card-info p {
     font-size: 11px;
     line-height: 1.5;
+    min-height: 30px;
 }
 
-/* Tablettes */
-@media (max-width: 900px) {
+.card-meta {
+    margin-bottom: 8px;
+}
+
+/* FILTRES */
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 11px;
+    margin-bottom: 30px;
+}
+
+.filter {
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+/* GRAND ÉCRAN */
+
+@media (min-width: 1400px) {
     .archive-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 18px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 28px;
     }
 
     .cover {
-        height: 190px;
+        height: 215px;
     }
 }
 
-/* Téléphones */
+/* TABLETTES */
+
+@media (max-width: 900px) {
+    .archive-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .cover {
+        height: 185px;
+    }
+
+    .card-info {
+        padding: 13px;
+    }
+
+    .card-info h3 {
+        font-size: 17px;
+    }
+}
+
+/* TÉLÉPHONES */
+
 @media (max-width: 650px) {
     .archive-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -163,5 +136,71 @@ body.esp-editing [data-esp-key]:hover {
 
     .card-info h3 {
         font-size: 15px;
+        line-height: 1.3;
+    }
+
+    .card-info p {
+        font-size: 10px;
+        line-height: 1.4;
+        min-height: 25px;
+    }
+
+    .filters {
+        gap: 8px;
+        margin-bottom: 23px;
+    }
+
+    .filter {
+        padding: 9px 12px;
+        font-size: 10px;
     }
 }
+
+/* TRÈS PETITS TÉLÉPHONES */
+
+@media (max-width: 380px) {
+    .archive-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 11px;
+    }
+
+    .cover {
+        height: 135px;
+    }
+
+    .card-info {
+        padding: 9px;
+    }
+
+    .card-info h3 {
+        font-size: 13px;
+    }
+}
+
+/* ==========================================
+   ÉDITEUR VISUEL — MODE PROPRIÉTAIRE
+   ========================================== */
+
+body.esp-editing {
+    cursor: crosshair;
+}
+
+body.esp-editing .archive-card {
+    outline: 1px dashed var(--yellow);
+    outline-offset: 3px;
+    cursor: pointer;
+}
+
+body.esp-editing .archive-card:hover {
+    outline: 2px solid var(--yellow);
+}
+
+body.esp-editing [data-esp-key]:hover {
+    outline: 1px dashed var(--yellow);
+    outline-offset: 3px;
+    cursor: pointer;
+}
+
+/* ==========================================
+   FIN
+   ========================================== */
