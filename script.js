@@ -490,6 +490,211 @@
       });
   }
 
+  let savedVisualSettings = null;
+
+  function publicElementKey(element) {
+    if (element.id) return "id:" + element.id;
+    const parts = [];
+    let node = element;
+    while (node && node !== document.body && parts.length < 8) {
+      let part = node.tagName.toLowerCase();
+      const classes = [...node.classList].filter(name => !name.startsWith("esp-")).slice(0, 2);
+      if (classes.length) part += "." + classes.join(".");
+      const parent = node.parentElement;
+      if (parent) {
+        const siblings = [...parent.children].filter(child => child.tagName === node.tagName);
+        if (siblings.length > 1) part += ":nth-of-type(" + (siblings.indexOf(node) + 1) + ")";
+      }
+      parts.unshift(part);
+      node = parent;
+    }
+    return parts.join(">");
+  }
+
+  function findPublicSettingElement(key) {
+    if (key === "global:body") return document.body;
+    if (String(key).startsWith("id:")) return document.getElementById(String(key).slice(3));
+    return [...document.querySelectorAll("*")].find(element => {
+      if (element.dataset.espKey === key) return true;
+      const elementKey = publicElementKey(element);
+      if (elementKey === key) {
+        element.dataset.espKey = key;
+        return true;
+      }
+      return false;
+    }) || null;
+  }
+
+  function replacePublicText(element, value) {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    while (walker.nextNode()) {
+      if (walker.currentNode.nodeValue.trim()) textNodes.push(walker.currentNode);
+    }
+    if (textNodes.length) {
+      textNodes[0].nodeValue = value;
+      textNodes.slice(1).forEach(node => node.remove());
+    } else {
+      element.append(document.createTextNode(value));
+    }
+  }
+
+  function applyPublicVisualSettings(visual = savedVisualSettings) {
+    if (!visual || typeof visual !== "object") return;
+    savedVisualSettings = visual;
+
+    Object.entries(visual.texts || {}).forEach(([key, value]) => {
+      const element = findPublicSettingElement(key);
+      if (element) replacePublicText(element, String(value ?? ""));
+    });
+
+    Object.entries(visual.styles || {}).forEach(([key, saved]) => {
+      const element = findPublicSettingElement(key);
+      if (!element || !saved) return;
+      ["color","backgroundColor","fontSize","fontFamily","fontWeight","letterSpacing",
+       "opacity","boxShadow","transform","width","padding","borderRadius","display"].forEach(prop => {
+        if (saved[prop] !== undefined && saved[prop] !== "") element.style[prop] = saved[prop];
+      });
+      if (saved.backgroundImage) {
+        element.style.backgroundImage = saved.backgroundImage;
+        element.style.backgroundSize = "cover";
+        element.style.backgroundPosition = "center";
+      }
+    });
+
+    Object.entries(visual.links || {}).forEach(([key, url]) => {
+      const element = findPublicSettingElement(key);
+      if (element?.tagName === "A") element.href = url;
+    });
+    Object.entries(visual.images || {}).forEach(([key, url]) => {
+      const element = findPublicSettingElement(key);
+      if (element?.tagName === "IMG") element.src = url;
+    });
+    Object.entries(visual.logos || {}).forEach(([key, url]) => {
+      const element = findPublicSettingElement(key);
+      if (!element) return;
+      const image = document.createElement("img");
+      image.src = url;
+      image.alt = "European Satfeed Premium";
+      image.className = "esp-custom-logo";
+      image.style.cssText = "display:block;width:auto;max-width:110px;max-height:54px;object-fit:contain";
+      element.replaceChildren(image);
+    });
+
+    const heroStamp = document.querySelector(".hero-stamp");
+    const hero = visual.heroStamp || {};
+    if (heroStamp && Object.keys(hero).length) {
+      if (hero.imageUrl) {
+        heroStamp.replaceChildren();
+        const image = document.createElement("img");
+        image.src = hero.imageUrl;
+        image.alt = "European Satfeed Premium";
+        image.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;clip-path:circle(50% at 50% 50%)";
+        heroStamp.style.borderRadius = "50%";
+        heroStamp.append(image);
+      } else {
+        heroStamp.innerHTML = "<span class='esp-stamp-top'></span><b class='esp-stamp-center'></b><span class='esp-stamp-bottom'></span>";
+        const top = heroStamp.querySelector(".esp-stamp-top");
+        const center = heroStamp.querySelector(".esp-stamp-center");
+        const bottom = heroStamp.querySelector(".esp-stamp-bottom");
+        top.textContent = hero.topText ?? "EST.";
+        center.textContent = hero.centerText ?? "ES+";
+        bottom.textContent = hero.bottomText ?? "PREMIUM";
+        top.style.color = bottom.style.color = hero.smallColor || "#aab2bf";
+        center.style.color = hero.centerColor || "#eaff00";
+        top.style.fontSize = bottom.style.fontSize = (hero.smallSize || 8) + "px";
+        center.style.fontSize = (hero.centerSize || 37) + "px";
+        heroStamp.style.fontFamily = hero.fontFamily || "Barlow Condensed";
+      }
+      if (hero.diameter) { heroStamp.style.width = hero.diameter + "px"; heroStamp.style.height = hero.diameter + "px"; }
+      if (hero.borderColor) heroStamp.style.borderColor = hero.borderColor;
+      if (hero.borderWidth !== undefined) heroStamp.style.borderWidth = hero.borderWidth + "px";
+      if (hero.backgroundColor) heroStamp.style.backgroundColor = hero.backgroundColor;
+      if (hero.rotation !== undefined) heroStamp.style.transform = "rotate(" + hero.rotation + "deg)";
+      if (hero.glowColor) heroStamp.style.boxShadow = "0 0 28px " + hero.glowColor + "66";
+      if (hero.right !== undefined) heroStamp.style.right = hero.right + "%";
+      if (hero.bottom !== undefined) heroStamp.style.bottom = hero.bottom + "%";
+    }
+
+    const premiumAside = document.querySelector(".premium-aside");
+    const premium = visual.premiumStamp || {};
+    if (premiumAside && Object.keys(premium).length) {
+      if (!premium.enabled) {
+        premiumAside.classList.remove("esp-premium-round");
+        premiumAside.innerHTML = "<span>EUROPEAN<br>SATFEED<br>PREMIUM</span><b>ES+</b><span>MEMBERS ONLY</span>";
+        premiumAside.removeAttribute("style");
+      } else {
+        premiumAside.innerHTML = "";
+        premiumAside.classList.add("esp-premium-round");
+        const diameter = premium.diameter || 240;
+        Object.assign(premiumAside.style, {
+          position:"relative", boxSizing:"border-box", width:diameter+"px", height:diameter+"px",
+          minWidth:diameter+"px", padding:"0", borderRadius:"50%", overflow:"hidden",
+          display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"space-between",
+          transform:"rotate("+(premium.rotation||0)+"deg)",
+          background:premium.backgroundColor||"#080b12",
+          border:(premium.borderWidth??1)+"px solid "+(premium.borderColor||"#ffffff55"),
+          boxShadow:"0 0 30px "+(premium.glowColor||"#eaff00")+"66"
+        });
+        if (premium.imageUrl) {
+          const image=document.createElement("img");
+          image.src=premium.imageUrl;
+          image.alt="Logo European Satfeed Premium";
+          image.style.cssText="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;clip-path:circle(50% at 50% 50%)";
+          premiumAside.append(image);
+        } else {
+          const center=document.createElement("b");
+          center.textContent=premium.centerText||"ES+";
+          center.style.cssText="position:absolute;left:8%;right:8%;top:50%;transform:translateY(-50%);text-align:center;z-index:2;font:900 "+(premium.centerSize||82)+"px 'Barlow Condensed',sans-serif;color:"+(premium.centerColor||"#eaff00")+";line-height:.9";
+          premiumAside.append(center);
+        }
+        if (premium.topText) {
+          const top=document.createElement("span");
+          top.textContent=premium.topText;
+          top.style.cssText="position:absolute;top:13%;left:8%;right:8%;z-index:3;text-align:center;color:"+(premium.smallColor||"#aab2bf")+";font:700 "+(premium.smallSize||9)+"px 'DM Sans',sans-serif;letter-spacing:2px";
+          premiumAside.append(top);
+        }
+        if (premium.bottomText) {
+          const bottom=document.createElement("span");
+          bottom.textContent=premium.bottomText;
+          bottom.style.cssText="position:absolute;bottom:13%;left:8%;right:8%;z-index:3;text-align:center;color:"+(premium.smallColor||"#aab2bf")+";font:700 "+(premium.smallSize||9)+"px 'DM Sans',sans-serif;letter-spacing:2px";
+          premiumAside.append(bottom);
+        }
+      }
+    }
+
+    if (visual.global?.mainColor) document.documentElement.style.setProperty("--yellow", visual.global.mainColor);
+    if (visual.global?.backgroundColor) {
+      document.documentElement.style.setProperty("--bg", visual.global.backgroundColor);
+      document.body.style.backgroundColor = visual.global.backgroundColor;
+    }
+    if (visual.global?.backgroundImage) {
+      document.body.style.backgroundImage = visual.global.backgroundImage;
+      document.body.style.backgroundSize = visual.global.backgroundSize || "cover";
+      document.body.style.backgroundPosition = visual.global.backgroundPosition || "center";
+      document.body.style.backgroundAttachment = "fixed";
+    }
+  }
+
+  async function loadPublicVisualSettings() {
+    try {
+      const query = new URL(`${SUPABASE_URL}/rest/v1/site_settings`);
+      query.searchParams.set("select", "content");
+      query.searchParams.set("limit", "50");
+      const response = await fetch(query, {
+        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+        cache: "no-store"
+      });
+      if (!response.ok) throw new Error("site_settings: " + response.status);
+      const rows = await response.json();
+      const row = (rows || []).find(item => item.content && typeof item.content === "object");
+      savedVisualSettings = row?.content?.visual || null;
+      if (savedVisualSettings) applyPublicVisualSettings(savedVisualSettings);
+    } catch (error) {
+      console.warn("Impossible de charger les personnalisations du site :", error);
+    }
+  }
+
   async function loadDeletedGithubCoverKeys() {
     try {
       const query = new URL(`${SUPABASE_URL}/rest/v1/site_settings`);
@@ -587,6 +792,7 @@
     document.documentElement.lang = language;
     try { localStorage.setItem("esp-language", language); } catch (_) {}
     updateTranslations();
+    applyPublicVisualSettings();
     refreshCatalogueControls();
     renderCards();
     if (lightbox && !lightbox.hidden) renderLightboxItem();
@@ -620,6 +826,7 @@
   };
 
   updateTranslations();
+  loadPublicVisualSettings();
   renderFilters();
 
   loadCatalogue().catch(error => {
