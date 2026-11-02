@@ -3,7 +3,7 @@
   "use strict";
 
   const SUPABASE_URL = "https://afipejmgjkigcbohsxkt.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_MWi4yR-uw_TfrXJJrKdS1Q_783VTF6Z";
+  const SUPABASE_KEY = "sb_publishable_MWi4yR-uw_TfrxJJrKdS1Q_783VTF6Z";
   const OWNER_UID = "1f2e7add-fe3d-4792-8c8c-9708e584b9d6";
   const BUCKET = "covers";
 
