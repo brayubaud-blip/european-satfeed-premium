@@ -10,12 +10,20 @@
 
   const $ = (selector, root = document) => root.querySelector(selector);
 
+  const LANGUAGE_OPTIONS = [
+    { code:"fr", name:"Français", native:"Français", flag:"🇫🇷" },
+    { code:"en", name:"English", native:"English", flag:"🇬🇧" },
+    { code:"es", name:"Español", native:"Español", flag:"🇪🇸" },
+    { code:"uk", name:"Українська", native:"Українська", flag:"🇺🇦" },
+    { code:"zh", name:"中文", native:"中文", flag:"🇨🇳" },
+    { code:"ar", name:"العربية", native:"العربية", flag:"🌙" }
+  ];
   let language = (() => {
     try {
       const saved = localStorage.getItem("esp-language");
-      if (saved === "en" || saved === "fr") return saved;
+      if (LANGUAGE_OPTIONS.some(item => item.code === saved)) return saved;
     } catch (_) {}
-    return document.documentElement.lang === "en" ? "en" : "fr";
+    return "fr";
   })();
   let activeFilter = "all";
   let catalogueItems = [];
@@ -88,128 +96,277 @@
   const creatorOf = item => item.creator || item.author || "";
 
   const categories = [
-    { id: "all", fr: "TOUT", en: "ALL" },
-    { id: "comps", fr: "COMPS", en: "COMPS" },
-    { id: "folders", fr: "FOLDERS", en: "FOLDERS" },
-    { id: "old", fr: "OLD", en: "OLD" },
-    { id: "edits", fr: "EDITS", en: "EDITS" },
-    { id: "collections", fr: "COLLECTIONS", en: "COLLECTIONS" }
+    { id:"all", fr:"TOUT", en:"ALL", es:"TODO", uk:"УСЕ", zh:"全部", ar:"الكل" },
+    { id:"comps", fr:"COMPS", en:"COMPS", es:"COMPS", uk:"КОМПІЛЯЦІЇ", zh:"集锦", ar:"تجميعات" },
+    { id:"folders", fr:"DOSSIERS", en:"FOLDERS", es:"CARPETAS", uk:"ПАПКИ", zh:"文件夹", ar:"مجلدات" },
+    { id:"old", fr:"ANCIEN", en:"OLD", es:"CLÁSICO", uk:"АРХІВ", zh:"经典", ar:"قديم" },
+    { id:"edits", fr:"EDITS", en:"EDITS", es:"EDITS", uk:"ЕДІТИ", zh:"剪辑", ar:"تعديلات" },
+    { id:"collections", fr:"COLLECTIONS", en:"COLLECTIONS", es:"COLECCIONES", uk:"КОЛЕКЦІЇ", zh:"收藏", ar:"مجموعات" }
   ];
 
   const translations = {
     fr: {
-      topline: "FOOTBALL CULTURE. ARCHIVÉE.",
-      navArchive: "Archive",
-      navLatest: "Derniers drops",
-      navIncluded: "Contenu",
-      navPremium: "Premium",
-      navFaq: "FAQ",
-      join: "REJOINDRE PREMIUM ↗",
-      eyebrow: "L'ARCHIVE FOOTBALL",
-      heroCopy: "Une archive dédiée à la culture football : images, clips, edits et ressources soigneusement sélectionnés.",
-      explore: "EXPLORER L'ARCHIVE",
-      preview: "APERÇU GRATUIT ↗",
-      heroMeta: "UNE NOUVELLE FAÇON DE COLLECTIONNER LE FOOTBALL",
-      archiveEyebrow: "EXPLORER LA COLLECTION",
-      archiveTitle: "L'ARCHIVE.",
-      archiveDesc: "Un aperçu des collections disponibles. Les fichiers complets sont réservés aux membres Premium.",
-      favorite: "Favoris",
-      favorited: "Dans les favoris",
-      addCoverAdmin: "+ AJOUTER UNE COVER",
-      archiveFoot: "DE NOUVELLES COLLECTIONS SONT AJOUTÉES RÉGULIÈREMENT.",
-      latestEyebrow: "NOUVEAUTÉS DE L'ARCHIVE",
-      latestTitle: "DERNIERS<br><span>DROPS.</span>",
-      latestDesc: "Les nouveautés, les sélections récentes et les prochains ajouts. Reste connecté pour ne rien manquer.",
-      followTelegram: "SUIVRE LE CANAL TELEGRAM ↗",
-      dropText: "NOUVEAU CONTENU. MÊME PASSION.",
-      updating: "MIS À JOUR RÉGULIÈREMENT",
-      includedEyebrow: "L'EXPÉRIENCE PREMIUM",
-      includedTitle: "QU'Y A-T-IL<br>DANS LE PACK ?",
-      includedDesc: "Tout ce qu'il faut pour nourrir ta créativité et suivre la culture football.",
-      feature1Title: "DOSSIERS HAUTE QUALITÉ",
-      feature1Desc: "Des dossiers organisés avec des images et ressources en haute qualité.",
-      feature2Title: "CLIPS VIRAUX",
-      feature2Desc: "Des clips football sélectionnés pour tes montages et tes idées.",
-      feature3Title: "COMP DROPS RAPIDES",
-      feature3Desc: "De nouvelles sélections et compilations publiées régulièrement.",
-      feature4Title: "DEMANDES & PLUS",
-      feature4Desc: "Possibilité de proposer des demandes et de découvrir d'autres contenus.",
-      premiumEyebrow: "TON ACCÈS COMMENCE ICI",
-      premiumDesc: "Accède au contenu complet de EUROPEAN SATFEED PREMIUM et rejoins la communauté.",
-      oneTime: "/ ACCÈS",
-      getAccess: "OBTENIR L'ACCÈS PREMIUM",
-      secureNote: "Paiement via Payhip. Après l'achat, suis les instructions pour obtenir ton accès privé.",
-      faqEyebrow: "BON À SAVOIR",
-      faqDesc: "Les réponses aux questions les plus fréquentes.",
-      q1: "Que comprend l'accès Premium ?",
-      a1: "L'accès aux dossiers et contenus complets proposés dans le canal privé, selon les publications disponibles.",
-      q2: "Comment obtenir l'accès après le paiement ?",
-      a2: "Effectue ton achat via Payhip, puis suis les instructions indiquées après le paiement. En cas de problème, contacte le support Telegram.",
-      q3: "Le contenu est-il gratuit ?",
-      a3: "Les aperçus sont publics. Les dossiers et contenus complets sont réservés aux membres Premium.",
-      q4: "Comment contacter le support ?",
-      a4: "Tu peux contacter le support sur Telegram : @Njr_edit_10.",
-      footerLine: "LA CULTURE FOOTBALL, COLLECTIONNÉE.",
-      loading: "Chargement du catalogue…",
-      empty: "Aucun contenu disponible dans cette catégorie.",
-      error: "Impossible de charger le catalogue.", browseCategories: "CATÉGORIES", searchPlaceholder: "Rechercher dans l’archive...", allTeams: "Toutes les équipes", allSeasons: "Toutes les saisons", allCreators: "Tous les créateurs", noResults: "Aucun résultat pour cette recherche."
+      topline:"FOOTBALL CULTURE. ARCHIVÉE.", navArchive:"Archive", navLatest:"Derniers drops",
+      navIncluded:"Contenu", navPremium:"Premium", navFaq:"FAQ", join:"REJOINDRE PREMIUM ↗",
+      eyebrow:"L'ARCHIVE FOOTBALL",
+      heroCopy:"Une archive dédiée à la culture football : images, clips, edits et ressources soigneusement sélectionnés.",
+      explore:"EXPLORER L'ARCHIVE", preview:"APERÇU GRATUIT ↗",
+      heroMeta:"UNE NOUVELLE FAÇON DE COLLECTIONNER LE FOOTBALL",
+      archiveEyebrow:"EXPLORER LA COLLECTION", archiveTitle:"L'ARCHIVE.",
+      archiveDesc:"Un aperçu des collections disponibles. Les fichiers complets sont réservés aux membres Premium.",
+      favorite:"Favoris", favorited:"Dans les favoris", addCoverAdmin:"+ AJOUTER UNE COVER",
+      archiveFoot:"DE NOUVELLES COLLECTIONS SONT AJOUTÉES RÉGULIÈREMENT.",
+      latestEyebrow:"NOUVEAUTÉS DE L'ARCHIVE", latestTitle:"DERNIERS<br><span>DROPS.</span>",
+      latestDesc:"Les nouveautés, les sélections récentes et les prochains ajouts. Reste connecté pour ne rien manquer.",
+      followTelegram:"SUIVRE LE CANAL TELEGRAM ↗", dropText:"NOUVEAU CONTENU. MÊME PASSION.",
+      updating:"MIS À JOUR RÉGULIÈREMENT", includedEyebrow:"L'EXPÉRIENCE PREMIUM",
+      includedTitle:"QU'Y A-T-IL<br>DANS LE PACK ?",
+      includedDesc:"Tout ce qu'il faut pour nourrir ta créativité et suivre la culture football.",
+      feature1Title:"DOSSIERS HAUTE QUALITÉ", feature1Desc:"Des dossiers organisés avec des images et ressources en haute qualité.",
+      feature2Title:"CLIPS VIRAUX", feature2Desc:"Des clips football sélectionnés pour tes montages et tes idées.",
+      feature3Title:"COMP DROPS RAPIDES", feature3Desc:"De nouvelles sélections et compilations publiées régulièrement.",
+      feature4Title:"DEMANDES & PLUS", feature4Desc:"Possibilité de proposer des demandes et de découvrir d'autres contenus.",
+      premiumEyebrow:"TON ACCÈS COMMENCE ICI",
+      premiumDesc:"Accède au contenu complet de EUROPEAN SATFEED PREMIUM et rejoins la communauté.",
+      oneTime:"/ ACCÈS", getAccess:"OBTENIR L'ACCÈS PREMIUM",
+      secureNote:"Paiement via Payhip. Après l'achat, suis les instructions pour obtenir ton accès privé.",
+      faqEyebrow:"BON À SAVOIR", faqDesc:"Les réponses aux questions les plus fréquentes.",
+      q1:"Que comprend l'accès Premium ?",
+      a1:"L'accès aux dossiers et contenus complets proposés dans le canal privé, selon les publications disponibles.",
+      q2:"Comment obtenir l'accès après le paiement ?",
+      a2:"Effectue ton achat via Payhip, puis suis les instructions indiquées après le paiement. En cas de problème, contacte le support Telegram.",
+      q3:"Le contenu est-il gratuit ?",
+      a3:"Les aperçus sont publics. Les dossiers et contenus complets sont réservés aux membres Premium.",
+      q4:"Comment contacter le support ?",
+      a4:"Tu peux contacter le support sur Telegram : @Njr_edit_10.",
+      footerLine:"LA CULTURE FOOTBALL, COLLECTIONNÉE.",
+      loading:"Chargement du catalogue…", empty:"Aucun contenu disponible dans cette catégorie.",
+      error:"Impossible de charger le catalogue.", browseCategories:"CATÉGORIES",
+      searchPlaceholder:"Rechercher dans l’archive...", allTeams:"Toutes les équipes",
+      allSeasons:"Toutes les saisons", allCreators:"Tous les créateurs",
+      noResults:"Aucun résultat pour cette recherche.", refreshCatalogue:"ACTUALISER",
+      refreshing:"ACTUALISATION…", refreshDone:"Catalogue actualisé.",
+      refreshError:"Impossible d'actualiser le catalogue.", prevCover:"Cover précédente",
+      nextCover:"Cover suivante", closePreview:"Fermer l'aperçu", chooseLanguage:"Choisir la langue"
     },
     en: {
-      topline: "FOOTBALL CULTURE. ARCHIVED.",
-      navArchive: "Archive",
-      navLatest: "Latest drops",
-      navIncluded: "What's inside",
-      navPremium: "Premium",
-      navFaq: "FAQ",
-      join: "JOIN PREMIUM ↗",
-      eyebrow: "THE FOOTBALL ARCHIVE",
-      heroCopy: "An archive dedicated to football culture: carefully selected images, clips, edits and resources.",
-      explore: "EXPLORE THE ARCHIVE",
-      preview: "FREE PREVIEW ↗",
-      heroMeta: "A NEW WAY TO COLLECT FOOTBALL",
-      archiveEyebrow: "EXPLORE THE COLLECTION",
-      archiveTitle: "THE ARCHIVE.",
-      archiveDesc: "A preview of available collections. Full files are reserved for Premium members.",
-      favorite: "Favorite",
-      favorited: "Added to favorites",
-      addCoverAdmin: "+ ADD A COVER",
-      archiveFoot: "MORE COLLECTIONS ARE ADDED REGULARLY.",
-      latestEyebrow: "FRESH FROM THE ARCHIVE",
-      latestTitle: "LATEST<br><span>DROPS.</span>",
-      latestDesc: "New content, recent selections and upcoming additions. Stay connected.",
-      followTelegram: "FOLLOW THE TELEGRAM CHANNEL ↗",
-      dropText: "NEW CONTENT. SAME PASSION.",
-      updating: "REGULARLY UPDATED",
-      includedEyebrow: "THE PREMIUM EXPERIENCE",
-      includedTitle: "WHAT'S<br>INSIDE?",
-      includedDesc: "Everything you need to fuel your creativity and follow football culture.",
-      feature1Title: "HIGH-QUALITY FOLDERS",
-      feature1Desc: "Organized folders with high-quality images and resources.",
-      feature2Title: "VIRAL CLIPS",
-      feature2Desc: "Selected football clips for your edits and ideas.",
-      feature3Title: "FAST COMP DROPS",
-      feature3Desc: "New selections and compilations published regularly.",
-      feature4Title: "REQUESTS & MORE",
-      feature4Desc: "Suggest requests and discover more content.",
-      premiumEyebrow: "YOUR ACCESS STARTS HERE",
-      premiumDesc: "Access the full EUROPEAN SATFEED PREMIUM content and join the community.",
-      oneTime: "/ ACCESS",
-      getAccess: "GET PREMIUM ACCESS",
-      secureNote: "Payment via Payhip. After purchase, follow the instructions to get your private access.",
-      faqEyebrow: "GOOD TO KNOW",
-      faqDesc: "Answers to frequently asked questions.",
-      q1: "What is included in Premium access?",
-      a1: "Access to the full folders and content shared in the private channel, depending on available posts.",
-      q2: "How do I get access after payment?",
-      a2: "Purchase through Payhip and follow the instructions after payment. Contact Telegram support if you need help.",
-      q3: "Is the content free?",
-      a3: "Previews are public. Full folders and content are reserved for Premium members.",
-      q4: "How can I contact support?",
-      a4: "You can contact support on Telegram: @Njr_edit_10.",
-      footerLine: "FOOTBALL CULTURE, COLLECTED.",
-      loading: "Loading catalogue…",
-      empty: "No content available in this category.",
-      error: "Unable to load the catalogue.", browseCategories: "CATEGORIES", searchPlaceholder: "Search the archive...", allTeams: "All teams", allSeasons: "All seasons", allCreators: "All creators", noResults: "No results for this search."
+      topline:"FOOTBALL CULTURE. ARCHIVED.", navArchive:"Archive", navLatest:"Latest drops",
+      navIncluded:"What's inside", navPremium:"Premium", navFaq:"FAQ", join:"JOIN PREMIUM ↗",
+      eyebrow:"THE FOOTBALL ARCHIVE",
+      heroCopy:"An archive dedicated to football culture: carefully selected images, clips, edits and resources.",
+      explore:"EXPLORE THE ARCHIVE", preview:"FREE PREVIEW ↗",
+      heroMeta:"A NEW WAY TO COLLECT FOOTBALL",
+      archiveEyebrow:"EXPLORE THE COLLECTION", archiveTitle:"THE ARCHIVE.",
+      archiveDesc:"A preview of available collections. Full files are reserved for Premium members.",
+      favorite:"Favorite", favorited:"Added to favorites", addCoverAdmin:"+ ADD A COVER",
+      archiveFoot:"MORE COLLECTIONS ARE ADDED REGULARLY.",
+      latestEyebrow:"FRESH FROM THE ARCHIVE", latestTitle:"LATEST<br><span>DROPS.</span>",
+      latestDesc:"New content, recent selections and upcoming additions. Stay connected.",
+      followTelegram:"FOLLOW THE TELEGRAM CHANNEL ↗", dropText:"NEW CONTENT. SAME PASSION.",
+      updating:"REGULARLY UPDATED", includedEyebrow:"THE PREMIUM EXPERIENCE",
+      includedTitle:"WHAT'S<br>INSIDE?",
+      includedDesc:"Everything you need to fuel your creativity and follow football culture.",
+      feature1Title:"HIGH-QUALITY FOLDERS", feature1Desc:"Organized folders with high-quality images and resources.",
+      feature2Title:"VIRAL CLIPS", feature2Desc:"Selected football clips for your edits and ideas.",
+      feature3Title:"FAST COMP DROPS", feature3Desc:"New selections and compilations published regularly.",
+      feature4Title:"REQUESTS & MORE", feature4Desc:"Suggest requests and discover more content.",
+      premiumEyebrow:"YOUR ACCESS STARTS HERE",
+      premiumDesc:"Access the full EUROPEAN SATFEED PREMIUM content and join the community.",
+      oneTime:"/ ACCESS", getAccess:"GET PREMIUM ACCESS",
+      secureNote:"Payment via Payhip. After purchase, follow the instructions to get your private access.",
+      faqEyebrow:"GOOD TO KNOW", faqDesc:"Answers to frequently asked questions.",
+      q1:"What is included in Premium access?",
+      a1:"Access to the full folders and content shared in the private channel, depending on available posts.",
+      q2:"How do I get access after payment?",
+      a2:"Purchase through Payhip and follow the instructions after payment. Contact Telegram support if you need help.",
+      q3:"Is the content free?",
+      a3:"Previews are public. Full folders and content are reserved for Premium members.",
+      q4:"How can I contact support?",
+      a4:"You can contact support on Telegram: @Njr_edit_10.",
+      footerLine:"FOOTBALL CULTURE, COLLECTED.",
+      loading:"Loading catalogue…", empty:"No content available in this category.",
+      error:"Unable to load the catalogue.", browseCategories:"CATEGORIES",
+      searchPlaceholder:"Search the archive...", allTeams:"All teams",
+      allSeasons:"All seasons", allCreators:"All creators", noResults:"No results for this search.",
+      refreshCatalogue:"REFRESH", refreshing:"REFRESHING…", refreshDone:"Catalogue refreshed.",
+      refreshError:"Could not refresh the catalogue.", prevCover:"Previous cover",
+      nextCover:"Next cover", closePreview:"Close preview", chooseLanguage:"Choose language"
+    },
+    es: {
+      topline:"CULTURA DEL FÚTBOL. ARCHIVADA.", navArchive:"Archivo", navLatest:"Últimas novedades",
+      navIncluded:"Contenido", navPremium:"Premium", navFaq:"FAQ", join:"UNIRME A PREMIUM ↗",
+      eyebrow:"EL ARCHIVO DE FÚTBOL",
+      heroCopy:"Un archivo dedicado a la cultura del fútbol: imágenes, clips, edits y recursos seleccionados con cuidado.",
+      explore:"EXPLORAR EL ARCHIVO", preview:"VISTA PREVIA GRATIS ↗",
+      heroMeta:"UNA NUEVA FORMA DE COLECCIONAR FÚTBOL",
+      archiveEyebrow:"EXPLORAR LA COLECCIÓN", archiveTitle:"EL ARCHIVO.",
+      archiveDesc:"Una muestra de las colecciones disponibles. Los archivos completos están reservados para miembros Premium.",
+      favorite:"Favorito", favorited:"Guardado en favoritos", addCoverAdmin:"+ AÑADIR COVER",
+      archiveFoot:"SE AÑADEN NUEVAS COLECCIONES CON REGULARIDAD.",
+      latestEyebrow:"LO ÚLTIMO DEL ARCHIVO", latestTitle:"ÚLTIMOS<br><span>DROPS.</span>",
+      latestDesc:"Nuevos contenidos, selecciones recientes y próximas incorporaciones. Sigue conectado.",
+      followTelegram:"SEGUIR EL CANAL DE TELEGRAM ↗", dropText:"NUEVO CONTENIDO. LA MISMA PASIÓN.",
+      updating:"ACTUALIZADO REGULARMENTE", includedEyebrow:"LA EXPERIENCIA PREMIUM",
+      includedTitle:"¿QUÉ<br>INCLUYE?",
+      includedDesc:"Todo lo que necesitas para impulsar tu creatividad y seguir la cultura del fútbol.",
+      feature1Title:"CARPETAS DE ALTA CALIDAD", feature1Desc:"Carpetas organizadas con imágenes y recursos en alta calidad.",
+      feature2Title:"CLIPS VIRALES", feature2Desc:"Clips de fútbol seleccionados para tus edits e ideas.",
+      feature3Title:"NUEVOS COMPS RÁPIDOS", feature3Desc:"Nuevas selecciones y compilaciones publicadas regularmente.",
+      feature4Title:"PETICIONES Y MÁS", feature4Desc:"Puedes proponer peticiones y descubrir otros contenidos.",
+      premiumEyebrow:"TU ACCESO EMPIEZA AQUÍ",
+      premiumDesc:"Accede al contenido completo de EUROPEAN SATFEED PREMIUM y únete a la comunidad.",
+      oneTime:"/ ACCESO", getAccess:"OBTENER ACCESO PREMIUM",
+      secureNote:"Pago a través de Payhip. Después de comprar, sigue las instrucciones para obtener tu acceso privado.",
+      faqEyebrow:"INFORMACIÓN ÚTIL", faqDesc:"Respuestas a las preguntas más frecuentes.",
+      q1:"¿Qué incluye el acceso Premium?",
+      a1:"Acceso a las carpetas y al contenido completo del canal privado, según las publicaciones disponibles.",
+      q2:"¿Cómo consigo el acceso después del pago?",
+      a2:"Compra a través de Payhip y sigue las instrucciones posteriores al pago. Contacta con el soporte de Telegram si necesitas ayuda.",
+      q3:"¿El contenido es gratuito?",
+      a3:"Las vistas previas son públicas. Las carpetas y el contenido completo están reservados para miembros Premium.",
+      q4:"¿Cómo puedo contactar con soporte?",
+      a4:"Puedes contactar con soporte por Telegram: @Njr_edit_10.",
+      footerLine:"LA CULTURA DEL FÚTBOL, COLECCIONADA.",
+      loading:"Cargando catálogo…", empty:"No hay contenido disponible en esta categoría.",
+      error:"No se puede cargar el catálogo.", browseCategories:"CATEGORÍAS",
+      searchPlaceholder:"Buscar en el archivo...", allTeams:"Todos los equipos",
+      allSeasons:"Todas las temporadas", allCreators:"Todos los creadores",
+      noResults:"No hay resultados para esta búsqueda.", refreshCatalogue:"ACTUALIZAR",
+      refreshing:"ACTUALIZANDO…", refreshDone:"Catálogo actualizado.",
+      refreshError:"No se pudo actualizar el catálogo.", prevCover:"Cover anterior",
+      nextCover:"Cover siguiente", closePreview:"Cerrar vista previa", chooseLanguage:"Elegir idioma"
+    },
+    uk: {
+      topline:"ФУТБОЛЬНА КУЛЬТУРА. В АРХІВІ.", navArchive:"Архів", navLatest:"Нові надходження",
+      navIncluded:"Вміст", navPremium:"Преміум", navFaq:"Питання", join:"ОТРИМАТИ PREMIUM ↗",
+      eyebrow:"ФУТБОЛЬНИЙ АРХІВ",
+      heroCopy:"Архів футбольної культури: ретельно відібрані зображення, кліпи, едіти та матеріали.",
+      explore:"ВІДКРИТИ АРХІВ", preview:"БЕЗКОШТОВНИЙ ПЕРЕГЛЯД ↗",
+      heroMeta:"НОВИЙ СПОСІБ КОЛЕКЦІОНУВАТИ ФУТБОЛ",
+      archiveEyebrow:"ПЕРЕГЛЯНУТИ КОЛЕКЦІЮ", archiveTitle:"АРХІВ.",
+      archiveDesc:"Огляд доступних колекцій. Повні файли доступні лише учасникам Premium.",
+      favorite:"В обране", favorited:"Додано в обране", addCoverAdmin:"+ ДОДАТИ ОБКЛАДИНКУ",
+      archiveFoot:"НОВІ КОЛЕКЦІЇ ДОДАЮТЬСЯ РЕГУЛЯРНО.",
+      latestEyebrow:"НОВЕ В АРХІВІ", latestTitle:"ОСТАННІ<br><span>ДОДАВАННЯ.</span>",
+      latestDesc:"Новий контент, свіжі добірки та майбутні оновлення. Залишайся на зв'язку.",
+      followTelegram:"СТЕЖИТИ ЗА TELEGRAM-КАНАЛОМ ↗", dropText:"НОВИЙ КОНТЕНТ. ТА САМА ПРИСТРАСТЬ.",
+      updating:"РЕГУЛЯРНЕ ОНОВЛЕННЯ", includedEyebrow:"PREMIUM-ДОСВІД",
+      includedTitle:"ЩО<br>ВСЕРЕДИНІ?",
+      includedDesc:"Усе необхідне для творчості та знайомства зі світом футбольної культури.",
+      feature1Title:"ПАПКИ ВИСОКОЇ ЯКОСТІ", feature1Desc:"Упорядковані папки із зображеннями та матеріалами високої якості.",
+      feature2Title:"ВІРУСНІ КЛІПИ", feature2Desc:"Відібрані футбольні кліпи для твоїх монтажів та ідей.",
+      feature3Title:"ШВИДКІ COMP-ДОБІРКИ", feature3Desc:"Нові добірки та компіляції публікуються регулярно.",
+      feature4Title:"ЗАПИТИ ТА ІНШЕ", feature4Desc:"Можна пропонувати запити й відкривати для себе новий контент.",
+      premiumEyebrow:"ТВІЙ ДОСТУП ПОЧИНАЄТЬСЯ ТУТ",
+      premiumDesc:"Отримай повний доступ до EUROPEAN SATFEED PREMIUM та приєднуйся до спільноти.",
+      oneTime:"/ ДОСТУП", getAccess:"ОТРИМАТИ PREMIUM",
+      secureNote:"Оплата через Payhip. Після покупки дотримуйся інструкцій, щоб отримати приватний доступ.",
+      faqEyebrow:"КОРИСНО ЗНАТИ", faqDesc:"Відповіді на найпоширеніші запитання.",
+      q1:"Що входить до Premium-доступу?",
+      a1:"Доступ до повних папок і матеріалів у приватному каналі відповідно до доступних публікацій.",
+      q2:"Як отримати доступ після оплати?",
+      a2:"Здійсни покупку через Payhip і виконай інструкції після оплати. За потреби звернися до підтримки Telegram.",
+      q3:"Контент безкоштовний?",
+      a3:"Попередній перегляд відкритий. Повні папки та матеріали доступні лише учасникам Premium.",
+      q4:"Як зв'язатися з підтримкою?",
+      a4:"Напиши до підтримки в Telegram: @Njr_edit_10.",
+      footerLine:"ФУТБОЛЬНА КУЛЬТУРА, ЗІБРАНА В АРХІВІ.",
+      loading:"Завантаження каталогу…", empty:"У цій категорії поки немає контенту.",
+      error:"Не вдалося завантажити каталог.", browseCategories:"КАТЕГОРІЇ",
+      searchPlaceholder:"Пошук в архіві...", allTeams:"Усі команди",
+      allSeasons:"Усі сезони", allCreators:"Усі автори",
+      noResults:"За цим запитом нічого не знайдено.", refreshCatalogue:"ОНОВИТИ",
+      refreshing:"ОНОВЛЕННЯ…", refreshDone:"Каталог оновлено.",
+      refreshError:"Не вдалося оновити каталог.", prevCover:"Попередня обкладинка",
+      nextCover:"Наступна обкладинка", closePreview:"Закрити перегляд", chooseLanguage:"Обрати мову"
+    },
+    zh: {
+      topline:"足球文化 · 精选典藏", navArchive:"档案", navLatest:"最新更新",
+      navIncluded:"内容", navPremium:"高级会员", navFaq:"常见问题", join:"加入高级会员 ↗",
+      eyebrow:"足球影像档案",
+      heroCopy:"专注足球文化的精选档案：图片、短片、混剪和优质素材。",
+      explore:"探索档案", preview:"免费预览 ↗",
+      heroMeta:"收藏足球的全新方式",
+      archiveEyebrow:"探索精选", archiveTitle:"足球档案。",
+      archiveDesc:"这里展示部分精选内容。完整素材仅向 Premium 会员开放。",
+      favorite:"收藏", favorited:"已加入收藏", addCoverAdmin:"+ 添加封面",
+      archiveFoot:"我们会定期加入新的精选内容。",
+      latestEyebrow:"档案最新内容", latestTitle:"最新<br><span>发布。</span>",
+      latestDesc:"查看新内容、近期精选和即将更新的素材。记得持续关注。",
+      followTelegram:"关注 TELEGRAM 频道 ↗", dropText:"新内容，同样的热爱。",
+      updating:"定期更新", includedEyebrow:"PREMIUM 专属体验",
+      includedTitle:"包含<br>哪些内容？",
+      includedDesc:"为你的创作提供灵感，持续探索足球文化。",
+      feature1Title:"高清素材文件夹", feature1Desc:"分类整理的文件夹，包含高清图片和创作素材。",
+      feature2Title:"热门足球短片", feature2Desc:"为你的剪辑和创意精选的足球短片。",
+      feature3Title:"快速 COMP 更新", feature3Desc:"定期发布新的精选内容和混剪合集。",
+      feature4Title:"定制请求及更多", feature4Desc:"你可以提出素材需求，发现更多内容。",
+      premiumEyebrow:"从这里开启你的访问",
+      premiumDesc:"获取 EUROPEAN SATFEED PREMIUM 完整内容，加入我们的社区。",
+      oneTime:"/ 访问权限", getAccess:"获取 PREMIUM 权限",
+      secureNote:"通过 Payhip 付款。购买后请按照说明获取私人访问权限。",
+      faqEyebrow:"你需要了解", faqDesc:"常见问题解答。",
+      q1:"Premium 权限包含什么？",
+      a1:"可访问私人频道中提供的完整文件夹和内容，具体以实际发布为准。",
+      q2:"付款后如何获得访问权限？",
+      a2:"通过 Payhip 完成购买，并按照付款后的说明操作。如需帮助，请联系 Telegram 客服。",
+      q3:"内容是免费的吗？",
+      a3:"预览内容公开开放。完整文件夹和素材仅供 Premium 会员使用。",
+      q4:"如何联系客服？",
+      a4:"你可以通过 Telegram 联系客服：@Njr_edit_10。",
+      footerLine:"收藏足球文化。",
+      loading:"正在加载档案…", empty:"此分类暂时没有可用内容。",
+      error:"无法加载档案。", browseCategories:"浏览分类",
+      searchPlaceholder:"搜索足球档案...", allTeams:"所有球队",
+      allSeasons:"所有赛季", allCreators:"所有创作者",
+      noResults:"没有找到符合条件的内容。", refreshCatalogue:"刷新",
+      refreshing:"正在刷新…", refreshDone:"档案已更新。",
+      refreshError:"暂时无法刷新档案。", prevCover:"上一张封面",
+      nextCover:"下一张封面", closePreview:"关闭预览", chooseLanguage:"选择语言"
+    },
+    ar: {
+      topline:"ثقافة كرة القدم. محفوظة في الأرشيف.", navArchive:"الأرشيف", navLatest:"أحدث الإضافات",
+      navIncluded:"المحتوى", navPremium:"بريميوم", navFaq:"الأسئلة الشائعة", join:"انضم إلى بريميوم ↗",
+      eyebrow:"أرشيف كرة القدم",
+      heroCopy:"أرشيف مخصص لثقافة كرة القدم: صور ومقاطع ومونتاجات وموارد مختارة بعناية.",
+      explore:"استكشف الأرشيف", preview:"معاينة مجانية ↗",
+      heroMeta:"طريقة جديدة لجمع محتوى كرة القدم",
+      archiveEyebrow:"استكشف المجموعة", archiveTitle:"الأرشيف.",
+      archiveDesc:"نظرة على المجموعات المتاحة. الملفات الكاملة مخصصة لأعضاء بريميوم.",
+      favorite:"المفضلة", favorited:"أُضيفت إلى المفضلة", addCoverAdmin:"+ إضافة غلاف",
+      archiveFoot:"تُضاف مجموعات جديدة بانتظام.",
+      latestEyebrow:"أحدث محتوى الأرشيف", latestTitle:"أحدث<br><span>الإضافات.</span>",
+      latestDesc:"اكتشف المحتوى الجديد والاختيارات الأخيرة والإضافات القادمة. تابعنا باستمرار.",
+      followTelegram:"تابع قناة تيليجرام ↗", dropText:"محتوى جديد. الشغف نفسه.",
+      updating:"تحديثات منتظمة", includedEyebrow:"تجربة بريميوم",
+      includedTitle:"ماذا<br>تتضمن؟",
+      includedDesc:"كل ما تحتاجه لإلهام إبداعك ومتابعة ثقافة كرة القدم.",
+      feature1Title:"مجلدات عالية الجودة", feature1Desc:"مجلدات منظمة تضم صوراً وموارد عالية الجودة.",
+      feature2Title:"مقاطع رائجة", feature2Desc:"مقاطع كرة قدم مختارة لمونتاجاتك وأفكارك.",
+      feature3Title:"إضافات COMP سريعة", feature3Desc:"اختيارات وتجميعات جديدة تُنشر بانتظام.",
+      feature4Title:"طلبات والمزيد", feature4Desc:"يمكنك اقتراح طلبات واكتشاف محتوى إضافي.",
+      premiumEyebrow:"ابدأ وصولك من هنا",
+      premiumDesc:"احصل على محتوى EUROPEAN SATFEED PREMIUM الكامل وانضم إلى المجتمع.",
+      oneTime:"/ وصول", getAccess:"احصل على وصول بريميوم",
+      secureNote:"الدفع عبر Payhip. بعد الشراء، اتبع التعليمات للحصول على وصولك الخاص.",
+      faqEyebrow:"معلومات مهمة", faqDesc:"إجابات عن الأسئلة الأكثر شيوعاً.",
+      q1:"ماذا يشمل وصول بريميوم؟",
+      a1:"الوصول إلى المجلدات والمحتوى الكامل المنشور في القناة الخاصة، وفقاً للمنشورات المتاحة.",
+      q2:"كيف أحصل على الوصول بعد الدفع؟",
+      a2:"اشترِ عبر Payhip واتبع التعليمات بعد الدفع. تواصل مع دعم تيليجرام عند الحاجة.",
+      q3:"هل المحتوى مجاني؟",
+      a3:"المعاينات متاحة للجميع. المجلدات والملفات الكاملة مخصصة لأعضاء بريميوم.",
+      q4:"كيف أتواصل مع الدعم؟",
+      a4:"يمكنك التواصل مع الدعم عبر تيليجرام: @Njr_edit_10.",
+      footerLine:"ثقافة كرة القدم في مجموعة واحدة.",
+      loading:"جارٍ تحميل الأرشيف…", empty:"لا يوجد محتوى متاح في هذه الفئة.",
+      error:"تعذّر تحميل الأرشيف.", browseCategories:"تصفّح الفئات",
+      searchPlaceholder:"ابحث في الأرشيف...", allTeams:"كل الفرق",
+      allSeasons:"كل المواسم", allCreators:"كل المنشئين",
+      noResults:"لم يتم العثور على نتائج لهذا البحث.", refreshCatalogue:"تحديث",
+      refreshing:"جارٍ التحديث…", refreshDone:"تم تحديث الأرشيف.",
+      refreshError:"تعذّر تحديث الأرشيف.", prevCover:"الغلاف السابق",
+      nextCover:"الغلاف التالي", closePreview:"إغلاق المعاينة", chooseLanguage:"اختر اللغة"
     }
   };
 
@@ -231,7 +388,7 @@
 
   function localized(value) {
     if (typeof value === "string") return value;
-    return value?.[language] || value?.fr || value?.en || "";
+    return value?.[language] || value?.en || value?.fr || "";
   }
 
   function t(key) {
@@ -240,17 +397,55 @@
 
   function updateTranslations() {
     document.querySelectorAll("[data-i18n]").forEach(element => {
-      const key = element.dataset.i18n;
-      const value = t(key);
+      const value = t(element.dataset.i18n);
       if (value) element.innerHTML = value;
     });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(element => {
+      element.placeholder = t(element.dataset.i18nPlaceholder);
+    });
+    document.querySelectorAll("[data-i18n-title]").forEach(element => {
+      element.title = t(element.dataset.i18nTitle);
+    });
+    document.querySelectorAll("[data-i18n-aria-label]").forEach(element => {
+      element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+    });
+    updateLanguagePicker();
+  }
 
-    const toggle = $("#langToggle");
-    if (toggle) {
-      toggle.innerHTML = language === "fr"
-        ? "FR <span>/</span> EN"
-        : "EN <span>/</span> FR";
-    }
+  function updateLanguagePicker() {
+    const current = LANGUAGE_OPTIONS.find(option => option.code === language) || LANGUAGE_OPTIONS[0];
+    const label = $("#currentLanguageLabel");
+    const trigger = $("#langToggle");
+    const menu = $("#languageMenu");
+    if (label) label.textContent = current.code.toUpperCase();
+    if (trigger) trigger.setAttribute("aria-label", t("chooseLanguage"));
+    if (!menu) return;
+
+    menu.replaceChildren();
+    LANGUAGE_OPTIONS.forEach(option => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "language-option" + (option.code === language ? " active" : "");
+      button.dataset.language = option.code;
+      button.setAttribute("role", "menuitemradio");
+      button.setAttribute("aria-checked", String(option.code === language));
+      button.innerHTML =
+        '<span class="language-option-flag" aria-hidden="true">' + option.flag + '</span>' +
+        '<span class="language-option-name">' + option.native + '</span>' +
+        '<span class="language-option-code">' + option.code.toUpperCase() + '</span>';
+      button.addEventListener("click", () => {
+        setLanguage(option.code);
+        closeLanguageMenu();
+      });
+      menu.append(button);
+    });
+  }
+
+  function closeLanguageMenu() {
+    const menu = $("#languageMenu");
+    const trigger = $("#langToggle");
+    if (menu) menu.hidden = true;
+    if (trigger) trigger.setAttribute("aria-expanded", "false");
   }
 
   function updateStatus(message) {
@@ -353,9 +548,9 @@
     lightbox.querySelector(".lightbox-title").textContent = localized(item.title) || "";
     lightbox.querySelector(".lightbox-description").textContent = localized(item.description) || "";
     lightbox.querySelector(".lightbox-counter").textContent = (viewerIndex + 1) + " / " + viewerItems.length;
-    lightbox.querySelector(".lightbox-prev").setAttribute("aria-label", language === "fr" ? "Cover précédente" : "Previous cover");
-    lightbox.querySelector(".lightbox-next").setAttribute("aria-label", language === "fr" ? "Cover suivante" : "Next cover");
-    lightbox.querySelector(".lightbox-close").setAttribute("aria-label", language === "fr" ? "Fermer l'aperçu" : "Close preview");
+    lightbox.querySelector(".lightbox-prev").setAttribute("aria-label", t("prevCover"));
+    lightbox.querySelector(".lightbox-next").setAttribute("aria-label", t("nextCover"));
+    lightbox.querySelector(".lightbox-close").setAttribute("aria-label", t("closePreview"));
   }
 
   function openLightbox(items, index) {
@@ -799,8 +994,13 @@
       return new Set();
     }
   }
-  async function loadCatalogue() {
-    if (loadingPromise) return loadingPromise;
+  async function loadCatalogue(forceRefresh = false) {
+    if (loadingPromise && !forceRefresh) return loadingPromise;
+    if (loadingPromise && forceRefresh) {
+      const previousLoad = loadingPromise;
+      try { await previousLoad; } catch (_) {}
+      if (loadingPromise === previousLoad) loadingPromise = null;
+    }
 
     loadingPromise = (async () => {
       updateStatus(t("loading"));
@@ -866,10 +1066,11 @@
   }
 
   function setLanguage(nextLanguage) {
-    if (!["fr", "en"].includes(nextLanguage)) return;
+    if (!LANGUAGE_OPTIONS.some(option => option.code === nextLanguage)) return;
 
     language = nextLanguage;
     document.documentElement.lang = language;
+    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
     try { localStorage.setItem("esp-language", language); } catch (_) {}
     updateTranslations();
     applyPublicVisualSettings();
@@ -881,8 +1082,42 @@
   [searchInput, teamSelect, seasonSelect, creatorSelect].forEach(control => control && control.addEventListener('input', renderCards));
   [teamSelect, seasonSelect, creatorSelect].forEach(control => control && control.addEventListener('change', renderCards));
 
-  $("#langToggle")?.addEventListener("click", () => {
-    setLanguage(language === "fr" ? "en" : "fr");
+  $("#langToggle")?.addEventListener("click", event => {
+    event.stopPropagation();
+    const menu = $("#languageMenu");
+    const trigger = $("#langToggle");
+    if (!menu || !trigger) return;
+    const willOpen = menu.hidden;
+    menu.hidden = !willOpen;
+    trigger.setAttribute("aria-expanded", String(willOpen));
+  });
+
+  document.addEventListener("click", event => {
+    if (!event.target.closest(".language-picker")) closeLanguageMenu();
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeLanguageMenu();
+  });
+
+  $("#catalogueRefresh")?.addEventListener("click", async () => {
+    const button = $("#catalogueRefresh");
+    const label = button?.querySelector("[data-i18n]");
+    if (!button || button.disabled) return;
+    button.disabled = true;
+    button.classList.add("is-loading");
+    if (label) label.textContent = t("refreshing");
+    updateStatus(t("refreshing"));
+    try {
+      await loadCatalogue(true);
+      updateStatus(t("refreshDone"));
+    } catch (error) {
+      console.error("Refresh catalogue:", error);
+      updateStatus(t("refreshError"));
+    } finally {
+      button.disabled = false;
+      button.classList.remove("is-loading");
+      if (label) label.textContent = t("refreshCatalogue");
+    }
   });
 
   const menuToggle = $("#menuToggle");
