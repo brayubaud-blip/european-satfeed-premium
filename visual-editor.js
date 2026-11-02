@@ -6,6 +6,7 @@
   const SUPABASE_KEY = "sb_publishable_MWi4yR-uw_TfrxJJrKdS1Q_783VTF6Z";
   const OWNER_UID = "1f2e7add-fe3d-4792-8c8c-9708e584b9d6";
   const BUCKET = "covers";
+  const adminLinkRequested = new URLSearchParams(window.location.search).get("admin") === "1";
 
   if (!window.supabase?.createClient) {
     console.error("Supabase JS n'est pas chargé.");
@@ -1819,6 +1820,15 @@
         throw new Error("Ce compte n'est pas autorisé.");
       }
 
+      if (adminLinkRequested) {
+        login.classList.remove("open");
+        editing = false;
+        document.body.classList.remove("esp-editing");
+        editControls.style.display = "none";
+        await openAdmin();
+        return;
+      }
+
       login.classList.remove("open");
       admin.classList.remove("open");
       editing = true;
@@ -2136,6 +2146,15 @@
   });
 
   checkOwner().then(async authorized => {
+    if (adminLinkRequested) {
+      if (authorized) {
+        await openAdmin();
+      } else {
+        showLogin();
+      }
+      return;
+    }
+
     if (authorized) {
       await loadCatalogueAdmin();
       await loadSettings();
