@@ -624,7 +624,7 @@
         value="${Number(item?.position ?? allItems.length)}">
 
       <button class="esp-btn primary" id="esp-cover-save">ENREGISTRER</button>
-      ${item ? '<button class="esp-btn" id="esp-cover-hide">' + (item.published === false ? 'REPUBLIER' : 'MASQUER') + '</button><button class="esp-btn danger" id="esp-cover-delete">SUPPRIMER LA COVER</button>' : ''}
+      ${item ? '<button class="esp-btn" id="esp-cover-duplicate">DUPLIQUER</button><button class="esp-btn" id="esp-cover-hide">' + (item.published === false ? 'REPUBLIER' : 'MASQUER') + '</button><button class="esp-btn danger" id="esp-cover-delete">SUPPRIMER LA COVER</button>' : ''}
       <button class="esp-btn" id="esp-cover-cancel">ANNULER</button>
     `);
 
