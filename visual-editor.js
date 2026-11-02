@@ -357,7 +357,10 @@
 
   function syncPublicAddCover() {
     const button = $("#publicAddCover");
-    if (button) button.hidden = !owner;
+    if (button) {
+      // Visible uniquement au propriétaire, pendant le mode édition directe.
+      button.hidden = !(owner && editing && !admin.classList.contains("open"));
+    }
   }
 
   function showLogin() {
@@ -1856,6 +1859,7 @@
     await loadSettings();
     prepareEditableElements();
     editControls.style.display = "flex";
+    syncPublicAddCover();
   };
 
 
@@ -2087,6 +2091,7 @@
     document.body.classList.remove("esp-editing");
     editControls.style.display = "none";
     closeMenu();
+    syncPublicAddCover();
   }
 
   finishEditControl.addEventListener("click", finishDirectEditing);
