@@ -14,6 +14,9 @@
   let activeFilter = "all";
   let catalogueItems = [];
   let loadingPromise = null;
+  let viewerItems = [];
+  let viewerIndex = 0;
+  let lightbox = null;
 
   const grid = $("#archiveGrid");
   const filtersContainer = $("#filters");
@@ -229,6 +232,97 @@
     renderFilters();
   }
 
+
+  function ensureLightbox() {
+    if (lightbox) return lightbox;
+    lightbox = document.createElement("div");
+    lightbox.className = "cover-lightbox";
+    lightbox.hidden = true;
+    lightbox.innerHTML = `
+      <button type="button" class="lightbox-close" aria-label="Close preview">×</button>
+      <button type="button" class="lightbox-arrow lightbox-prev" aria-label="Previous cover">‹</button>
+      <figure class="lightbox-figure">
+        <img class="lightbox-image" alt="">
+        <figcaption>
+          <strong class="lightbox-title"></strong>
+          <p class="lightbox-description"></p>
+          <span class="lightbox-counter"></span>
+        </figcaption>
+      </figure>
+      <button type="button" class="lightbox-arrow lightbox-next" aria-label="Next cover">›</button>
+    `;
+    document.body.append(lightbox);
+    lightbox.querySelector(".lightbox-close").addEventListener("click", closeLightbox);
+    lightbox.querySelector(".lightbox-prev").addEventListener("click", () => stepLightbox(-1));
+    lightbox.querySelector(".lightbox-next").addEventListener("click", () => stepLightbox(1));
+    lightbox.addEventListener("click", event => {
+      if (event.target === lightbox) closeLightbox();
+    });
+    let touchStart = null;
+    lightbox.addEventListener("touchstart", event => {
+      touchStart = event.changedTouches?.[0]?.screenX ?? null;
+    }, {passive:true});
+    lightbox.addEventListener("touchend", event => {
+      const end = event.changedTouches?.[0]?.screenX;
+      if (touchStart !== null && typeof end === "number") {
+        const delta = end - touchStart;
+        if (Math.abs(delta) > 45) stepLightbox(delta < 0 ? 1 : -1);
+      }
+      touchStart = null;
+    }, {passive:true});
+    return lightbox;
+  }
+
+  function renderLightboxItem() {
+    if (!lightbox || !viewerItems.length) return;
+    const item = viewerItems[viewerIndex];
+    const image = lightbox.querySelector(".lightbox-image");
+    image.src = item.image_url || item.image || "";
+    image.alt = localized(item.title) || "Football archive";
+    lightbox.querySelector(".lightbox-title").textContent = localized(item.title) || "";
+    lightbox.querySelector(".lightbox-description").textContent = localized(item.description) || "";
+    lightbox.querySelector(".lightbox-counter").textContent = (viewerIndex + 1) + " / " + viewerItems.length;
+    lightbox.querySelector(".lightbox-prev").setAttribute("aria-label", language === "fr" ? "Cover précédente" : "Previous cover");
+    lightbox.querySelector(".lightbox-next").setAttribute("aria-label", language === "fr" ? "Cover suivante" : "Next cover");
+    lightbox.querySelector(".lightbox-close").setAttribute("aria-label", language === "fr" ? "Fermer l'aperçu" : "Close preview");
+  }
+
+  function openLightbox(items, index) {
+    viewerItems = items.slice();
+    viewerIndex = Math.max(0, Math.min(index, viewerItems.length - 1));
+    ensureLightbox();
+    renderLightboxItem();
+    lightbox.hidden = false;
+    document.body.classList.add("lightbox-open");
+    lightbox.querySelector(".lightbox-close").focus();
+  }
+
+  function closeLightbox() {
+    if (!lightbox) return;
+    lightbox.hidden = true;
+    document.body.classList.remove("lightbox-open");
+  }
+
+  function stepLightbox(direction) {
+    if (!lightbox || lightbox.hidden || !viewerItems.length) return;
+    viewerIndex = (viewerIndex + direction + viewerItems.length) % viewerItems.length;
+    renderLightboxItem();
+  }
+
+  document.addEventListener("keydown", event => {
+    if (!lightbox || lightbox.hidden) return;
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      stepLightbox(-1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      stepLightbox(1);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      closeLightbox();
+    }
+  });
+
   function renderCards() {
     if (!grid) return;
 
@@ -255,9 +349,19 @@
       return;
     }
 
-    visible.forEach(item => {
+    visible.forEach((item, itemIndex) => {
       const card = document.createElement("article");
       card.className = "archive-card";
+      card.tabIndex = 0;
+      card.setAttribute("role", "button");
+      card.setAttribute("aria-label", (language === "fr" ? "Agrandir la cover : " : "View cover: ") + (localized(item.title) || "Football archive"));
+      card.addEventListener("click", () => openLightbox(visible, itemIndex));
+      card.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openLightbox(visible, itemIndex);
+        }
+      });
       card.dataset.catalogueId = String(item.id);
       card.dataset.catalogueSource = item.source || "supabase";
 
