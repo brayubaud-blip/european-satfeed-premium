@@ -25,6 +25,8 @@
     } catch (_) {}
     return "fr";
   })();
+  document.documentElement.lang = language;
+  document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
   let activeFilter = "all";
   let catalogueItems = [];
   let loadingPromise = null;
@@ -147,7 +149,15 @@
       noResults:"Aucun résultat pour cette recherche.", refreshCatalogue:"ACTUALISER",
       refreshing:"ACTUALISATION…", refreshDone:"Catalogue actualisé.",
       refreshError:"Impossible d'actualiser le catalogue.", prevCover:"Cover précédente",
-      nextCover:"Cover suivante", closePreview:"Fermer l'aperçu", chooseLanguage:"Choisir la langue"
+      nextCover:"Cover suivante", closePreview:"Fermer l'aperçu", chooseLanguage:"Choisir la langue",
+      languageHeading:"CHOISIR UNE LANGUE",
+      heroTitle:"LE JEU.<br><span>AU-DELÀ</span> DU TERRAIN.",
+      heroScroll:"FAIS DÉFILER POUR DÉCOUVRIR ↓",
+      tickerArchive:"ARCHIVE FOOTBALL", tickerPremium:"CONTENU PREMIUM",
+      tickerDrops:"NOUVEAUX DROPS", tickerCulture:"CULTURE FOOTBALL",
+      premiumTitle:"PASSE EN<br><span>PREMIUM.</span>", faqTitle:"FAQ.",
+      footerBuild:"CRÉÉ POUR LA CULTURE FOOTBALL.",
+      payhipLink:"PAYHIP ↗", supportLink:"SUPPORT ↗"
     },
     en: {
       topline:"FOOTBALL CULTURE. ARCHIVED.", navArchive:"Archive", navLatest:"Latest drops",
@@ -190,7 +200,15 @@
       allSeasons:"All seasons", allCreators:"All creators", noResults:"No results for this search.",
       refreshCatalogue:"REFRESH", refreshing:"REFRESHING…", refreshDone:"Catalogue refreshed.",
       refreshError:"Could not refresh the catalogue.", prevCover:"Previous cover",
-      nextCover:"Next cover", closePreview:"Close preview", chooseLanguage:"Choose language"
+      nextCover:"Next cover", closePreview:"Close preview", chooseLanguage:"Choose language",
+      languageHeading:"CHOOSE YOUR LANGUAGE",
+      heroTitle:"THE GAME.<br><span>BEYOND</span> THE PITCH.",
+      heroScroll:"SCROLL TO DISCOVER ↓",
+      tickerArchive:"FOOTBALL ARCHIVE", tickerPremium:"PREMIUM CONTENT",
+      tickerDrops:"FRESH DROPS", tickerCulture:"FOOTBALL CULTURE",
+      premiumTitle:"GO<br><span>PREMIUM.</span>", faqTitle:"FAQ.",
+      footerBuild:"BUILT FOR FOOTBALL CULTURE.",
+      payhipLink:"PAYHIP ↗", supportLink:"SUPPORT ↗"
     },
     es: {
       topline:"CULTURA DEL FÚTBOL. ARCHIVADA.", navArchive:"Archivo", navLatest:"Últimas novedades",
@@ -234,7 +252,15 @@
       noResults:"No hay resultados para esta búsqueda.", refreshCatalogue:"ACTUALIZAR",
       refreshing:"ACTUALIZANDO…", refreshDone:"Catálogo actualizado.",
       refreshError:"No se pudo actualizar el catálogo.", prevCover:"Cover anterior",
-      nextCover:"Cover siguiente", closePreview:"Cerrar vista previa", chooseLanguage:"Elegir idioma"
+      nextCover:"Cover siguiente", closePreview:"Cerrar vista previa", chooseLanguage:"Elegir idioma",
+      languageHeading:"ELIGE TU IDIOMA",
+      heroTitle:"EL JUEGO.<br><span>MÁS ALLÁ</span> DEL CAMPO.",
+      heroScroll:"DESLIZA PARA DESCUBRIR ↓",
+      tickerArchive:"ARCHIVO DE FÚTBOL", tickerPremium:"CONTENIDO PREMIUM",
+      tickerDrops:"NUEVAS PUBLICACIONES", tickerCulture:"CULTURA DEL FÚTBOL",
+      premiumTitle:"PÁSATE A<br><span>PREMIUM.</span>", faqTitle:"PREGUNTAS FRECUENTES.",
+      footerBuild:"HECHO PARA LA CULTURA DEL FÚTBOL.",
+      payhipLink:"PAYHIP ↗", supportLink:"SOPORTE ↗"
     },
     uk: {
       topline:"ФУТБОЛЬНА КУЛЬТУРА. В АРХІВІ.", navArchive:"Архів", navLatest:"Нові надходження",
@@ -278,7 +304,15 @@
       noResults:"За цим запитом нічого не знайдено.", refreshCatalogue:"ОНОВИТИ",
       refreshing:"ОНОВЛЕННЯ…", refreshDone:"Каталог оновлено.",
       refreshError:"Не вдалося оновити каталог.", prevCover:"Попередня обкладинка",
-      nextCover:"Наступна обкладинка", closePreview:"Закрити перегляд", chooseLanguage:"Обрати мову"
+      nextCover:"Наступна обкладинка", closePreview:"Закрити перегляд", chooseLanguage:"Обрати мову",
+      languageHeading:"ОБЕРИ МОВУ",
+      heroTitle:"ГРА.<br><span>БІЛЬШЕ</span> ЗА ФУТБОЛ.",
+      heroScroll:"ГОРТАЙ, ЩОБ ВІДКРИТИ ↓",
+      tickerArchive:"ФУТБОЛЬНИЙ АРХІВ", tickerPremium:"PREMIUM-КОНТЕНТ",
+      tickerDrops:"НОВІ ДОДАВАННЯ", tickerCulture:"ФУТБОЛЬНА КУЛЬТУРА",
+      premiumTitle:"ОБИРАЙ<br><span>PREMIUM.</span>", faqTitle:"ПИТАННЯ ТА ВІДПОВІДІ.",
+      footerBuild:"СТВОРЕНО ДЛЯ ФУТБОЛЬНОЇ КУЛЬТУРИ.",
+      payhipLink:"PAYHIP ↗", supportLink:"ПІДТРИМКА ↗"
     },
     zh: {
       topline:"足球文化 · 精选典藏", navArchive:"档案", navLatest:"最新更新",
@@ -322,7 +356,15 @@
       noResults:"没有找到符合条件的内容。", refreshCatalogue:"刷新",
       refreshing:"正在刷新…", refreshDone:"档案已更新。",
       refreshError:"暂时无法刷新档案。", prevCover:"上一张封面",
-      nextCover:"下一张封面", closePreview:"关闭预览", chooseLanguage:"选择语言"
+      nextCover:"下一张封面", closePreview:"关闭预览", chooseLanguage:"选择语言",
+      languageHeading:"选择你的语言",
+      heroTitle:"热爱这场比赛。<br><span>不止</span> 于球场。",
+      heroScroll:"向下探索 ↓",
+      tickerArchive:"足球档案", tickerPremium:"高级会员内容",
+      tickerDrops:"最新发布", tickerCulture:"足球文化",
+      premiumTitle:"解锁<br><span>PREMIUM.</span>", faqTitle:"常见问题。",
+      footerBuild:"为足球文化而打造。",
+      payhipLink:"PAYHIP ↗", supportLink:"客服 ↗"
     },
     ar: {
       topline:"ثقافة كرة القدم. محفوظة في الأرشيف.", navArchive:"الأرشيف", navLatest:"أحدث الإضافات",
@@ -366,7 +408,15 @@
       noResults:"لم يتم العثور على نتائج لهذا البحث.", refreshCatalogue:"تحديث",
       refreshing:"جارٍ التحديث…", refreshDone:"تم تحديث الأرشيف.",
       refreshError:"تعذّر تحديث الأرشيف.", prevCover:"الغلاف السابق",
-      nextCover:"الغلاف التالي", closePreview:"إغلاق المعاينة", chooseLanguage:"اختر اللغة"
+      nextCover:"الغلاف التالي", closePreview:"إغلاق المعاينة", chooseLanguage:"اختر اللغة",
+      languageHeading:"اختر لغتك",
+      heroTitle:"اللعبة.<br><span>أبعد</span> من الملعب.",
+      heroScroll:"مرّر لاكتشاف المزيد ↓",
+      tickerArchive:"أرشيف كرة القدم", tickerPremium:"محتوى بريميوم",
+      tickerDrops:"إضافات جديدة", tickerCulture:"ثقافة كرة القدم",
+      premiumTitle:"انتقل إلى<br><span>بريميوم.</span>", faqTitle:"الأسئلة الشائعة.",
+      footerBuild:"صُمّم لعشاق ثقافة كرة القدم.",
+      payhipLink:"PAYHIP ↗", supportLink:"الدعم ↗"
     }
   };
 
@@ -422,6 +472,10 @@
     if (!menu) return;
 
     menu.replaceChildren();
+    const heading = document.createElement("div");
+    heading.className = "language-menu-heading";
+    heading.textContent = t("languageHeading");
+    menu.append(heading);
     LANGUAGE_OPTIONS.forEach(option => {
       const button = document.createElement("button");
       button.type = "button";
