@@ -1,262 +1,258 @@
-/* EUROPEAN SATFEED PREMIUM — DIRECT VISUAL EDITOR */
+/* EUROPEAN SATFEED PREMIUM — OWNER CMS */
 (() => {
   "use strict";
 
-  const URL = "https://afipejmgjkigcbohsxkt.supabase.co";
-  const KEY = "sb_publishable_MWi4yR-uw_TfrXJJrKdS1Q_783VTF6Z";
-  const OWNER = "1f2e7add-fe3d-4792-8c8c-9708e584b9d6";
+  const SUPABASE_URL = "https://afipejmgjkigcbohsxkt.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_MWi4yR-uw_TfrXJJrKdS1Q_783VTF6Z";
+  const OWNER_UID = "1f2e7add-fe3d-4792-8c8c-9708e584b9d6";
   const BUCKET = "covers";
 
   if (!window.supabase?.createClient) {
-    console.error("Supabase JS introuvable.");
+    console.error("Supabase JS n'est pas chargé.");
     return;
   }
 
-  const db = window.supabase.createClient(URL, KEY);
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const $ = (selector, root = document) => root.querySelector(selector);
-  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+
+  const categories = [
+    ["comps", "COMPS"],
+    ["folders", "FOLDERS"],
+    ["old", "OLD"],
+    ["edits", "EDITS"],
+    ["collections", "COLLECTIONS"],
+    ["unclassified", "NON CLASSÉ"]
+  ];
 
   let owner = false;
   let editing = false;
+  let allItems = [];
   let settingsRow = null;
-  let settings = {};
-  let selectedElement = null;
+  let settings = { texts: {}, styles: {}, links: {} };
+  let currentTab = "catalogue";
+  let editingItemId = null;
 
-  const categories = [
-    "comps",
-    "folders",
-    "old",
-    "edits",
-    "collections",
-    "clubs",
-    "national teams",
-    "unclassified"
-  ];
-
-  const categoryLabels = {
-    comps: "COMPS",
-    folders: "FOLDERS",
-    old: "OLD",
-    edits: "EDITS",
-    collections: "COLLECTIONS",
-    clubs: "CLUBS",
-    "national teams": "NATIONAL TEAMS",
-    unclassified: "NON CLASSÉ"
-  };
-
-  const style = document.createElement("style");
-
-  style.textContent = `
-    #esp-login,
-    #esp-context-menu,
-    #esp-owner-tools {
+  const css = document.createElement("style");
+  css.textContent = `
+    #esp-login,#esp-admin,#esp-menu {
       font-family:"DM Sans",Arial,sans-serif;
-    }
-
-    #esp-owner-tools {
-      display:none;
-      position:fixed;
-      z-index:100000;
-      right:18px;
-      bottom:18px;
-      background:#0d121c;
-      color:#f4f5f7;
-      border:1px solid #eaff00;
-      padding:10px 13px;
-      box-shadow:0 8px 35px #000b;
-      font-size:12px;
-    }
-
-    #esp-owner-tools button,
-    #esp-context-menu button,
-    #esp-login button {
-      background:#172131;
-      color:#fff;
-      border:1px solid #465267;
-      padding:10px 12px;
-      cursor:pointer;
-      font-weight:700;
-      font-size:11px;
-      margin:3px;
-    }
-
-    #esp-owner-tools button.primary,
-    #esp-context-menu button.primary,
-    #esp-login button.primary {
-      background:#eaff00;
-      color:#080b12;
-      border-color:#eaff00;
-    }
-
-    #esp-context-menu {
-      display:none;
-      position:fixed;
-      z-index:100001;
-      width:min(330px,calc(100vw - 24px));
-      max-height:80vh;
-      overflow:auto;
-      background:#0d121c;
-      color:#f4f5f7;
-      border:1px solid #eaff00;
-      padding:13px;
-      box-shadow:0 10px 40px #000d;
-      font-size:12px;
-    }
-
-    #esp-context-menu h3 {
-      color:#eaff00;
-      font-size:15px;
-      margin:3px 0 10px;
-    }
-
-    #esp-context-menu button {
-      display:block;
-      width:100%;
-      text-align:left;
-      margin:4px 0;
-    }
-
-    #esp-context-menu button.danger {
-      color:#ff929b;
-    }
-
-    #esp-context-menu label {
-      display:block;
-      color:#aeb9c9;
-      margin:9px 0 4px;
-    }
-
-    #esp-context-menu input,
-    #esp-context-menu textarea,
-    #esp-context-menu select,
-    #esp-login input {
-      width:100%;
       box-sizing:border-box;
-      padding:10px;
-      margin:4px 0 9px;
-      color:#fff;
-      background:#080d15;
-      border:1px solid #465267;
     }
-
-    #esp-context-menu textarea {
-      min-height:75px;
-      resize:vertical;
-    }
-
-    #esp-context-menu .hint {
-      color:#aeb9c9;
-      font-size:11px;
-      line-height:1.5;
-    }
-
+    #esp-login *,#esp-admin *,#esp-menu * {box-sizing:border-box}
     #esp-login {
-      display:none;
-      position:fixed;
-      z-index:100002;
-      inset:0;
-      background:#05070cf2;
-      align-items:center;
-      justify-content:center;
+      display:none;position:fixed;inset:0;z-index:1000000;
+      background:#05070cf2;align-items:center;justify-content:center;
+      padding:18px;color:#fff;
+    }
+    #esp-login.open {display:flex}
+    #esp-login .esp-window {
+      width:min(420px,100%);background:#101927;
+      border:1px solid #eaff00;padding:25px;
+    }
+    #esp-login h2 {color:#eaff00}
+    #esp-login input,#esp-admin input,#esp-admin textarea,
+    #esp-admin select,#esp-menu input,#esp-menu textarea,
+    #esp-menu select {
+      width:100%;padding:12px;margin:6px 0 12px;
+      color:#fff;background:#080d15;border:1px solid #39465a;
+      border-radius:4px;font:inherit;
+    }
+    #esp-login label,#esp-admin label,#esp-menu label {
+      display:block;color:#b5c0d0;font-size:12px;
+    }
+    #esp-admin {
+      display:none;position:fixed;inset:0;z-index:999990;
+      background:#080b12;color:#f4f5f7;overflow:auto;
       padding:18px;
     }
-
-    #esp-login.open {
-      display:flex;
+    #esp-admin.open {display:block}
+    .esp-admin-inner {max-width:1200px;margin:auto}
+    .esp-admin-head {
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;flex-wrap:wrap;border-bottom:1px solid #30394a;
+      padding:12px 0 18px;margin-bottom:18px;
     }
-
-    #esp-login .window {
-      width:min(390px,100%);
-      padding:24px;
-      background:#111a27;
-      border:1px solid #eaff00;
-      color:#fff;
+    .esp-admin-head h2 {margin:0;color:#eaff00;font-size:22px}
+    .esp-admin-tabs {display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}
+    .esp-admin-tabs button,.esp-btn {
+      border:1px solid #465267;background:#172131;color:#fff;
+      padding:11px 14px;border-radius:4px;cursor:pointer;
+      font-weight:700;font-size:12px;
     }
-
-    #esp-login h2 {
-      color:#eaff00;
+    .esp-admin-tabs button.active,.esp-btn.primary {
+      background:#eaff00;color:#080b12;border-color:#eaff00;
     }
-
-    #esp-login label {
-      display:block;
-      margin-top:12px;
+    .esp-btn.danger {border-color:#a33a48;color:#ff9ba4}
+    .esp-panel {
+      background:#0d121c;border:1px solid #293447;
+      padding:16px;margin:12px 0;border-radius:5px;
     }
-
+    .esp-row {
+      display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+    }
+    .esp-row > * {flex:1}
+    .esp-list-item {
+      display:grid;grid-template-columns:85px 1fr auto;
+      gap:13px;align-items:center;padding:12px 0;
+      border-bottom:1px solid #293447;
+    }
+    .esp-list-item img {
+      width:85px;height:65px;object-fit:cover;background:#172131;
+    }
+    .esp-list-item strong {display:block;font-size:13px}
+    .esp-muted {font-size:11px;color:#9ba7b8;margin-top:5px}
+    .esp-actions {display:flex;gap:5px;flex-wrap:wrap}
+    .esp-actions button {padding:8px;font-size:10px}
+    #esp-menu {
+      display:none;position:fixed;z-index:1000001;
+      left:50%;top:50%;transform:translate(-50%,-50%);
+      width:min(460px,calc(100vw - 24px));
+      max-height:85vh;overflow:auto;background:#101927;
+      border:1px solid #eaff00;padding:17px;color:#fff;
+      box-shadow:0 15px 55px #000d;
+    }
+    #esp-menu.open {display:block}
+    #esp-menu h3 {color:#eaff00;margin:0 0 12px}
+    .esp-toolbar {
+      position:fixed;z-index:999980;right:14px;bottom:14px;
+      display:none;gap:8px;align-items:center;
+      background:#101927;border:1px solid #eaff00;
+      padding:9px;box-shadow:0 5px 25px #000a;
+    }
+    .esp-toolbar button {
+      background:#eaff00;color:#080b12;border:0;
+      padding:10px;font-weight:800;cursor:pointer;
+    }
+    body.esp-editing [data-esp-editable="true"] {
+      outline:1px dashed #eaff00;outline-offset:3px;cursor:pointer;
+    }
     body.esp-editing .archive-card {
-      outline:1px dashed #eaff00;
-      outline-offset:3px;
-      cursor:pointer;
+      outline:1px dashed #eaff00;outline-offset:3px;
     }
-
-    body.esp-editing [data-esp-key]:hover {
-      outline:1px dashed #eaff00;
-      outline-offset:3px;
-      cursor:pointer;
-    }
-
-    body.esp-editing .archive-card:hover {
-      outline:2px solid #eaff00;
-    }
-
-    @media(max-width:600px) {
-      #esp-owner-tools {
-        right:8px;
-        bottom:8px;
-        max-width:calc(100vw - 16px);
-      }
-
-      #esp-owner-tools button {
-        padding:8px;
-        font-size:10px;
-      }
-
-      #esp-context-menu {
-        max-height:75vh;
-      }
+    @media(max-width:650px) {
+      #esp-admin {padding:10px}
+      .esp-list-item {grid-template-columns:65px 1fr}
+      .esp-list-item img {width:65px;height:58px}
+      .esp-list-item .esp-actions {grid-column:1/-1}
+      .esp-toolbar {left:8px;right:8px;bottom:8px;justify-content:center}
+      .esp-toolbar button {flex:1;padding:11px 5px;font-size:10px}
+      .esp-admin-head h2 {font-size:18px}
     }
   `;
-
-  document.head.append(style);
+  document.head.append(css);
 
   const login = document.createElement("div");
   login.id = "esp-login";
-
   login.innerHTML = `
-    <div class="window">
+    <div class="esp-window">
       <h2>ES+ OWNER ACCESS</h2>
-      <p>Connexion réservée au propriétaire.</p>
+      <p>Connexion réservée au propriétaire du site.</p>
       <form id="esp-login-form">
         <label>Adresse e-mail</label>
         <input id="esp-email" type="email" required autocomplete="username">
         <label>Mot de passe</label>
         <input id="esp-password" type="password" required autocomplete="current-password">
-        <button class="primary" type="submit">SE CONNECTER</button>
-        <button type="button" id="esp-login-close">ANNULER</button>
+        <button class="esp-btn primary" type="submit">SE CONNECTER</button>
+        <button class="esp-btn" type="button" id="esp-login-close">ANNULER</button>
         <p id="esp-login-message"></p>
       </form>
     </div>
   `;
-
   document.body.append(login);
 
-  const toolbar = document.createElement("div");
-  toolbar.id = "esp-owner-tools";
+  const admin = document.createElement("div");
+  admin.id = "esp-admin";
+  admin.innerHTML = `
+    <div class="esp-admin-inner">
+      <header class="esp-admin-head">
+        <div>
+          <h2>EUROPEAN SATFEED — ADMIN</h2>
+          <div class="esp-muted">Gestion complète du site</div>
+        </div>
+        <div class="esp-row" style="flex:0 1 auto">
+          <button class="esp-btn" id="esp-view-site">VOIR LE SITE</button>
+          <button class="esp-btn danger" id="esp-logout">DÉCONNEXION</button>
+        </div>
+      </header>
 
-  toolbar.innerHTML = `
-    <strong style="color:#eaff00;display:block;margin-bottom:7px">
-      ES+ OWNER
-    </strong>
-    <button class="primary" id="esp-toggle-edit">ACTIVER L'ÉDITION</button>
-    <button id="esp-add-cover">+ COVER</button>
-    <button id="esp-hidden-covers">COVERS MASQUÉES</button>
-    <button id="esp-save-page">ENREGISTRER</button>
-    <button id="esp-logout">DÉCONNEXION</button>
+      <nav class="esp-admin-tabs">
+        <button data-tab="catalogue" class="active">CATALOGUE</button>
+        <button data-tab="hidden">COVERS MASQUÉES</button>
+        <button data-tab="site">ÉDITER LE SITE</button>
+        <button data-tab="appearance">APPARENCE</button>
+      </nav>
+
+      <section id="esp-tab-catalogue">
+        <div class="esp-panel">
+          <div class="esp-row">
+            <div>
+              <h3>TOUTES LES COVERS</h3>
+              <p class="esp-muted">Gère tes covers depuis une seule liste.</p>
+            </div>
+            <button class="esp-btn primary" id="esp-add-cover">+ AJOUTER UNE COVER</button>
+          </div>
+          <input id="esp-search" placeholder="Rechercher une cover...">
+          <select id="esp-filter">
+            <option value="all">Toutes les catégories</option>
+            ${categories.map(([id,label]) =>
+              `<option value="${id}">${label}</option>`
+            ).join("")}
+            <option value="clubs">Anciennes données CLUBS</option>
+            <option value="national teams">Anciennes données NATIONAL TEAMS</option>
+          </select>
+          <div id="esp-catalogue-list">Chargement...</div>
+        </div>
+      </section>
+
+      <section id="esp-tab-hidden" hidden>
+        <div class="esp-panel">
+          <h3>COVERS MASQUÉES</h3>
+          <div id="esp-hidden-list"></div>
+        </div>
+      </section>
+
+      <section id="esp-tab-site" hidden>
+        <div class="esp-panel">
+          <h3>ÉDITION DIRECTE DU SITE</h3>
+          <p class="esp-muted">
+            Active le mode édition, puis touche ou clique sur un texte,
+            un titre, un bouton ou une section pour le modifier.
+          </p>
+          <button class="esp-btn primary" id="esp-toggle-edit">
+            ACTIVER L'ÉDITION DIRECTE
+          </button>
+          <button class="esp-btn" id="esp-save-settings">
+            ENREGISTRER LES MODIFICATIONS
+          </button>
+        </div>
+      </section>
+
+      <section id="esp-tab-appearance" hidden>
+        <div class="esp-panel">
+          <h3>APPARENCE GÉNÉRALE</h3>
+          <label>Couleur principale</label>
+          <input type="color" id="esp-main-color" value="#eaff00">
+          <label>Couleur de fond</label>
+          <input type="color" id="esp-bg-color" value="#080b12">
+          <button class="esp-btn primary" id="esp-save-appearance">
+            ENREGISTRER L'APPARENCE
+          </button>
+        </div>
+      </section>
+    </div>
   `;
+  document.body.append(admin);
 
+  const toolbar = document.createElement("div");
+  toolbar.className = "esp-toolbar";
+  toolbar.innerHTML = `
+    <button id="esp-open-admin">OUVRIR ADMIN</button>
+    <button id="esp-exit-edit">QUITTER ÉDITION</button>
+  `;
   document.body.append(toolbar);
 
   const menu = document.createElement("div");
-  menu.id = "esp-context-menu";
+  menu.id = "esp-menu";
   document.body.append(menu);
 
   const picker = document.createElement("input");
@@ -265,162 +261,54 @@
   picker.hidden = true;
   document.body.append(picker);
 
-  function notify(message) {
-    window.alert(message);
-  }
-
-  function closeMenu() {
-    menu.style.display = "none";
-    selectedElement = null;
-  }
-
-  function showMenu(x, y, html) {
-    menu.innerHTML = html;
-    menu.style.display = "block";
-
-    const width = menu.offsetWidth;
-    const height = menu.offsetHeight;
-
-    menu.style.left =
-      Math.max(8, Math.min(x, window.innerWidth - width - 8)) + "px";
-
-    menu.style.top =
-      Math.max(8, Math.min(y, window.innerHeight - height - 8)) + "px";
+  function message(text) {
+    window.alert(text);
   }
 
   function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
+      "&": "&amp;", "<": "&lt;", ">": "&gt;",
+      '"': "&quot;", "'": "&#39;"
     })[char]);
   }
 
-  function localizedValue(value, lang = "fr") {
+  function getText(value, lang = "fr") {
     if (typeof value === "string") return value;
     return value?.[lang] || value?.fr || value?.en || "";
   }
 
-  function categoryOptions(current = "edits") {
-    return categories.map(category => `
-      <option value="${escapeHTML(category)}"
-        ${category === current ? "selected" : ""}>
-        ${escapeHTML(categoryLabels[category])}
-      </option>
-    `).join("");
+  function isOwnerSession(session) {
+    return !!session?.user && session.user.id === OWNER_UID;
   }
 
-  function makeElementKey(element) {
-    if (element.id) return "id:" + element.id;
+  function showLogin() {
+    login.classList.add("open");
+  }
 
-    const parts = [];
-    let node = element;
+  function closeMenu() {
+    menu.classList.remove("open");
+    menu.innerHTML = "";
+  }
 
-    while (node && node !== document.body && parts.length < 8) {
-      let part = node.tagName.toLowerCase();
+  function showMenu(html) {
+    menu.innerHTML = html;
+    menu.classList.add("open");
+  }
 
-      const classes = [...node.classList]
-        .filter(name => !name.startsWith("esp-"))
-        .slice(0, 2);
+  async function checkOwner() {
+    const { data, error } = await db.auth.getSession();
+    if (error) throw error;
 
-      if (classes.length) {
-        part += "." + classes.join(".");
-      }
+    owner = isOwnerSession(data.session);
 
-      const parent = node.parentElement;
-
-      if (parent) {
-        const same = [...parent.children].filter(child =>
-          child.tagName === node.tagName
-        );
-
-        if (same.length > 1) {
-          part += `:nth-of-type(${same.indexOf(node) + 1})`;
-        }
-      }
-
-      parts.unshift(part);
-      node = parent;
+    if (!owner) {
+      admin.classList.remove("open");
+      toolbar.style.display = "none";
+      editing = false;
+      document.body.classList.remove("esp-editing");
     }
 
-    return parts.join(">");
-  }
-
-  function prepareElements() {
-    $$("body *").forEach(element => {
-      if (element.closest(
-        "#esp-login,#esp-owner-tools,#esp-context-menu"
-      )) return;
-
-      if (element.classList.contains("archive-card")) return;
-
-      if (!element.dataset.espKey) {
-        element.dataset.espKey = makeElementKey(element);
-      }
-    });
-  }
-
-  function findElement(key) {
-    return $$("[data-esp-key]").find(element =>
-      element.dataset.espKey === key
-    );
-  }
-
-  function replaceVisibleText(element, value) {
-    const walker = document.createTreeWalker(
-      element,
-      NodeFilter.SHOW_TEXT,
-      {
-        acceptNode(node) {
-          return node.nodeValue.trim()
-            ? NodeFilter.FILTER_ACCEPT
-            : NodeFilter.FILTER_REJECT;
-        }
-      }
-    );
-
-    const firstTextNode = walker.nextNode();
-
-    if (firstTextNode) {
-      firstTextNode.nodeValue = value;
-    } else {
-      element.append(document.createTextNode(value));
-    }
-  }
-
-  function applySettings() {
-    prepareElements();
-
-    Object.entries(settings.texts || {}).forEach(([key, value]) => {
-      const element = findElement(key);
-      if (element) replaceVisibleText(element, value);
-    });
-
-    Object.entries(settings.styles || {}).forEach(([key, saved]) => {
-      const element = findElement(key);
-      if (!element || !saved) return;
-
-      if (saved.color) element.style.color = saved.color;
-
-      if (saved.backgroundColor) {
-        element.style.backgroundColor = saved.backgroundColor;
-      }
-
-      if (saved.backgroundImage) {
-        element.style.backgroundImage = saved.backgroundImage;
-        element.style.backgroundSize = "cover";
-        element.style.backgroundPosition = "center";
-      }
-    });
-
-    Object.entries(settings.links || {}).forEach(([key, value]) => {
-      const element = findElement(key);
-      if (element && element.tagName === "A") {
-        element.href = value;
-      }
-    });
+    return owner;
   }
 
   async function loadSettings() {
@@ -435,9 +323,10 @@
       row.content && typeof row.content === "object"
     ) || null;
 
-    const content = settingsRow?.content || {};
+    settings = settingsRow?.content?.visual || {
+      texts: {}, styles: {}, links: {}
+    };
 
-    settings = content.visual || {};
     settings.texts ||= {};
     settings.styles ||= {};
     settings.links ||= {};
@@ -446,6 +335,8 @@
   }
 
   async function saveSettings(silent = false) {
+    if (!owner) throw new Error("Accès propriétaire requis.");
+
     const content = {
       ...(settingsRow?.content || {}),
       visual: settings
@@ -454,730 +345,681 @@
     let result;
 
     if (settingsRow?.id) {
-      result = await db
-        .from("site_settings")
+      result = await db.from("site_settings")
         .update({ content })
         .eq("id", settingsRow.id);
     } else {
-      result = await db
-        .from("site_settings")
+      result = await db.from("site_settings")
         .insert({ id: "public", content })
         .select()
         .single();
 
-      if (!result.error) {
-        settingsRow = result.data;
-      }
+      if (!result.error) settingsRow = result.data;
     }
 
     if (result.error) throw result.error;
-
     if (settingsRow) settingsRow.content = content;
 
-    if (!silent) {
-      notify("Modifications enregistrées.");
+    if (!silent) message("Modifications enregistrées.");
+  }
+
+  function elementKey(element) {
+    if (element.id) return `id:${element.id}`;
+
+    const parts = [];
+    let node = element;
+
+    while (node && node !== document.body && parts.length < 8) {
+      let part = node.tagName.toLowerCase();
+      const classes = [...node.classList]
+        .filter(name => !name.startsWith("esp-"))
+        .slice(0, 2);
+
+      if (classes.length) part += "." + classes.join(".");
+
+      const parent = node.parentElement;
+      if (parent) {
+        const siblings = [...parent.children]
+          .filter(child => child.tagName === node.tagName);
+
+        if (siblings.length > 1) {
+          part += `:nth-of-type(${siblings.indexOf(node) + 1})`;
+        }
+      }
+
+      parts.unshift(part);
+      node = parent;
+    }
+
+    return parts.join(">");
+  }
+
+  function prepareEditableElements() {
+    document.querySelectorAll(
+      "h1,h2,h3,p,a,button,summary,.topline,.hero,.ticker," +
+      ".archive-section,.latest-section,.included-section," +
+      ".premium-section,.faq-section,.footer"
+    ).forEach(element => {
+      if (element.closest("#esp-admin,#esp-login,#esp-menu,.esp-toolbar")) return;
+      element.dataset.espEditable = "true";
+      element.dataset.espKey ||= elementKey(element);
+    });
+  }
+
+  function findElement(key) {
+    return [...document.querySelectorAll("[data-esp-key]")]
+      .find(element => element.dataset.espKey === key);
+  }
+
+  function replaceTextSafely(element, value) {
+    const textNodes = [];
+    const walker = document.createTreeWalker(
+      element,
+      NodeFilter.SHOW_TEXT
+    );
+
+    while (walker.nextNode()) {
+      if (walker.currentNode.nodeValue.trim()) {
+        textNodes.push(walker.currentNode);
+      }
+    }
+
+    if (textNodes.length) {
+      textNodes[0].nodeValue = value;
+      textNodes.slice(1).forEach(node => node.remove());
+    } else {
+      element.append(document.createTextNode(value));
     }
   }
 
-  async function checkOwner() {
-    const { data, error } = await db.auth.getSession();
+  function applySettings() {
+    prepareEditableElements();
+
+    Object.entries(settings.texts || {}).forEach(([key, value]) => {
+      const element = findElement(key);
+      if (element) replaceTextSafely(element, value);
+    });
+
+    Object.entries(settings.styles || {}).forEach(([key, saved]) => {
+      const element = findElement(key);
+      if (!element || !saved) return;
+
+      if (saved.color) element.style.color = saved.color;
+      if (saved.backgroundColor) element.style.backgroundColor = saved.backgroundColor;
+
+      if (saved.backgroundImage) {
+        element.style.backgroundImage = saved.backgroundImage;
+        element.style.backgroundSize = "cover";
+        element.style.backgroundPosition = "center";
+      }
+    });
+
+    Object.entries(settings.links || {}).forEach(([key, url]) => {
+      const element = findElement(key);
+      if (element?.tagName === "A") element.href = url;
+    });
+  }
+
+  async function loadCatalogueAdmin() {
+    const { data, error } = await db
+      .from("catalogue")
+      .select("id,title,description,category,image_url,published,position")
+      .order("position", { ascending: true });
+
     if (error) throw error;
 
-    owner = !!data.session?.user &&
-      data.session.user.id === OWNER;
-
-    toolbar.style.display = owner ? "block" : "none";
-
-    if (!owner) {
-      editing = false;
-      document.body.classList.remove("esp-editing");
-      closeMenu();
-    }
-
-    return owner;
+    allItems = data || [];
+    renderAdminCatalogue();
+    renderHidden();
   }
 
-  async function uploadImage(file, folder = "catalogue") {
-    if (!file || !file.type.startsWith("image/")) {
-      throw new Error("Sélectionne un fichier image valide.");
+  function renderAdminCatalogue() {
+    const container = $("#esp-catalogue-list");
+    if (!container) return;
+
+    const search = ($("#esp-search")?.value || "").toLowerCase();
+    const filter = $("#esp-filter")?.value || "all";
+
+    const filtered = allItems.filter(item => {
+      const title = getText(item.title).toLowerCase();
+      const category = String(item.category || "").toLowerCase();
+
+      return (filter === "all" || category === filter) &&
+        title.includes(search);
+    });
+
+    container.replaceChildren();
+
+    if (!filtered.length) {
+      container.textContent = "Aucune cover trouvée.";
+      return;
+    }
+
+    filtered.forEach(item => {
+      const row = document.createElement("div");
+      row.className = "esp-list-item";
+
+      const image = document.createElement("img");
+      image.src = item.image_url || "";
+      image.alt = getText(item.title);
+
+      const details = document.createElement("div");
+      const title = document.createElement("strong");
+      title.textContent = getText(item.title) || "Sans titre";
+
+      const meta = document.createElement("div");
+      meta.className = "esp-muted";
+      meta.textContent =
+        `${item.category || "Non classé"} · ${item.published ? "Publiée" : "Masquée"}`;
+
+      details.append(title, meta);
+
+      const actions = document.createElement("div");
+      actions.className = "esp-actions";
+
+      const edit = makeButton("MODIFIER", () => openCoverEditor(item));
+      const hide = makeButton(
+        item.published ? "MASQUER" : "PUBLIER",
+        () => togglePublished(item)
+      );
+      const remove = makeButton("SUPPRIMER", () => deleteCover(item), "danger");
+
+      actions.append(edit, hide, remove);
+      row.append(image, details, actions);
+      container.append(row);
+    });
+  }
+
+  function makeButton(label, callback, type = "") {
+    const button = document.createElement("button");
+    button.className = `esp-btn ${type}`;
+    button.type = "button";
+    button.textContent = label;
+    button.addEventListener("click", callback);
+    return button;
+  }
+
+  function renderHidden() {
+    const container = $("#esp-hidden-list");
+    if (!container) return;
+
+    container.replaceChildren();
+
+    const hidden = allItems.filter(item => item.published === false);
+
+    if (!hidden.length) {
+      container.textContent = "Aucune cover masquée.";
+      return;
+    }
+
+    hidden.forEach(item => {
+      const row = document.createElement("div");
+      row.className = "esp-list-item";
+
+      const image = document.createElement("img");
+      image.src = item.image_url || "";
+
+      const title = document.createElement("strong");
+      title.textContent = getText(item.title) || "Sans titre";
+
+      const publish = makeButton("REPUBLIER", () => togglePublished(item));
+      row.append(image, title, publish);
+      container.append(row);
+    });
+  }
+
+  function categorySelect(selected) {
+    return categories.map(([id, label]) =>
+      `<option value="${id}" ${id === selected ? "selected" : ""}>${label}</option>`
+    ).join("");
+  }
+
+  function openCoverEditor(item = null) {
+    editingItemId = item?.id ?? null;
+
+    const titleFr = getText(item?.title, "fr");
+    const titleEn = getText(item?.title, "en");
+    const descFr = getText(item?.description, "fr");
+    const descEn = getText(item?.description, "en");
+
+    showMenu(`
+      <h3>${item ? "MODIFIER LA COVER" : "AJOUTER UNE COVER"}</h3>
+
+      <label>Image</label>
+      <input type="file" id="esp-cover-file" accept="image/*">
+
+      <label>Titre français</label>
+      <input id="esp-cover-title-fr" value="${escapeHTML(titleFr)}">
+
+      <label>Titre anglais</label>
+      <input id="esp-cover-title-en" value="${escapeHTML(titleEn)}">
+
+      <label>Description française</label>
+      <textarea id="esp-cover-desc-fr">${escapeHTML(descFr)}</textarea>
+
+      <label>Description anglaise</label>
+      <textarea id="esp-cover-desc-en">${escapeHTML(descEn)}</textarea>
+
+      <label>Catégorie</label>
+      <select id="esp-cover-category">
+        ${categorySelect(item?.category || "edits")}
+      </select>
+
+      <label>Position dans le catalogue</label>
+      <input type="number" min="0" id="esp-cover-position"
+        value="${Number(item?.position ?? allItems.length)}">
+
+      <button class="esp-btn primary" id="esp-cover-save">
+        ENREGISTRER
+      </button>
+      <button class="esp-btn" id="esp-cover-cancel">ANNULER</button>
+    `);
+
+    $("#esp-cover-cancel").onclick = closeMenu;
+
+    $("#esp-cover-save").onclick = async () => {
+      const button = $("#esp-cover-save");
+      const file = $("#esp-cover-file").files?.[0];
+
+      const titleFrValue = $("#esp-cover-title-fr").value.trim();
+      const titleEnValue = $("#esp-cover-title-en").value.trim();
+      const category = $("#esp-cover-category").value;
+
+      if (!titleFrValue) {
+        message("Ajoute au moins un titre français.");
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "ENREGISTREMENT…";
+
+      try {
+        let imageUrl = item?.image_url || "";
+
+        if (file) imageUrl = await uploadImage(file);
+
+        if (!imageUrl) throw new Error("Sélectionne une image.");
+
+        const changes = {
+          title: {
+            fr: titleFrValue,
+            en: titleEnValue || titleFrValue
+          },
+          description: {
+            fr: $("#esp-cover-desc-fr").value.trim(),
+            en: $("#esp-cover-desc-en").value.trim()
+          },
+          category,
+          image_url: imageUrl,
+          position: Math.max(0, Number($("#esp-cover-position").value || 0)),
+          published: item?.published ?? true
+        };
+
+        let result;
+
+        if (item) {
+          result = await db.from("catalogue")
+            .update(changes)
+            .eq("id", item.id);
+        } else {
+          result = await db.from("catalogue").insert(changes);
+        }
+
+        if (result.error) throw result.error;
+
+        closeMenu();
+        await refreshAdminAndPublic();
+        message(item ? "Cover modifiée." : "Cover ajoutée.");
+      } catch (error) {
+        button.disabled = false;
+        button.textContent = "RÉESSAYER";
+        message("Erreur : " + error.message);
+      }
+    };
+  }
+
+  async function uploadImage(file) {
+    if (!file.type.startsWith("image/")) {
+      throw new Error("Le fichier doit être une image.");
     }
 
     if (file.size > 12 * 1024 * 1024) {
       throw new Error("Image trop lourde : maximum 12 Mo.");
     }
 
-    const extension = (
-      file.name.split(".").pop() || "jpg"
-    ).toLowerCase().replace(/[^a-z0-9]/g, "");
+    const extension = (file.name.split(".").pop() || "jpg")
+      .toLowerCase().replace(/[^a-z0-9]/g, "");
 
-    const path =
-      `${folder}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+    const path = `catalogue/${Date.now()}-${crypto.randomUUID()}.${extension}`;
 
-    const { error } = await db.storage
-      .from(BUCKET)
-      .upload(path, file, {
-        cacheControl: "3600",
-        upsert: false,
-        contentType: file.type
-      });
+    const { error } = await db.storage.from(BUCKET).upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type
+    });
 
     if (error) throw error;
 
-    return db.storage
-      .from(BUCKET)
-      .getPublicUrl(path).data.publicUrl;
+    return db.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
   }
 
-  async function updateCatalogue(item, changes) {
-    const { error } = await db
-      .from("catalogue")
-      .update(changes)
-      .eq("id", item.id);
+  async function togglePublished(item) {
+    try {
+      const { error } = await db.from("catalogue")
+        .update({ published: !item.published })
+        .eq("id", item.id);
 
-    if (error) throw error;
+      if (error) throw error;
 
+      await refreshAdminAndPublic();
+    } catch (error) {
+      message("Impossible de modifier la publication : " + error.message);
+    }
+  }
+
+  async function deleteCover(item) {
+    const title = getText(item.title) || "cette cover";
+
+    if (!confirm(`Supprimer la fiche « ${title} » ?\n\nLe fichier image ne sera pas supprimé du stockage.`)) {
+      return;
+    }
+
+    try {
+      const { error } = await db.from("catalogue")
+        .delete()
+        .eq("id", item.id);
+
+      if (error) throw error;
+
+      await refreshAdminAndPublic();
+      message("Fiche supprimée. Le fichier image est conservé.");
+    } catch (error) {
+      message("Suppression impossible : " + error.message);
+    }
+  }
+
+  async function refreshAdminAndPublic() {
+    await loadCatalogueAdmin();
     await window.ESP_CATALOGUE?.refresh?.();
-    closeMenu();
   }
 
-  function openCardMenu(card, x, y) {
-    const id = card.dataset.catalogueId;
-
-    const item = (window.ESP_CATALOGUE?.getItems?.() || [])
-      .find(entry => String(entry.id) === String(id));
-
-    if (!item) {
-      notify("Cette cover n'a pas été retrouvée.");
-      return;
-    }
-
-    if (item.source === "github") {
-      showMenu(x, y, `
-        <h3>ANCIENNE COVER GITHUB</h3>
-        <p class="hint">
-          Cette cover est encore dans ton ancien dossier GitHub.
-          Elle ne sera pas supprimée de GitHub.
-        </p>
-        <label>Titre français</label>
-        <input id="esp-legacy-title"
-          value="${escapeHTML(localizedValue(item.title))}">
-        <label>Catégorie de destination</label>
-        <select id="esp-legacy-category">
-          ${categoryOptions("edits")}
-        </select>
-        <button class="primary" id="esp-import-legacy">
-          IMPORTER DANS SUPABASE
-        </button>
-        <button id="esp-close-menu">FERMER</button>
-      `);
-
-      $("#esp-import-legacy", menu).onclick = () =>
-        importLegacy(item);
-
-      $("#esp-close-menu", menu).onclick = closeMenu;
-      return;
-    }
-
-    showMenu(x, y, `
-      <h3>MODIFIER LA COVER</h3>
-
-      <label>Titre français</label>
-      <input id="esp-title-fr"
-        value="${escapeHTML(localizedValue(item.title, "fr"))}">
-
-      <label>Titre anglais</label>
-      <input id="esp-title-en"
-        value="${escapeHTML(localizedValue(item.title, "en"))}">
-
-      <label>Description française</label>
-      <textarea id="esp-desc-fr">${escapeHTML(localizedValue(item.description, "fr"))}</textarea>
-
-      <label>Description anglaise</label>
-      <textarea id="esp-desc-en">${escapeHTML(localizedValue(item.description, "en"))}</textarea>
-
-      <label>Catégorie</label>
-      <select id="esp-category">
-        ${categoryOptions(item.category)}
-      </select>
-
-      <label>Position dans le catalogue</label>
-      <input id="esp-position" type="number" min="0" step="1"
-        value="${Number(item.position || 0)}">
-
-      <button class="primary" id="esp-save-card">
-        ENREGISTRER LES MODIFICATIONS
-      </button>
-
-      <button id="esp-replace-card">REMPLACER L'IMAGE</button>
-
-      <button id="esp-visibility-card">
-        ${item.published ? "MASQUER" : "REPUBLIER"}
-      </button>
-
-      <button class="danger" id="esp-delete-card">
-        SUPPRIMER
-      </button>
-
-      <button id="esp-close-menu">FERMER</button>
-    `);
-
-    $("#esp-save-card", menu).onclick = async () => {
-      try {
-        await updateCatalogue(item, {
-          title: {
-            fr: $("#esp-title-fr", menu).value.trim(),
-            en: $("#esp-title-en", menu).value.trim()
-          },
-          description: {
-            fr: $("#esp-desc-fr", menu).value.trim(),
-            en: $("#esp-desc-en", menu).value.trim()
-          },
-          category: $("#esp-category", menu).value,
-          position: Math.max(
-            0,
-            Number($("#esp-position", menu).value || 0)
-          )
-        });
-
-        notify("Cover mise à jour.");
-      } catch (error) {
-        notify("Erreur : " + error.message);
-      }
-    };
-
-    $("#esp-replace-card", menu).onclick = () => {
-      picker.dataset.action = "replace";
-      picker.dataset.itemId = String(item.id);
-      closeMenu();
-      picker.click();
-    };
-
-    $("#esp-visibility-card", menu).onclick = async () => {
-      try {
-        await updateCatalogue(item, {
-          published: !item.published
-        });
-
-        notify(item.published
-          ? "Cover masquée."
-          : "Cover republiée."
-        );
-      } catch (error) {
-        notify("Erreur : " + error.message);
-      }
-    };
-
-    $("#esp-delete-card", menu).onclick = async () => {
-      const title = localizedValue(item.title) || "cette cover";
-
-      if (!confirm(
-        `Supprimer définitivement « ${title} » du catalogue ?`
-      )) return;
-
-      try {
-        const { error } = await db
-          .from("catalogue")
-          .delete()
-          .eq("id", item.id);
-
-        if (error) throw error;
-
-        await window.ESP_CATALOGUE?.refresh?.();
-        closeMenu();
-
-        notify(
-          "Fiche supprimée. Le fichier image du stockage est conservé."
-        );
-      } catch (error) {
-        notify("Erreur : " + error.message);
-      }
-    };
-
-    $("#esp-close-menu", menu).onclick = closeMenu;
-  }
-
-  async function importLegacy(item) {
-    const title = $("#esp-legacy-title", menu).value.trim();
-    const category = $("#esp-legacy-category", menu).value;
-
-    if (!title) {
-      notify("Ajoute un titre avant l'importation.");
-      return;
-    }
-
-    try {
-      const items = window.ESP_CATALOGUE?.getItems?.() || [];
-
-      const { error } = await db.from("catalogue").insert({
-        title: { fr: title, en: title },
-        description: { fr: "", en: "" },
-        category,
-        image_url: item.image_url,
-        published: true,
-        position: items.length
-      });
-
-      if (error) throw error;
-
-      await window.ESP_CATALOGUE?.refresh?.();
-      closeMenu();
-
-      notify("Cover importée. L'original GitHub est conservé.");
-    } catch (error) {
-      notify("Importation impossible : " + error.message);
-    }
-  }
-
-  function openAddCoverMenu() {
-    showMenu(
-      Math.max(12, (window.innerWidth - 330) / 2),
-      Math.max(12, (window.innerHeight - 500) / 2),
-      `
-        <h3>AJOUTER UNE NOUVELLE COVER</h3>
-
-        <label>Image de la cover</label>
-        <input id="esp-new-image" type="file" accept="image/*">
-
-        <label>Titre français</label>
-        <input id="esp-new-title-fr" placeholder="Ex : UCL RUN">
-
-        <label>Titre anglais</label>
-        <input id="esp-new-title-en" placeholder="Ex : UCL RUN">
-
-        <label>Description française</label>
-        <textarea id="esp-new-desc-fr"
-          placeholder="Description facultative"></textarea>
-
-        <label>Description anglaise</label>
-        <textarea id="esp-new-desc-en"
-          placeholder="Optional description"></textarea>
-
-        <label>Catégorie</label>
-        <select id="esp-new-category">
-          ${categoryOptions("edits")}
-        </select>
-
-        <button class="primary" id="esp-create-cover">
-          AJOUTER AU CATALOGUE
-        </button>
-
-        <button id="esp-cancel-new-cover">ANNULER</button>
-
-        <p class="hint">
-          JPG, PNG ou WEBP. Maximum 12 Mo.
-        </p>
-      `
-    );
-
-    $("#esp-cancel-new-cover", menu).onclick = closeMenu;
-
-    $("#esp-create-cover", menu).onclick = async () => {
-      const file = $("#esp-new-image", menu).files?.[0];
-      const titleFr = $("#esp-new-title-fr", menu).value.trim();
-      const titleEn = $("#esp-new-title-en", menu).value.trim();
-      const descFr = $("#esp-new-desc-fr", menu).value.trim();
-      const descEn = $("#esp-new-desc-en", menu).value.trim();
-      const category = $("#esp-new-category", menu).value;
-
-      if (!file) {
-        notify("Sélectionne une image.");
-        return;
-      }
-
-      if (!titleFr) {
-        notify("Ajoute au moins un titre français.");
-        return;
-      }
-
-      if (!categories.includes(category)) {
-        notify("Catégorie non reconnue.");
-        return;
-      }
-
-      const button = $("#esp-create-cover", menu);
-      button.disabled = true;
-      button.textContent = "IMPORTATION EN COURS…";
-
-      try {
-        const imageUrl = await uploadImage(file);
-        const items = window.ESP_CATALOGUE?.getItems?.() || [];
-
-        const { error } = await db.from("catalogue").insert({
-          title: {
-            fr: titleFr,
-            en: titleEn || titleFr
-          },
-          description: {
-            fr: descFr,
-            en: descEn
-          },
-          category,
-          image_url: imageUrl,
-          published: true,
-          position: items.length
-        });
-
-        if (error) throw error;
-
-        closeMenu();
-        await window.ESP_CATALOGUE?.refresh?.();
-
-        notify("Nouvelle cover ajoutée au catalogue !");
-      } catch (error) {
-        button.disabled = false;
-        button.textContent = "RÉESSAYER";
-        notify("Erreur : " + error.message);
-      }
-    };
-  }
-
-  async function openHiddenCovers() {
-    try {
-      const { data, error } = await db
-        .from("catalogue")
-        .select("id,title,description,category,image_url,published,position")
-        .eq("published", false)
-        .order("position", { ascending: true });
-
-      if (error) throw error;
-
-      if (!data?.length) {
-        showMenu(
-          20,
-          20,
-          `
-            <h3>COVERS MASQUÉES</h3>
-            <p class="hint">Aucune cover masquée.</p>
-            <button id="esp-close-menu">FERMER</button>
-          `
-        );
-
-        $("#esp-close-menu", menu).onclick = closeMenu;
-        return;
-      }
-
-      showMenu(
-        20,
-        20,
-        `
-          <h3>COVERS MASQUÉES (${data.length})</h3>
-          <p class="hint">
-            Tu peux republier une cover ou supprimer sa fiche.
-          </p>
-          <div id="esp-hidden-list"></div>
-          <button id="esp-close-menu">FERMER</button>
-        `
-      );
-
-      const list = $("#esp-hidden-list", menu);
-
-      data.forEach(item => {
-        const entry = document.createElement("div");
-        entry.style.cssText =
-          "border-top:1px solid #465267;padding:10px 0;margin-top:8px";
-
-        const title = document.createElement("strong");
-        title.textContent = localizedValue(item.title) || "Sans titre";
-
-        const category = document.createElement("p");
-        category.className = "hint";
-        category.textContent = categoryLabels[item.category] || item.category;
-
-        const publish = document.createElement("button");
-        publish.textContent = "REPUBLIER";
-        publish.onclick = async () => {
-          try {
-            const { error } = await db
-              .from("catalogue")
-              .update({ published: true })
-              .eq("id", item.id);
-
-            if (error) throw error;
-
-            await window.ESP_CATALOGUE?.refresh?.();
-            notify("Cover republiée.");
-            openHiddenCovers();
-          } catch (error) {
-            notify("Erreur : " + error.message);
-          }
-        };
-
-        const remove = document.createElement("button");
-        remove.className = "danger";
-        remove.textContent = "SUPPRIMER";
-        remove.onclick = async () => {
-          if (!confirm("Supprimer définitivement cette fiche ?")) return;
-
-          try {
-            const { error } = await db
-              .from("catalogue")
-              .delete()
-              .eq("id", item.id);
-
-            if (error) throw error;
-
-            notify("Fiche supprimée.");
-            openHiddenCovers();
-          } catch (error) {
-            notify("Erreur : " + error.message);
-          }
-        };
-
-        entry.append(title, category, publish, remove);
-        list.append(entry);
-      });
-
-      $("#esp-close-menu", menu).onclick = closeMenu;
-    } catch (error) {
-      notify("Impossible de charger les covers masquées : " + error.message);
-    }
-  }
-
-  function openTextMenu(element, x, y) {
-    selectedElement = element;
-
+  function openTextEditor(element) {
     const key = element.dataset.espKey;
-    const currentText = element.innerText || element.textContent || "";
+    const oldText = element.innerText || element.textContent || "";
+    const isLink = element.tagName === "A";
 
-    showMenu(x, y, `
-      <h3>MODIFIER CET ÉLÉMENT</h3>
-
-      <label>Texte</label>
-      <textarea id="esp-element-text">${escapeHTML(currentText)}</textarea>
-
-      <button class="primary" id="esp-apply-text">
-        APPLIQUER LE TEXTE
-      </button>
-
-      <button id="esp-text-color">COULEUR DU TEXTE</button>
-      <button id="esp-background-color">COULEUR DU FOND</button>
-      <button id="esp-background-image">IMAGE DE FOND</button>
-
-      ${element.tagName === "A"
-        ? '<button id="esp-edit-url">MODIFIER LE LIEN</button>'
-        : ""}
-
-      <button id="esp-close-menu">FERMER</button>
+    showMenu(`
+      <h3>MODIFIER L'ÉLÉMENT</h3>
+      <label>Texte affiché</label>
+      <textarea id="esp-text-value">${escapeHTML(oldText)}</textarea>
+      ${isLink ? `
+        <label>Adresse du lien</label>
+        <input id="esp-link-value" value="${escapeHTML(element.href)}">
+      ` : ""}
+      <label>Couleur du texte</label>
+      <input type="color" id="esp-text-color" value="${toHex(getComputedStyle(element).color)}">
+      <button class="esp-btn primary" id="esp-apply-text">APPLIQUER</button>
+      <button class="esp-btn" id="esp-cancel-text">ANNULER</button>
     `);
 
-    $("#esp-apply-text", menu).onclick = () => {
-      const value = $("#esp-element-text", menu).value;
+    $("#esp-cancel-text").onclick = closeMenu;
 
-      replaceVisibleText(element, value);
+    $("#esp-apply-text").onclick = () => {
+      const value = $("#esp-text-value").value;
+      replaceTextSafely(element, value);
       settings.texts[key] = value;
 
-      closeMenu();
-    };
-
-    $("#esp-text-color", menu).onclick = () => {
-      const color = prompt(
-        "Nouvelle couleur du texte (ex. #ffffff) :",
-        getComputedStyle(element).color
-      );
-
-      if (color === null) return;
-
+      const color = $("#esp-text-color").value;
       element.style.color = color;
       settings.styles[key] ||= {};
       settings.styles[key].color = color;
-    };
 
-    $("#esp-background-color", menu).onclick = () => {
-      const color = prompt(
-        "Nouvelle couleur de fond (ex. #080b12) :",
-        getComputedStyle(element).backgroundColor
-      );
-
-      if (color === null) return;
-
-      element.style.backgroundColor = color;
-      settings.styles[key] ||= {};
-      settings.styles[key].backgroundColor = color;
-    };
-
-    $("#esp-background-image", menu).onclick = () => {
-      picker.dataset.action = "page-background";
-      picker.dataset.elementKey = key;
-      closeMenu();
-      picker.click();
-    };
-
-    const linkButton = $("#esp-edit-url", menu);
-
-    if (linkButton) {
-      linkButton.onclick = () => {
-        const url = prompt("Nouvelle adresse du lien :", element.href);
-        if (url === null) return;
+      if (isLink) {
+        const rawUrl = $("#esp-link-value").value.trim();
 
         try {
-          const parsed = new URL(url, location.href);
-
-          if (!["http:", "https:", "mailto:", "tel:"].includes(parsed.protocol)) {
-            throw new Error("Adresse non autorisée.");
+          const url = new URL(rawUrl, location.href);
+          if (!["http:", "https:", "mailto:", "tel:"].includes(url.protocol)) {
+            throw new Error("Protocole non autorisé");
           }
 
-          element.href = parsed.href;
-          settings.links[key] = parsed.href;
-          closeMenu();
+          element.href = url.href;
+          settings.links[key] = url.href;
         } catch {
-          notify("Adresse de lien invalide.");
+          message("Lien invalide.");
+          return;
         }
-      };
+      }
+
+      closeMenu();
+      saveSettings(true).catch(error =>
+        message("Erreur de sauvegarde : " + error.message)
+      );
+    };
+  }
+
+  function toHex(color) {
+    if (color.startsWith("#")) return color;
+    const values = color.match(/\d+/g);
+    if (!values || values.length < 3) return "#ffffff";
+    return "#" + values.slice(0, 3)
+      .map(value => Number(value).toString(16).padStart(2, "0"))
+      .join("");
+  }
+
+  function replaceTextSafely(element, value) {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    let first = null;
+    const rest = [];
+
+    while (walker.nextNode()) {
+      if (walker.currentNode.nodeValue.trim()) {
+        if (!first) first = walker.currentNode;
+        else rest.push(walker.currentNode);
+      }
     }
 
-    $("#esp-close-menu", menu).onclick = closeMenu;
+    if (first) {
+      first.nodeValue = value;
+      rest.forEach(node => node.remove());
+    } else {
+      element.append(document.createTextNode(value));
+    }
   }
 
-  function openSectionMenu(element, x, y) {
-    selectedElement = element;
+  function openSectionEditor(element) {
+    const key = element.dataset.espKey;
 
-    showMenu(x, y, `
-      <h3>APPARENCE DE LA ZONE</h3>
-      <p class="hint">
-        Modifie le fond ou la couleur de cette zone.
-      </p>
-
-      <button id="esp-section-bg">CHANGER LA COULEUR DU FOND</button>
-      <button id="esp-section-image">METTRE UNE IMAGE DE FOND</button>
-      <button id="esp-section-text">CHANGER LA COULEUR DU TEXTE</button>
-      <button id="esp-close-menu">FERMER</button>
+    showMenu(`
+      <h3>APPARENCE DE LA SECTION</h3>
+      <label>Couleur du fond</label>
+      <input type="color" id="esp-section-color" value="${toHex(getComputedStyle(element).backgroundColor)}">
+      <label>Image de fond</label>
+      <input type="file" id="esp-section-image" accept="image/*">
+      <button class="esp-btn primary" id="esp-section-save">ENREGISTRER</button>
+      <button class="esp-btn" id="esp-section-cancel">FERMER</button>
     `);
 
-    $("#esp-section-bg", menu).onclick = () => {
-      const color = prompt(
-        "Couleur du fond :",
-        getComputedStyle(element).backgroundColor
-      );
+    $("#esp-section-cancel").onclick = closeMenu;
 
-      if (color === null) return;
-
+    $("#esp-section-save").onclick = async () => {
+      const color = $("#esp-section-color").value;
       element.style.backgroundColor = color;
-
-      const key = element.dataset.espKey;
       settings.styles[key] ||= {};
       settings.styles[key].backgroundColor = color;
-    };
 
-    $("#esp-section-text", menu).onclick = () => {
-      const color = prompt(
-        "Couleur du texte :",
-        getComputedStyle(element).color
-      );
+      const file = $("#esp-section-image").files?.[0];
 
-      if (color === null) return;
+      try {
+        if (file) {
+          const imageUrl = await uploadImage(file);
+          const backgroundImage = `url("${imageUrl}")`;
 
-      element.style.color = color;
+          element.style.backgroundImage = backgroundImage;
+          element.style.backgroundSize = "cover";
+          element.style.backgroundPosition = "center";
 
-      const key = element.dataset.espKey;
-      settings.styles[key] ||= {};
-      settings.styles[key].color = color;
-    };
-
-    $("#esp-section-image", menu).onclick = () => {
-      picker.dataset.action = "page-background";
-      picker.dataset.elementKey = element.dataset.espKey;
-      closeMenu();
-      picker.click();
-    };
-
-    $("#esp-close-menu", menu).onclick = closeMenu;
-  }
-
-  picker.addEventListener("change", async () => {
-    const file = picker.files?.[0];
-    const action = picker.dataset.action;
-    const itemId = picker.dataset.itemId;
-    const elementKey = picker.dataset.elementKey;
-
-    picker.value = "";
-
-    if (!file) return;
-
-    try {
-      const imageUrl = await uploadImage(file);
-
-      if (action === "replace" && itemId) {
-        const { error } = await db
-          .from("catalogue")
-          .update({ image_url: imageUrl })
-          .eq("id", itemId);
-
-        if (error) throw error;
-
-        await window.ESP_CATALOGUE?.refresh?.();
-        notify("Image de la cover remplacée.");
-      }
-
-      if (action === "page-background" && elementKey) {
-        const element = findElement(elementKey);
-
-        if (!element) {
-          throw new Error("Élément introuvable.");
+          settings.styles[key].backgroundImage = backgroundImage;
         }
 
-        const backgroundImage = `url("${imageUrl}")`;
-
-        element.style.backgroundImage = backgroundImage;
-        element.style.backgroundSize = "cover";
-        element.style.backgroundPosition = "center";
-
-        settings.styles[elementKey] ||= {};
-        settings.styles[elementKey].backgroundImage = backgroundImage;
-
         await saveSettings(true);
-        notify("Image de fond enregistrée.");
+        closeMenu();
+        message("Apparence enregistrée.");
+      } catch (error) {
+        message("Erreur : " + error.message);
       }
+    };
+  }
+
+  function switchTab(tab) {
+    currentTab = tab;
+
+    document.querySelectorAll(".esp-admin-tabs button").forEach(button => {
+      button.classList.toggle("active", button.dataset.tab === tab);
+    });
+
+    ["catalogue", "hidden", "site", "appearance"].forEach(name => {
+      const section = $(`#esp-tab-${name}`);
+      if (section) section.hidden = name !== tab;
+    });
+  }
+
+  async function openAdmin() {
+    if (!(await checkOwner())) {
+      showLogin();
+      return;
+    }
+
+    admin.classList.add("open");
+    toolbar.style.display = "flex";
+
+    try {
+      await loadCatalogueAdmin();
+      await loadSettings();
     } catch (error) {
-      notify("Erreur : " + error.message);
+      message("Erreur de chargement ADMIN : " + error.message);
+    }
+  }
+
+  $("#esp-login-close").onclick = () => login.classList.remove("open");
+
+  $("#esp-login-form").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const output = $("#esp-login-message");
+    output.textContent = "Connexion…";
+
+    const { error } = await db.auth.signInWithPassword({
+      email: $("#esp-email").value.trim(),
+      password: $("#esp-password").value
+    });
+
+    if (error) {
+      output.textContent = error.message;
+      return;
+    }
+
+    try {
+      if (!(await checkOwner())) {
+        await db.auth.signOut();
+        throw new Error("Ce compte n'est pas autorisé.");
+      }
+
+      login.classList.remove("open");
+      await openAdmin();
+    } catch (error) {
+      output.textContent = error.message;
     }
   });
 
-  function getEditableTarget(target) {
-    let node = target;
+  $("#esp-logout").onclick = async () => {
+    await db.auth.signOut();
+    admin.classList.remove("open");
+    toolbar.style.display = "none";
+    editing = false;
+    document.body.classList.remove("esp-editing");
+  };
 
-    while (node && node !== document.body) {
-      if (node.closest(
-        "#esp-login,#esp-owner-tools,#esp-context-menu"
-      )) return null;
+  $("#esp-view-site").onclick = () => admin.classList.remove("open");
+  $("#esp-open-admin").onclick = openAdmin;
 
-      if (node.closest(".archive-card")) return null;
+  $("#esp-exit-edit").onclick = () => {
+    editing = false;
+    document.body.classList.remove("esp-editing");
+    toolbar.style.display = "none";
+  };
 
-      if (node.matches(
-        "a,button,h1,h2,h3,p,span,strong,b,em,summary,small"
-      )) {
-        return node;
-      }
+  $("#esp-add-cover").onclick = () => openCoverEditor();
 
-      node = node.parentElement;
+  $("#esp-search").addEventListener("input", renderAdminCatalogue);
+  $("#esp-filter").addEventListener("change", renderAdminCatalogue);
+
+  document.querySelectorAll(".esp-admin-tabs button").forEach(button => {
+    button.addEventListener("click", () => switchTab(button.dataset.tab));
+  });
+
+  $("#esp-toggle-edit").onclick = () => {
+    editing = !editing;
+    document.body.classList.toggle("esp-editing", editing);
+    $("#esp-toggle-edit").textContent = editing
+      ? "TERMINER L'ÉDITION DIRECTE"
+      : "ACTIVER L'ÉDITION DIRECTE";
+    prepareEditableElements();
+  };
+
+  $("#esp-save-settings").onclick = async () => {
+    try {
+      await saveSettings();
+    } catch (error) {
+      message("Sauvegarde impossible : " + error.message);
     }
+  };
 
-    return null;
-  }
+  $("#esp-save-appearance").onclick = async () => {
+    const main = $("#esp-main-color").value;
+    const background = $("#esp-bg-color").value;
+
+    document.documentElement.style.setProperty("--yellow", main);
+    document.documentElement.style.setProperty("--bg", background);
+
+    settings.global ||= {};
+    settings.global.mainColor = main;
+    settings.global.backgroundColor = background;
+
+    try {
+      await saveSettings();
+      message("Apparence enregistrée.");
+    } catch (error) {
+      message("Erreur : " + error.message);
+    }
+  };
 
   document.addEventListener("click", event => {
-    if (!owner || !editing) return;
+    if (!owner || !editing || admin.classList.contains("open")) return;
 
-    if (event.target.closest(
-      "#esp-login,#esp-owner-tools,#esp-context-menu"
-    )) return;
+    if (event.target.closest("#esp-admin,#esp-login,#esp-menu,.esp-toolbar")) return;
 
     const card = event.target.closest(".archive-card");
 
     if (card) {
       event.preventDefault();
       event.stopPropagation();
-      openCardMenu(card, event.clientX, event.clientY);
+
+      const item = allItems.find(entry =>
+        String(entry.id) === String(card.dataset.catalogueId)
+      );
+
+      if (item) openCoverEditor(item);
+      else message("Cette cover provient de GitHub. Importe-la dans Supabase depuis la gestion du catalogue pour la modifier.");
       return;
     }
 
-    const editable = getEditableTarget(event.target);
+    const editable = event.target.closest('[data-esp-editable="true"]');
 
     if (editable) {
       event.preventDefault();
       event.stopPropagation();
-
-      prepareElements();
-      openTextMenu(editable, event.clientX, event.clientY);
+      openTextEditor(editable);
       return;
     }
 
@@ -1190,106 +1032,21 @@
     if (section) {
       event.preventDefault();
       event.stopPropagation();
-
-      prepareElements();
-      openSectionMenu(section, event.clientX, event.clientY);
+      section.dataset.espKey ||= elementKey(section);
+      openSectionEditor(section);
     }
   }, true);
 
-  document.addEventListener("click", event => {
-    if (
-      menu.style.display === "block" &&
-      !event.target.closest("#esp-context-menu") &&
-      !event.target.closest(".archive-card")
-    ) {
-      closeMenu();
-    }
-  });
-
-  $("#esp-toggle-edit").onclick = () => {
-    editing = !editing;
-
-    document.body.classList.toggle("esp-editing", editing);
-
-    $("#esp-toggle-edit").textContent = editing
-      ? "TERMINER L'ÉDITION"
-      : "ACTIVER L'ÉDITION";
-
-    if (editing) {
-      prepareElements();
-    } else {
-      closeMenu();
-    }
-  };
-
-  $("#esp-add-cover").onclick = openAddCoverMenu;
-  $("#esp-hidden-covers").onclick = openHiddenCovers;
-
-  $("#esp-save-page").onclick = async () => {
-    try {
-      await saveSettings();
-    } catch (error) {
-      notify("Erreur de sauvegarde : " + error.message);
-    }
-  };
-
-  $("#esp-logout").onclick = async () => {
-    await db.auth.signOut();
-    await checkOwner();
-    notify("Déconnexion effectuée.");
-  };
-
-  $("#esp-login-close").onclick = () => {
-    login.classList.remove("open");
-  };
-
-  $("#esp-login-form").addEventListener("submit", async event => {
-    event.preventDefault();
-
-    $("#esp-login-message").textContent = "Connexion…";
-
-    const { error } = await db.auth.signInWithPassword({
-      email: $("#esp-email").value.trim(),
-      password: $("#esp-password").value
-    });
-
-    if (error) {
-      $("#esp-login-message").textContent = error.message;
-      return;
-    }
-
-    try {
-      if (!(await checkOwner())) {
-        await db.auth.signOut();
-        throw new Error("Ce compte n'est pas autorisé.");
-      }
-
-      await loadSettings();
-      login.classList.remove("open");
-
-      notify("Connexion propriétaire réussie.");
-    } catch (error) {
-      $("#esp-login-message").textContent = error.message;
-    }
-  });
-
+  // Raccourci ordinateur : Ctrl + Maj + E.
   document.addEventListener("keydown", async event => {
-    if (
-      event.ctrlKey &&
-      event.shiftKey &&
-      event.key.toLowerCase() === "e"
-    ) {
+    if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "e") {
       event.preventDefault();
 
       try {
-        if (await checkOwner()) {
-          toolbar.style.display =
-            toolbar.style.display === "block" ? "none" : "block";
-        } else {
-          login.classList.add("open");
-        }
+        if (await checkOwner()) await openAdmin();
+        else showLogin();
       } catch (error) {
-        notify(error.message);
+        message(error.message);
       }
     }
 
@@ -1299,25 +1056,51 @@
     }
   });
 
-  db.auth.onAuthStateChange((_event, session) => {
-    owner = !!session?.user && session.user.id === OWNER;
+  // Raccourci téléphone : appuyer cinq fois sur le logo ES+.
+  const brand = $(".brand");
 
-    toolbar.style.display = owner ? "block" : "none";
+  if (brand) {
+    let taps = 0;
+    let tapTimer;
+
+    brand.addEventListener("click", event => {
+      taps++;
+      clearTimeout(tapTimer);
+
+      tapTimer = setTimeout(() => {
+        taps = 0;
+      }, 1500);
+
+      if (taps >= 5) {
+        taps = 0;
+        event.preventDefault();
+
+        checkOwner().then(authorized => {
+          if (authorized) openAdmin();
+          else showLogin();
+        }).catch(error => message(error.message));
+      }
+    });
+  }
+
+  db.auth.onAuthStateChange((_event, session) => {
+    owner = isOwnerSession(session);
 
     if (!owner) {
+      admin.classList.remove("open");
+      toolbar.style.display = "none";
       editing = false;
       document.body.classList.remove("esp-editing");
-      closeMenu();
     }
   });
 
-  checkOwner()
-    .then(async authorized => {
-      if (authorized) {
-        await loadSettings();
-      }
-    })
-    .catch(error => {
-      console.warn("Éditeur visuel :", error.message);
-    });
+  checkOwner().then(async authorized => {
+    if (authorized) {
+      toolbar.style.display = "flex";
+      await loadCatalogueAdmin();
+      await loadSettings();
+    }
+  }).catch(error => {
+    console.warn("ADMIN :", error.message);
+  });
 })();
