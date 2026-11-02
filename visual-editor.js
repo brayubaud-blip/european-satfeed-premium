@@ -123,6 +123,13 @@
       background:#eaff00;color:#080b12;border:0;
       padding:10px;font-weight:800;cursor:pointer;
     }
+    #esp-undo-control {
+      display:none;position:fixed;z-index:999970;top:108px;right:18px;
+      padding:9px 13px;background:#101927;color:#eaff00;
+      border:1px solid #eaff00;border-radius:4px;font:800 11px "DM Sans",Arial,sans-serif;
+      cursor:pointer;box-shadow:0 5px 22px #0009;
+    }
+    #esp-undo-control:hover {background:#eaff00;color:#080b12}
     body.esp-editing [data-esp-editable="true"] {
       outline:1px dashed #eaff00;outline-offset:3px;cursor:pointer;
     }
@@ -265,6 +272,12 @@
   toolbar.style.display = "none";
   document.body.append(toolbar);
 
+  const undoControl = document.createElement("button");
+  undoControl.id = "esp-undo-control";
+  undoControl.type = "button";
+  undoControl.textContent = "↶ RETOUR ARRIÈRE";
+  document.body.append(undoControl);
+
   const menu = document.createElement("div");
   menu.id = "esp-menu";
   document.body.append(menu);
@@ -345,6 +358,8 @@
     settings.styles ||= {};
     settings.links ||= {};
     settings.images ||= {};
+    settings.logos ||= {};
+    settings.undoStack ||= [];
 
     applySettings();
   }
@@ -486,8 +501,62 @@
       const element = findElement(key);
       if (element?.tagName === "IMG") element.src = url;
     });
+    Object.entries(settings.logos || {}).forEach(([key, url]) => {
+      const element = findElement(key);
+      if (element) {
+        const logoImage = document.createElement("img");
+        logoImage.src = url;
+        logoImage.alt = "European Satfeed Premium";
+        logoImage.className = "esp-custom-logo";
+        logoImage.style.cssText = "display:block;width:auto;max-width:110px;max-height:54px;object-fit:contain";
+        element.replaceChildren(logoImage);
+      }
+    });
     if (settings.global?.mainColor) document.documentElement.style.setProperty("--yellow", settings.global.mainColor);
     if (settings.global?.backgroundColor) document.documentElement.style.setProperty("--bg", settings.global.backgroundColor);
+  }
+
+  function cloneEditorState() {
+    return JSON.parse(JSON.stringify({
+      texts: settings.texts || {},
+      styles: settings.styles || {},
+      links: settings.links || {},
+      images: settings.images || {},
+      logos: settings.logos || {},
+      global: settings.global || {}
+    }));
+  }
+
+  async function recordUndo(label) {
+    if (!owner) throw new Error("Accès propriétaire requis.");
+    settings.undoStack ||= [];
+    settings.undoStack.push({ label, snapshot: cloneEditorState() });
+    settings.undoStack = settings.undoStack.slice(-25);
+    await saveSettings(true);
+  }
+
+  async function undoLastChange() {
+    if (!owner) return;
+    const entry = settings.undoStack?.pop();
+    if (!entry) {
+      message("Aucune modification à annuler pour le moment.");
+      return;
+    }
+    const snapshot = entry.snapshot || {};
+    settings.texts = snapshot.texts || {};
+    settings.styles = snapshot.styles || {};
+    settings.links = snapshot.links || {};
+    settings.images = snapshot.images || {};
+    settings.logos = snapshot.logos || {};
+    settings.global = snapshot.global || {};
+    try {
+      await saveSettings(true);
+      applySettings();
+      message("Dernière modification annulée : " + (entry.label || "modification") + ".");
+    } catch (error) {
+      settings.undoStack.push(entry);
+      message("Impossible d'annuler : " + error.message);
+    }
   }
 
   async function loadCatalogueAdmin() {
@@ -920,14 +989,34 @@
       <label>Déplacement vertical (px)</label><input type="number" id="esp-move-y" value="0">
       <label>Largeur (px, 0 = automatique)</label><input type="number" min="0" max="2000" id="esp-element-width" value="0">
       <label>Espacement intérieur (px)</label><input type="number" min="0" max="200" id="esp-element-padding" value="0">
+      <button class="esp-btn" id="esp-reset-text-style">RESTAURER LE STYLE D'ORIGINE</button>
       <button class="esp-btn" id="esp-hide-element">MASQUER CET ÉLÉMENT</button>
       <button class="esp-btn primary" id="esp-apply-text">APPLIQUER</button>
       <button class="esp-btn" id="esp-cancel-text">ANNULER</button>
     `);
 
     $("#esp-cancel-text").onclick = closeMenu;
+    $("#esp-reset-text-style").onclick = async () => {
+      try {
+        await recordUndo("Réinitialiser le style d'un texte");
+        const saved = settings.styles[key] || {};
+        ["color","fontSize","fontFamily","fontWeight","letterSpacing","backgroundColor","transform","width","padding"].forEach(prop => {
+          delete saved[prop];
+          element.style[prop] = "";
+        });
+        if (Object.keys(saved).length) settings.styles[key] = saved;
+        else delete settings.styles[key];
+        closeMenu();
+        await saveSettings(true);
+        message("Le style d'origine du texte a été restauré.");
+      } catch (error) {
+        message("Impossible de restaurer le style : " + error.message);
+      }
+    };
 
-    $("#esp-apply-text").onclick = () => {
+    $("#esp-apply-text").onclick = async () => {
+      try { await recordUndo("Modification d'un texte"); }
+      catch (error) { message("Impossible de créer le point de retour : " + error.message); return; }
       const value = $("#esp-text-value").value;
       replaceTextSafely(element, value);
       settings.texts[key] = value;
@@ -983,6 +1072,8 @@
     };
     $("#esp-hide-element").onclick = async () => {
       if (!confirm("Masquer cet élément du site ?")) return;
+      try { await recordUndo("Masquer un élément"); }
+      catch (error) { message("Impossible de créer le point de retour : " + error.message); return; }
       element.style.display = "none";
       settings.styles[key] ||= {};
       settings.styles[key].display = "none";
@@ -1051,6 +1142,49 @@
     };
   }
 
+  function openLogoEditor(element) {
+    const key = element.dataset.espKey ||= elementKey(element);
+    showMenu(`
+      <h3>MODIFIER LE LOGO</h3>
+      <p class="esp-muted">Tu peux remplacer le logo texte par une image, ou revenir au logo ES+ d'origine.</p>
+      <label>Nouvelle image du logo</label>
+      <input type="file" id="esp-logo-file" accept="image/*">
+      <button class="esp-btn primary" id="esp-logo-save">REMPLACER LE LOGO</button>
+      <button class="esp-btn" id="esp-logo-reset">REVENIR AU LOGO ES+ TEXTE</button>
+      <button class="esp-btn" id="esp-logo-cancel">ANNULER</button>
+    `);
+    $("#esp-logo-cancel").onclick = closeMenu;
+    $("#esp-logo-save").onclick = async () => {
+      const file = $("#esp-logo-file").files?.[0];
+      if (!file) { message("Choisis une image de logo."); return; }
+      try {
+        await recordUndo("Remplacer le logo");
+        const url = await uploadImage(file);
+        settings.logos ||= {};
+        settings.logos[key] = url;
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = "European Satfeed Premium";
+        img.className = "esp-custom-logo";
+        img.style.cssText = "display:block;width:auto;max-width:110px;max-height:54px;object-fit:contain";
+        element.replaceChildren(img);
+        await saveSettings(true);
+        closeMenu();
+        message("Logo remplacé et enregistré.");
+      } catch (error) { message("Remplacement du logo impossible : " + error.message); }
+    };
+    $("#esp-logo-reset").onclick = async () => {
+      try {
+        await recordUndo("Restaurer le logo texte");
+        delete settings.logos[key];
+        element.innerHTML = "ES<span>+</span>";
+        await saveSettings(true);
+        closeMenu();
+        message("Logo texte d'origine restauré.");
+      } catch (error) { message("Impossible de restaurer le logo : " + error.message); }
+    };
+  }
+
   function openSectionEditor(element) {
     const key = element.dataset.espKey;
 
@@ -1060,6 +1194,7 @@
       <input type="color" id="esp-section-color" value="${toHex(getComputedStyle(element).backgroundColor)}">
       <label>Image de fond</label>
       <input type="file" id="esp-section-image" accept="image/*">
+      <button class="esp-btn" id="esp-section-remove-image" type="button">RETIRER L'IMAGE DE FOND</button>
       <label>Opacité de la section (%)</label>
       <input type="number" min="10" max="100" id="esp-section-opacity" value="${Math.round((Number(getComputedStyle(element).opacity) || 1) * 100)}">
       <label>Effet lumineux (glow)</label>
@@ -1071,6 +1206,8 @@
     $("#esp-section-cancel").onclick = closeMenu;
 
     $("#esp-section-save").onclick = async () => {
+      try { await recordUndo("Modifier le fond d'une section"); }
+      catch (error) { message("Impossible de créer le point de retour : " + error.message); return; }
       const color = $("#esp-section-color").value;
       element.style.backgroundColor = color;
       settings.styles[key] ||= {};
@@ -1101,6 +1238,17 @@
         message("Apparence enregistrée.");
       } catch (error) {
         message("Erreur : " + error.message);
+      }
+    };
+    $("#esp-section-remove-image").onclick = async () => {
+      try {
+        await recordUndo("Retirer une image de fond");
+        element.style.backgroundImage = "none";
+        if (settings.styles[key]) delete settings.styles[key].backgroundImage;
+        await saveSettings(true);
+        message("Image de fond retirée.");
+      } catch (error) {
+        message("Impossible de retirer l'image : " + error.message);
       }
     };
   }
@@ -1167,7 +1315,8 @@
       await loadCatalogueAdmin();
       await loadSettings();
       prepareEditableElements();
-      message("Mode édition direct activé. Tu es sur le site : clique sur un texte, une cover ou une section pour la modifier.");
+      undoControl.style.display = "block";
+      message("Mode édition direct activé. Clique sur ↶ RETOUR ARRIÈRE pour annuler la dernière modification.");
     } catch (error) {
       output.textContent = error.message;
     }
@@ -1179,9 +1328,10 @@
     toolbar.style.display = "none";
     editing = false;
     document.body.classList.remove("esp-editing");
+    undoControl.style.display = "none";
   };
 
-  $("#esp-view-site").onclick = () => { admin.classList.remove("open"); editing = true; document.body.classList.add("esp-editing"); toolbar.style.display = "none"; prepareEditableElements(); message("Mode édition activé : clique directement sur un texte, une cover ou une section du site pour la modifier."); };
+  $("#esp-view-site").onclick = async () => { admin.classList.remove("open"); editing = true; document.body.classList.add("esp-editing"); toolbar.style.display = "none"; await loadCatalogueAdmin(); await loadSettings(); prepareEditableElements(); undoControl.style.display = "block"; };
 
 
 
@@ -1275,6 +1425,14 @@
       return;
     }
 
+    const logo = event.target.closest(".brand-mark");
+    if (logo) {
+      event.preventDefault();
+      event.stopPropagation();
+      openLogoEditor(logo);
+      return;
+    }
+
     const image = event.target.closest("img");
     if (image && (image.closest(".brand") || image.closest(".hero"))) {
       event.preventDefault();
@@ -1295,7 +1453,7 @@
     const section = event.target.closest(
       ".topline,.header,.hero,.ticker,.archive-section," +
       ".latest-section,.included-section,.premium-section," +
-      ".faq-section,.footer,.header,.brand,.brand-mark,img"
+      ".faq-section,.footer,.header,.brand,.brand-mark,img,main,body"
     );
 
     if (section) {
@@ -1372,6 +1530,16 @@
     });
   }
 
+  undoControl.onclick = undoLastChange;
+  document.addEventListener("keydown", event => {
+    if (owner && editing && (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
+      const active = document.activeElement;
+      if (active && ["INPUT","TEXTAREA","SELECT"].includes(active.tagName)) return;
+      event.preventDefault();
+      undoLastChange();
+    }
+  });
+
   db.auth.onAuthStateChange((_event, session) => {
     owner = isOwnerSession(session);
 
@@ -1380,6 +1548,7 @@
       toolbar.style.display = "none";
       editing = false;
       document.body.classList.remove("esp-editing");
+      undoControl.style.display = "none";
     }
   });
 
