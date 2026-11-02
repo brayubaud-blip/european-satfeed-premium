@@ -1873,8 +1873,12 @@
   if (publicAddCover) {
     publicAddCover.addEventListener("click", async () => {
       try {
-        if (!(await checkOwner()) || !editing || admin.classList.contains("open")) {
+        if (!(await checkOwner())) {
           showLogin();
+          return;
+        }
+        if (!editing || admin.classList.contains("open")) {
+          message("Active d'abord le mode édition pour ajouter une cover.");
           return;
         }
         await loadCatalogueAdmin();
