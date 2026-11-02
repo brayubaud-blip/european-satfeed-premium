@@ -1008,35 +1008,38 @@ body.lightbox-open { overflow:hidden; }
 }
 
 
-/* OWNER ENTRY BUTTON IN THE PUBLIC CATALOGUE */
-.public-admin-access-row {
+
+
+/* OWNER-ONLY ADD COVER ACTION IN PUBLIC CATALOGUE */
+.public-catalogue-admin-actions {
   display:flex;
   justify-content:flex-end;
-  margin:-22px 0 28px;
+  margin:-18px 0 28px;
 }
-.public-admin-access {
+.public-add-cover[hidden] {display:none!important;}
+.public-add-cover {
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  min-height:42px;
-  padding:0 18px;
-  color:#eaff00;
-  background:#101927;
+  min-height:46px;
+  padding:0 20px;
+  color:#080b12;
+  background:#eaff00;
   border:1px solid #eaff00;
   border-radius:3px;
-  font:800 10px "DM Sans",Arial,sans-serif;
-  letter-spacing:1.5px;
+  font:900 11px "DM Sans",Arial,sans-serif;
+  letter-spacing:1.4px;
   cursor:pointer;
-  transition:background .2s ease,color .2s ease,transform .2s ease;
+  box-shadow:0 0 18px #eaff0026;
+  transition:filter .2s ease,transform .2s ease;
 }
-.public-admin-access:hover,
-.public-admin-access:focus-visible {
-  background:#eaff00;
-  color:#080b12;
+.public-add-cover:hover,.public-add-cover:focus-visible {
+  filter:brightness(1.08);
   transform:translateY(-1px);
-  outline:none;
+  outline:2px solid #eaff00;
+  outline-offset:3px;
 }
 @media(max-width:700px) {
-  .public-admin-access-row {justify-content:stretch;margin:-12px 0 22px;}
-  .public-admin-access {width:100%;min-height:48px;font-size:11px;}
+  .public-catalogue-admin-actions {justify-content:stretch;margin:-8px 0 22px;}
+  .public-add-cover {width:100%;min-height:50px;}
 }
