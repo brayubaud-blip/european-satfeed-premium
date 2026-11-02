@@ -191,6 +191,22 @@
             </div>
             <button class="esp-btn primary" id="esp-add-cover">+ AJOUTER UNE COVER</button>
           </div>
+
+          <div class="esp-panel" style="margin:16px 0;background:#101927">
+            <h3>IMPORTER PLUSIEURS COVERS</h3>
+            <p class="esp-muted">Sélectionne 200 images ou plus en une seule fois. Les titres seront créés à partir des noms de fichiers.</p>
+            <label>Catégorie pour les covers importées</label>
+            <select id="esp-bulk-category">
+              ${categories.map(([id,label]) => `<option value="${id}" ${id === "edits" ? "selected" : ""}>${label}</option>`).join("")}
+            </select>
+            <label>Images à importer</label>
+            <input id="esp-bulk-files" type="file" accept="image/*" multiple>
+            <p id="esp-bulk-count" class="esp-muted">Aucune image sélectionnée.</p>
+            <button class="esp-btn primary" type="button" id="esp-bulk-upload">IMPORTER LES COVERS SÉLECTIONNÉES</button>
+            <progress id="esp-bulk-progress" value="0" max="100" style="display:none;width:100%;height:12px;margin-top:12px"></progress>
+            <p id="esp-bulk-status" class="esp-muted" aria-live="polite"></p>
+          </div>
+
           <input id="esp-search" placeholder="Rechercher une cover...">
           <select id="esp-filter">
             <option value="all">Toutes les catégories</option>
@@ -723,6 +739,99 @@
     return db.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
   }
 
+  function bulkTitleFromFilename(filename) {
+    return String(filename || "")
+      .replace(/\\.[^.]+$/, "")
+      .replace(/[_-]+/g, " ")
+      .replace(/\\s+/g, " ")
+      .trim() || "Nouvelle cover";
+  }
+
+  async function importBulkCovers() {
+    const input = $("#esp-bulk-files");
+    const button = $("#esp-bulk-upload");
+    const progress = $("#esp-bulk-progress");
+    const status = $("#esp-bulk-status");
+    const selected = Array.from(input?.files || []);
+    const category = $("#esp-bulk-category")?.value || "edits";
+
+    if (!selected.length) {
+      message("Sélectionne d'abord les images à importer.");
+      return;
+    }
+    if (selected.length > 1000) {
+      message("Sélectionne au maximum 1 000 images par import. Tu peux faire plusieurs lots.");
+      return;
+    }
+
+    const valid = selected.filter(file => file.type.startsWith("image/") && file.size <= 12 * 1024 * 1024);
+    const rejected = selected.length - valid.length;
+    if (!valid.length) {
+      message("Aucune image valide. Chaque fichier doit être une image de 12 Mo maximum.");
+      return;
+    }
+
+    button.disabled = true;
+    input.disabled = true;
+    button.textContent = "IMPORT EN COURS…";
+    progress.style.display = "block";
+    progress.max = valid.length;
+    progress.value = 0;
+    status.textContent = "Préparation de " + valid.length + " image(s)…";
+
+    let imported = 0;
+    const failures = [];
+    let nextPosition = allItems.length;
+
+    try {
+      for (let index = 0; index < valid.length; index++) {
+        const file = valid[index];
+        try {
+          const imageUrl = await uploadImage(file);
+          const title = bulkTitleFromFilename(file.name);
+          const row = {
+            title: { fr: title, en: title },
+            description: { fr: "", en: "" },
+            category,
+            image_url: imageUrl,
+            position: nextPosition++,
+            published: true
+          };
+
+          const { error } = await db.from("catalogue").insert(row);
+          if (error) throw error;
+          imported++;
+        } catch (error) {
+          failures.push(file.name + " : " + (error.message || "Erreur inconnue"));
+        }
+
+        progress.value = index + 1;
+        status.textContent = "Import : " + (index + 1) + "/" + valid.length +
+          " · Réussies : " + imported + " · Erreurs : " + failures.length;
+      }
+
+      await refreshAdminAndPublic();
+      const skipped = rejected ? " · Refusées (format ou taille) : " + rejected : "";
+      status.textContent = "Terminé : " + imported + "/" + valid.length +
+        " cover(s) importée(s)" + skipped + (failures.length ? " · Échecs : " + failures.length : "");
+      if (failures.length) {
+        console.warn("Erreurs d'import des covers :", failures);
+        message("Import terminé avec " + failures.length + " erreur(s). Les noms concernés sont visibles dans la console du navigateur (F12).");
+      } else {
+        message(imported + " cover(s) importée(s) avec succès.");
+      }
+      input.value = "";
+      $("#esp-bulk-count").textContent = "Aucune image sélectionnée.";
+    } catch (error) {
+      status.textContent = "Import interrompu : " + (error.message || "Erreur inconnue");
+      message("L'import a été interrompu : " + error.message);
+    } finally {
+      button.disabled = false;
+      input.disabled = false;
+      button.textContent = "IMPORTER LES COVERS SÉLECTIONNÉES";
+    }
+  }
+
   async function duplicateCover(item) {
     try {
       const copy = { title:item.title, description:item.description, category:item.category, image_url:item.image_url, published:false, position:allItems.length };
@@ -1078,6 +1187,13 @@
 
 
   $("#esp-add-cover").onclick = () => openCoverEditor();
+  $("#esp-bulk-files").addEventListener("change", () => {
+    const count = $("#esp-bulk-files").files?.length || 0;
+    $("#esp-bulk-count").textContent = count
+      ? count + " image(s) sélectionnée(s)."
+      : "Aucune image sélectionnée.";
+  });
+  $("#esp-bulk-upload").onclick = importBulkCovers;
 
   $("#esp-search").addEventListener("input", renderAdminCatalogue);
   $("#esp-filter").addEventListener("change", renderAdminCatalogue);
