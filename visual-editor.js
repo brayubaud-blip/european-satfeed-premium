@@ -87,6 +87,15 @@
       background:#0d121c;border:1px solid #293447;
       padding:16px;margin:12px 0;border-radius:5px;
     }
+    .esp-add-cover-main {
+      display:block;width:100%;min-height:54px;margin:0 0 14px;
+      font-size:15px;letter-spacing:.4px;text-align:center;
+      background:#eaff00;color:#080b12;border:2px solid #eaff00;
+      box-shadow:0 0 18px #eaff0026;
+    }
+    .esp-add-cover-main:hover {
+      filter:brightness(1.08);transform:translateY(-1px);
+    }
     .esp-row {
       display:flex;gap:12px;align-items:center;flex-wrap:wrap;
     }
@@ -190,13 +199,15 @@
       </nav>
 
       <section id="esp-tab-catalogue">
+        <button class="esp-btn primary esp-add-cover-main" type="button" id="esp-add-cover">
+          + AJOUTER UNE NOUVELLE COVER
+        </button>
         <div class="esp-panel">
           <div class="esp-row">
             <div>
               <h3>TOUTES LES COVERS</h3>
               <p class="esp-muted">Gère tes covers depuis une seule liste.</p>
             </div>
-            <button class="esp-btn primary" id="esp-add-cover">+ AJOUTER UNE COVER</button>
           </div>
 
           <div class="esp-panel" style="margin:16px 0;background:#101927">
@@ -1553,7 +1564,10 @@
 
 
 
-  $("#esp-add-cover").onclick = () => openCoverEditor();
+  $("#esp-add-cover").addEventListener("click", () => {
+    switchTab("catalogue");
+    openCoverEditor(null);
+  });
   $("#esp-bulk-files").addEventListener("change", () => {
     const count = $("#esp-bulk-files").files?.length || 0;
     $("#esp-bulk-count").textContent = count
