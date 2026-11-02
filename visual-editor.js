@@ -170,7 +170,7 @@
           <div class="esp-muted">Gestion complète du site</div>
         </div>
         <div class="esp-row" style="flex:0 1 auto">
-          <button class="esp-btn" id="esp-view-site">VOIR LE SITE</button>
+          <button class="esp-btn primary" id="esp-view-site">VOIR LE SITE & MODIFIER</button>
           <button class="esp-btn danger" id="esp-logout">DÉCONNEXION</button>
         </div>
       </header>
@@ -246,7 +246,7 @@
   const toolbar = document.createElement("div");
   toolbar.className = "esp-toolbar";
   toolbar.innerHTML = `
-    <button id="esp-open-admin">OUVRIR ADMIN</button>
+    <button id="esp-open-admin">GESTION DES COVERS / ADMIN</button>
     <button id="esp-exit-edit">QUITTER ÉDITION</button>
   `;
   document.body.append(toolbar);
@@ -940,7 +940,7 @@
     document.body.classList.remove("esp-editing");
   };
 
-  $("#esp-view-site").onclick = () => admin.classList.remove("open");
+  $("#esp-view-site").onclick = () => { admin.classList.remove("open"); editing = true; document.body.classList.add("esp-editing"); toolbar.style.display = "flex"; prepareEditableElements(); message("Mode édition activé : clique directement sur un texte, une cover ou une section du site pour la modifier."); };
   $("#esp-open-admin").onclick = openAdmin;
 
   $("#esp-exit-edit").onclick = () => {
