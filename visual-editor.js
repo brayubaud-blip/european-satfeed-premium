@@ -139,6 +139,9 @@
       cursor:pointer;box-shadow:0 5px 22px #0009;
     }
     #esp-undo-control:hover {background:#eaff00;color:#080b12}
+    body.esp-editing .premium-aside {
+      outline:1px dashed #eaff00;outline-offset:7px;cursor:pointer;
+    }
     body.esp-editing [data-esp-editable="true"] {
       outline:1px dashed #eaff00;outline-offset:3px;cursor:pointer;
     }
@@ -524,6 +527,7 @@
       }
     });
     applyHeroStampSettings();
+    applyPremiumStampSettings();
     if (settings.global?.mainColor) document.documentElement.style.setProperty("--yellow", settings.global.mainColor);
     if (settings.global?.backgroundColor) {
       document.documentElement.style.setProperty("--bg", settings.global.backgroundColor);
@@ -545,6 +549,7 @@
       images: settings.images || {},
       logos: settings.logos || {},
       heroStamp: settings.heroStamp || {},
+      premiumStamp: settings.premiumStamp || {},
       deletedGithubCovers: settings.deletedGithubCovers || [],
       global: settings.global || {}
     }));
@@ -586,6 +591,7 @@
         settings.images = snapshot.images || {};
         settings.logos = snapshot.logos || {};
         settings.heroStamp = snapshot.heroStamp || {};
+        settings.premiumStamp = snapshot.premiumStamp || {};
         settings.deletedGithubCovers = snapshot.deletedGithubCovers || [];
         settings.global = snapshot.global || {};
         await saveSettings(true);
@@ -606,6 +612,7 @@
     settings.images = snapshot.images || {};
     settings.logos = snapshot.logos || {};
     settings.heroStamp = snapshot.heroStamp || {};
+    settings.premiumStamp = snapshot.premiumStamp || {};
     settings.deletedGithubCovers = snapshot.deletedGithubCovers || [];
     settings.global = snapshot.global || {};
     try {
@@ -1356,6 +1363,154 @@
   }
 
 
+
+  function applyPremiumStampSettings() {
+    const aside = document.querySelector(".premium-aside");
+    const saved = settings.premiumStamp || {};
+    if (!aside) return;
+
+    if (!saved.enabled) {
+      aside.classList.remove("esp-premium-round");
+      aside.innerHTML = "<span>EUROPEAN<br>SATFEED<br>PREMIUM</span><b>ES+</b><span>MEMBERS ONLY</span>";
+      aside.removeAttribute("style");
+      return;
+    }
+
+    aside.innerHTML = "";
+    aside.classList.add("esp-premium-round");
+    aside.style.position = "relative";
+    aside.style.boxSizing = "border-box";
+    aside.style.width = (saved.diameter || 240) + "px";
+    aside.style.height = (saved.diameter || 240) + "px";
+    aside.style.minWidth = (saved.diameter || 240) + "px";
+    aside.style.padding = "0";
+    aside.style.borderRadius = "50%";
+    aside.style.overflow = "hidden";
+    aside.style.display = "flex";
+    aside.style.flexDirection = "column";
+    aside.style.alignItems = "center";
+    aside.style.justifyContent = "space-between";
+    aside.style.transform = "rotate(" + (saved.rotation || 0) + "deg)";
+    aside.style.background = saved.backgroundColor || "#080b12";
+    aside.style.border = (saved.borderWidth ?? 1) + "px solid " + (saved.borderColor || "#ffffff55");
+    aside.style.boxShadow = "0 0 30px " + (saved.glowColor || "#eaff00") + "66";
+
+    if (saved.imageUrl) {
+      const image = document.createElement("img");
+      image.src = saved.imageUrl;
+      image.alt = "Logo European Satfeed Premium";
+      image.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;clip-path:circle(50% at 50% 50%);";
+      aside.append(image);
+    } else {
+      const center = document.createElement("b");
+      center.textContent = saved.centerText || "ES+";
+      center.style.cssText = "position:absolute;left:8%;right:8%;top:50%;transform:translateY(-50%);text-align:center;z-index:2;font:900 " + (saved.centerSize || 82) + "px 'Barlow Condensed',sans-serif;color:" + (saved.centerColor || "#eaff00") + ";line-height:.9;";
+      aside.append(center);
+    }
+
+    if (saved.topText) {
+      const top = document.createElement("span");
+      top.textContent = saved.topText;
+      top.style.cssText = "position:absolute;top:13%;left:8%;right:8%;z-index:3;text-align:center;color:" + (saved.smallColor || "#aab2bf") + ";font:700 " + (saved.smallSize || 9) + "px 'DM Sans',sans-serif;letter-spacing:2px;";
+      aside.append(top);
+    }
+    if (saved.bottomText) {
+      const bottom = document.createElement("span");
+      bottom.textContent = saved.bottomText;
+      bottom.style.cssText = "position:absolute;bottom:13%;left:8%;right:8%;z-index:3;text-align:center;color:" + (saved.smallColor || "#aab2bf") + ";font:700 " + (saved.smallSize || 9) + "px 'DM Sans',sans-serif;letter-spacing:2px;";
+      aside.append(bottom);
+    }
+  }
+
+  function openPremiumStampEditor(aside) {
+    const saved = settings.premiumStamp || {};
+    const html = [
+      "<h3>MODIFIER LE LOGO ES+ DE LA SECTION PREMIUM</h3>",
+      "<p class='esp-muted'>Ce réglage concerne le grand ES+ à droite de GO PREMIUM, indépendamment du logo circulaire de la bannière.</p>",
+      "<label><input type='checkbox' id='esp-premium-round-enabled' style='width:auto' checked> Afficher en logo rond</label>",
+      "<label>Texte supérieur (facultatif)</label><input id='esp-premium-top' type='text'>",
+      "<label>Texte central</label><input id='esp-premium-center' type='text'>",
+      "<label>Texte inférieur (facultatif)</label><input id='esp-premium-bottom' type='text'>",
+      "<label>Image de logo complète (facultatif)</label><input id='esp-premium-image' type='file' accept='image/*'>",
+      "<label>Diamètre du cercle (px)</label><input id='esp-premium-diameter' type='number' min='80' max='600'>",
+      "<label>Taille du texte central (px)</label><input id='esp-premium-center-size' type='number' min='12' max='180'>",
+      "<label>Taille des petits textes (px)</label><input id='esp-premium-small-size' type='number' min='6' max='30'>",
+      "<label>Couleur du texte central</label><input id='esp-premium-center-color' type='color'>",
+      "<label>Couleur des textes secondaires</label><input id='esp-premium-small-color' type='color'>",
+      "<label>Couleur du fond</label><input id='esp-premium-background' type='color'>",
+      "<label>Couleur du contour</label><input id='esp-premium-border' type='color'>",
+      "<label>Épaisseur du contour (px)</label><input id='esp-premium-border-width' type='number' min='0' max='12'>",
+      "<label>Couleur du halo</label><input id='esp-premium-glow' type='color'>",
+      "<label>Rotation (degrés)</label><input id='esp-premium-rotation' type='number' min='-180' max='180'>",
+      "<button class='esp-btn primary' id='esp-premium-save'>ENREGISTRER LE LOGO</button>",
+      "<button class='esp-btn' id='esp-premium-reset'>RESTAURER LE ES+ RECTANGULAIRE</button>",
+      "<button class='esp-btn' id='esp-premium-cancel'>ANNULER</button>"
+    ].join("");
+
+    showMenu(html);
+    $("#esp-premium-round-enabled").checked = saved.enabled !== false;
+    $("#esp-premium-top").value = saved.topText ?? "EUROPEAN SATFEED PREMIUM";
+    $("#esp-premium-center").value = saved.centerText ?? "ES+";
+    $("#esp-premium-bottom").value = saved.bottomText ?? "MEMBERS ONLY";
+    $("#esp-premium-diameter").value = saved.diameter || 240;
+    $("#esp-premium-center-size").value = saved.centerSize || 82;
+    $("#esp-premium-small-size").value = saved.smallSize || 9;
+    $("#esp-premium-center-color").value = saved.centerColor || "#eaff00";
+    $("#esp-premium-small-color").value = saved.smallColor || "#aab2bf";
+    $("#esp-premium-background").value = saved.backgroundColor || "#080b12";
+    $("#esp-premium-border").value = saved.borderColor || "#ffffff";
+    $("#esp-premium-border-width").value = saved.borderWidth ?? 1;
+    $("#esp-premium-glow").value = saved.glowColor || "#eaff00";
+    $("#esp-premium-rotation").value = saved.rotation || 0;
+    $("#esp-premium-cancel").onclick = closeMenu;
+
+    $("#esp-premium-save").onclick = async () => {
+      try {
+        await recordUndo("Modifier le logo ES+ de la section Premium");
+        const file = $("#esp-premium-image").files?.[0];
+        const next = {
+          enabled: $("#esp-premium-round-enabled").checked,
+          topText: $("#esp-premium-top").value.trim(),
+          centerText: $("#esp-premium-center").value.trim() || "ES+",
+          bottomText: $("#esp-premium-bottom").value.trim(),
+          diameter: Math.max(80, Math.min(600, Number($("#esp-premium-diameter").value || 240))),
+          centerSize: Math.max(12, Math.min(180, Number($("#esp-premium-center-size").value || 82))),
+          smallSize: Math.max(6, Math.min(30, Number($("#esp-premium-small-size").value || 9))),
+          centerColor: $("#esp-premium-center-color").value,
+          smallColor: $("#esp-premium-small-color").value,
+          backgroundColor: $("#esp-premium-background").value,
+          borderColor: $("#esp-premium-border").value,
+          borderWidth: Math.max(0, Math.min(12, Number($("#esp-premium-border-width").value || 0))),
+          glowColor: $("#esp-premium-glow").value,
+          rotation: Math.max(-180, Math.min(180, Number($("#esp-premium-rotation").value || 0)))
+        };
+        if (file) next.imageUrl = await uploadImage(file);
+        else if (saved.imageUrl) next.imageUrl = saved.imageUrl;
+        settings.premiumStamp = next;
+        applyPremiumStampSettings();
+        await saveSettings(true);
+        closeMenu();
+        message("Logo ES+ de la section Premium enregistré.");
+      } catch (error) {
+        message("Impossible d'enregistrer le logo Premium : " + error.message);
+      }
+    };
+
+    $("#esp-premium-reset").onclick = async () => {
+      try {
+        await recordUndo("Restaurer le ES+ Premium original");
+        delete settings.premiumStamp;
+        applyPremiumStampSettings();
+        await saveSettings(true);
+        closeMenu();
+        message("Le ES+ rectangulaire original est restauré.");
+      } catch (error) {
+        message("Impossible de restaurer le ES+ : " + error.message);
+      }
+    };
+  }
+
+
   function openImageEditor(image) {
     const current = image.currentSrc || image.src || "";
     showMenu(`
@@ -1544,10 +1699,12 @@
 
     admin.classList.add("open");
     toolbar.style.display = "none";
+    switchTab("catalogue");
 
     try {
       await loadCatalogueAdmin();
       await loadSettings();
+      switchTab("catalogue");
     } catch (error) {
       message("Erreur de chargement ADMIN : " + error.message);
     }
@@ -1701,6 +1858,14 @@
       } else {
         message("Cette cover n'a pas pu être identifiée.");
       }
+      return;
+    }
+
+    const premiumStamp = event.target.closest(".premium-aside");
+    if (premiumStamp) {
+      event.preventDefault();
+      event.stopPropagation();
+      openPremiumStampEditor(premiumStamp);
       return;
     }
 
