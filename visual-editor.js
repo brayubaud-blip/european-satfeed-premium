@@ -536,10 +536,10 @@
     }));
   }
 
-  async function recordUndo(label) {
+  async function recordUndo(label, meta = null) {
     if (!owner) throw new Error("Accès propriétaire requis.");
     settings.undoStack ||= [];
-    settings.undoStack.push({ label, snapshot: cloneEditorState() });
+    settings.undoStack.push({ label, snapshot: cloneEditorState(), meta });
     settings.undoStack = settings.undoStack.slice(-25);
     await saveSettings(true);
   }
@@ -550,6 +550,26 @@
     if (!entry) {
       message("Aucune modification à annuler pour le moment.");
       return;
+    }
+    if (entry.meta?.kind === "catalogue") {
+      try {
+        const meta = entry.meta;
+        if (meta.action === "restore" && meta.row) {
+          const { error } = await db.from("catalogue").upsert(meta.row);
+          if (error) throw error;
+        } else if (meta.action === "deleteIds" && Array.isArray(meta.ids) && meta.ids.length) {
+          const { error } = await db.from("catalogue").delete().in("id", meta.ids);
+          if (error) throw error;
+        }
+        await saveSettings(true);
+        await refreshAdminAndPublic();
+        message("Dernière action sur le catalogue annulée.");
+        return;
+      } catch (error) {
+        settings.undoStack.push(entry);
+        message("Impossible d'annuler cette action du catalogue : " + error.message);
+        return;
+      }
     }
     const snapshot = entry.snapshot || {};
     settings.texts = snapshot.texts || {};
@@ -771,15 +791,23 @@
         let result;
 
         if (item && item.source !== "github") {
+          await recordUndo("Modifier une cover", {
+            kind: "catalogue", action: "restore", row: item
+          });
           result = await db.from("catalogue")
             .update(changes)
             .eq("id", item.id);
         } else {
           // Keep the original GitHub image untouched; create an editable catalogue record.
-          result = await db.from("catalogue").insert(changes);
+          result = await db.from("catalogue").insert(changes).select("id").single();
         }
 
         if (result.error) throw result.error;
+        if (!item || item.source === "github") {
+          await recordUndo("Ajouter une cover", {
+            kind: "catalogue", action: "deleteIds", ids: [result.data.id]
+          });
+        }
 
         closeMenu();
         await refreshAdminAndPublic();
@@ -859,6 +887,7 @@
 
     let imported = 0;
     const failures = [];
+    const createdIds = [];
     let nextPosition = allItems.length;
 
     try {
@@ -876,8 +905,9 @@
             published: true
           };
 
-          const { error } = await db.from("catalogue").insert(row);
+          const { data, error } = await db.from("catalogue").insert(row).select("id").single();
           if (error) throw error;
+          createdIds.push(data.id);
           imported++;
         } catch (error) {
           failures.push(file.name + " : " + (error.message || "Erreur inconnue"));
@@ -888,6 +918,11 @@
           " · Réussies : " + imported + " · Erreurs : " + failures.length;
       }
 
+      if (createdIds.length) {
+        await recordUndo("Importer " + createdIds.length + " covers", {
+          kind: "catalogue", action: "deleteIds", ids: createdIds
+        });
+      }
       await refreshAdminAndPublic();
       const skipped = rejected ? " · Refusées (format ou taille) : " + rejected : "";
       status.textContent = "Terminé : " + imported + "/" + valid.length +
@@ -913,8 +948,11 @@
   async function duplicateCover(item) {
     try {
       const copy = { title:item.title, description:item.description, category:item.category, image_url:item.image_url, published:false, position:allItems.length };
-      const { error } = await db.from("catalogue").insert(copy);
+      const { data, error } = await db.from("catalogue").insert(copy).select("id").single();
       if (error) throw error;
+      await recordUndo("Dupliquer une cover", {
+        kind: "catalogue", action: "deleteIds", ids: [data.id]
+      });
       closeMenu();
       await refreshAdminAndPublic();
       message("Copie créée et masquée. Tu peux la modifier avant de la publier.");
@@ -923,6 +961,9 @@
 
   async function togglePublished(item) {
     try {
+      await recordUndo("Changer la visibilité d'une cover", {
+        kind: "catalogue", action: "restore", row: item
+      });
       const { error } = await db.from("catalogue")
         .update({ published: !item.published })
         .eq("id", item.id);
@@ -943,6 +984,9 @@
     }
 
     try {
+      await recordUndo("Supprimer une cover", {
+        kind: "catalogue", action: "restore", row: item
+      });
       const { error } = await db.from("catalogue")
         .delete()
         .eq("id", item.id);
