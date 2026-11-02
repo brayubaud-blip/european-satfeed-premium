@@ -470,6 +470,8 @@
       const element = findElement(key);
       if (element?.tagName === "IMG") element.src = url;
     });
+    if (settings.global?.mainColor) document.documentElement.style.setProperty("--yellow", settings.global.mainColor);
+    if (settings.global?.backgroundColor) document.documentElement.style.setProperty("--bg", settings.global.backgroundColor);
   }
 
   async function loadCatalogueAdmin() {
@@ -630,6 +632,8 @@
     if (item) {
       $("#esp-cover-hide").onclick = async () => { await togglePublished(item); closeMenu(); };
       $("#esp-cover-delete").onclick = async () => { closeMenu(); await deleteCover(item); };
+      const duplicateButton = $("#esp-cover-duplicate");
+      if (duplicateButton) duplicateButton.onclick = async () => { await duplicateCover(item); };
     }
 
     $("#esp-cover-save").onclick = async () => {
@@ -717,6 +721,17 @@
     if (error) throw error;
 
     return db.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+  }
+
+  async function duplicateCover(item) {
+    try {
+      const copy = { title:item.title, description:item.description, category:item.category, image_url:item.image_url, published:false, position:allItems.length };
+      const { error } = await db.from("catalogue").insert(copy);
+      if (error) throw error;
+      closeMenu();
+      await refreshAdminAndPublic();
+      message("Copie créée et masquée. Tu peux la modifier avant de la publier.");
+    } catch (error) { message("Duplication impossible : " + error.message); }
   }
 
   async function togglePublished(item) {
