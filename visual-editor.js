@@ -1178,7 +1178,8 @@
       const image = document.createElement("img");
       image.src = saved.imageUrl;
       image.alt = "European Satfeed Premium";
-      image.style.cssText = "position:absolute;inset:10%;width:80%;height:80%;object-fit:contain;";
+      image.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;clip-path:circle(50% at 50% 50%);";
+      stamp.style.borderRadius = "50%";
       stamp.append(image);
     } else if (Object.keys(saved).length) {
       stamp.innerHTML = '<span class="esp-stamp-top">EST.</span><b class="esp-stamp-center">ES+</b><span class="esp-stamp-bottom">PREMIUM</span>';
