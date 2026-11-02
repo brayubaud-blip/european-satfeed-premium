@@ -2179,12 +2179,31 @@
     });
   }
 
-  function finishDirectEditing() {
-    editing = false;
-    document.body.classList.remove("esp-editing");
-    editControls.style.display = "none";
-    closeMenu();
-    syncPublicAddCover();
+  async function finishDirectEditing() {
+    if (!owner) return;
+    const button = $("#esp-finish-edit-control");
+    if (button) {
+      button.disabled = true;
+      button.textContent = "ENREGISTREMENT…";
+    }
+    try {
+      // Chaque panneau sauvegarde déjà ses changements ; on force une dernière
+      // écriture complète avant de quitter le mode édition.
+      await saveSettings(true);
+      editing = false;
+      document.body.classList.remove("esp-editing");
+      editControls.style.display = "none";
+      closeMenu();
+      syncPublicAddCover();
+      message("Modifications enregistrées. Le site public sera mis à jour après rechargement.");
+    } catch (error) {
+      message("La sauvegarde a échoué : " + error.message + ". Le mode édition reste ouvert.");
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = "TERMINER L'ÉDITION";
+      }
+    }
   }
 
   finishEditControl.addEventListener("click", finishDirectEditing);
