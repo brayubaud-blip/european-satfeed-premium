@@ -2256,7 +2256,7 @@
     } finally {
       if (button) {
         button.disabled = false;
-        button.textContent = "TERMINER L'ÉDITION";
+        button.textContent = "TERMINER";
       }
     }
   }
