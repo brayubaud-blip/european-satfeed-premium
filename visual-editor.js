@@ -125,9 +125,9 @@
     #esp-menu {
       display:none;position:fixed;z-index:1000001;
       left:50%;top:50%;transform:translate(-50%,-50%);
-      width:min(460px,calc(100vw - 24px));
-      max-height:85vh;overflow:auto;background:#101927;
-      border:1px solid #eaff00;padding:17px;color:#fff;
+      width:min(420px,calc(100vw - 32px));
+      max-height:80vh;overflow:auto;background:#101927;
+      border:1px solid #eaff00;border-radius:8px;padding:20px;color:#fff;
       box-shadow:0 15px 55px #000d;
     }
     #esp-menu.open {display:block}
@@ -191,9 +191,9 @@
       .esp-admin-tabs button,.esp-btn {min-height:44px}
       .esp-panel {padding:12px}
       #esp-menu {
-        left:50%;top:auto;bottom:calc(8px + env(safe-area-inset-bottom));
-        transform:translateX(-50%);width:calc(100vw - 16px);
-        max-height:calc(100dvh - 16px);padding:16px;border-radius:10px 10px 7px 7px;
+        left:50%;top:auto;bottom:calc(10px + env(safe-area-inset-bottom));
+        transform:translateX(-50%);width:min(410px,calc(100vw - 28px));
+        max-height:78dvh;padding:15px 16px 18px;border-radius:12px;
         overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
       }
       #esp-menu input,#esp-menu textarea,#esp-menu select {min-height:44px;font-size:16px}
@@ -764,9 +764,19 @@
       const row = document.createElement("div");
       row.className = "esp-list-item";
 
-      const image = document.createElement("img");
-      image.src = item.image_url || "";
-      image.alt = getText(item.title);
+      let preview;
+      if (isVideoUrl(item.image_url)) {
+        preview = document.createElement("video");
+        preview.src = item.image_url || "";
+        preview.muted = true;
+        preview.loop = true;
+        preview.playsInline = true;
+        preview.preload = "metadata";
+      } else {
+        preview = document.createElement("img");
+        preview.src = item.image_url || "";
+        preview.alt = getText(item.title);
+      }
 
       const details = document.createElement("div");
       const title = document.createElement("strong");
@@ -790,7 +800,7 @@
       const remove = makeButton("SUPPRIMER", () => deleteCover(item), "danger");
 
       actions.append(edit, hide, remove);
-      row.append(image, details, actions);
+      row.append(preview, details, actions);
       container.append(row);
     });
   }
@@ -821,14 +831,24 @@
       const row = document.createElement("div");
       row.className = "esp-list-item";
 
-      const image = document.createElement("img");
-      image.src = item.image_url || "";
+      let preview;
+      if (isVideoUrl(item.image_url)) {
+        preview = document.createElement("video");
+        preview.src = item.image_url || "";
+        preview.muted = true;
+        preview.loop = true;
+        preview.playsInline = true;
+        preview.preload = "metadata";
+      } else {
+        preview = document.createElement("img");
+        preview.src = item.image_url || "";
+      }
 
       const title = document.createElement("strong");
       title.textContent = getText(item.title) || "Sans titre";
 
       const publish = makeButton("REPUBLIER", () => togglePublished(item));
-      row.append(image, title, publish);
+      row.append(preview, title, publish);
       container.append(row);
     });
   }
@@ -891,20 +911,24 @@
     const titleValue = getText(item?.title, currentLanguage);
     const descriptionValue = getText(item?.description, currentLanguage);
     const languageName = currentLanguage === "en" ? "anglais" : "français";
+    const existingUrl = item?.image_url || "";
+    const existingVideo = isVideoUrl(existingUrl);
 
     showMenu(`
-      <h3>${item ? "MODIFIER LA COVER" : "AJOUTER UNE COVER"}</h3>
-      <p class="esp-muted">Saisis le contenu une seule fois en ${languageName}. L'autre langue sera générée automatiquement à l'enregistrement.</p>
+      <h3>${item ? "MODIFIER LE MÉDIA" : "AJOUTER AU CATALOGUE"}</h3>
+      <p class="esp-muted">Saisis le contenu en ${languageName}. La traduction française/anglaise est générée à l'enregistrement.</p>
 
-      <label>Image${item ? "" : "s"}</label>
-      <input type="file" id="esp-cover-file" accept="image/*" ${item ? "" : "multiple"}>
-      ${item ? "" : '<p id="esp-cover-file-count" class="esp-muted">Tu peux sélectionner plusieurs images : une cover sera créée pour chaque fichier. Les noms des fichiers serviront de titres.</p>'}
+      <label>${item ? "Remplacer le média" : "Image ou vidéo"}</label>
+      <input type="file" id="esp-cover-file" accept="image/*,video/mp4,video/webm,video/quicktime,video/x-m4v" ${item ? "" : "multiple"}>
+      <p class="esp-help">Les vidéos sont réservées à la catégorie EDITS. Formats conseillés : MP4 ou WebM, 25 Mo maximum. Pour plusieurs fichiers, sélectionne uniquement des images.</p>
+      ${item ? "" : '<p id="esp-cover-file-count" class="esp-muted">Tu peux sélectionner plusieurs images : une cover sera créée pour chaque fichier.</p>'}
+      <div id="esp-cover-preview" class="esp-media-preview" aria-live="polite"></div>
 
       <label>Titre (${currentLanguage.toUpperCase()})</label>
       <input id="esp-cover-title" value="${escapeHTML(titleValue)}">
 
       <label>Description (${currentLanguage.toUpperCase()})</label>
-      <textarea id="esp-cover-description">${escapeHTML(descriptionValue)}</textarea>
+      <textarea id="esp-cover-description" rows="3">${escapeHTML(descriptionValue)}</textarea>
 
       <label>Catégorie</label>
       <select id="esp-cover-category">
@@ -916,22 +940,64 @@
         value="${Number(item?.position ?? allItems.length)}">
 
       <p id="esp-cover-translation-status" class="esp-muted" aria-live="polite"></p>
-      <button class="esp-btn primary" id="esp-cover-save">ENREGISTRER ET TRADUIRE</button>
-      ${item ? '<button class="esp-btn" id="esp-cover-duplicate">DUPLIQUER</button><button class="esp-btn" id="esp-cover-hide">' + (item.published === false ? 'REPUBLIER' : 'MASQUER') + '</button><button class="esp-btn danger" id="esp-cover-delete">SUPPRIMER LA COVER</button>' : ''}
+      <button class="esp-btn primary" id="esp-cover-save">ENREGISTRER</button>
+      ${item ? '<button class="esp-btn" id="esp-cover-duplicate">DUPLIQUER</button><button class="esp-btn" id="esp-cover-hide">' + (item.published === false ? 'REPUBLIER' : 'MASQUER') + '</button><button class="esp-btn danger" id="esp-cover-delete">SUPPRIMER</button>' : ''}
       <button class="esp-btn" id="esp-cover-cancel">ANNULER</button>
     `);
 
     $("#esp-cover-cancel").onclick = closeMenu;
     const coverFileInput = $("#esp-cover-file");
+    const preview = $("#esp-cover-preview");
+    let previewObjectUrl = null;
+
+    const renderMediaPreview = () => {
+      if (!preview) return;
+      if (previewObjectUrl) {
+        URL.revokeObjectURL(previewObjectUrl);
+        previewObjectUrl = null;
+      }
+      preview.replaceChildren();
+      const selected = coverFileInput?.files?.[0] || null;
+      const url = selected ? (previewObjectUrl = URL.createObjectURL(selected)) : existingUrl;
+      const video = selected ? isVideoFile(selected) : existingVideo;
+      if (!url) {
+        preview.textContent = "Aucun média sélectionné.";
+        preview.classList.add("is-empty");
+        return;
+      }
+      preview.classList.remove("is-empty");
+      if (video) {
+        const player = document.createElement("video");
+        player.src = url;
+        player.controls = true;
+        player.playsInline = true;
+        player.preload = "metadata";
+        preview.append(player);
+      } else {
+        const image = document.createElement("img");
+        image.src = url;
+        image.alt = "Aperçu du média";
+        preview.append(image);
+      }
+    };
+    renderMediaPreview();
+
     if (!item && coverFileInput) {
       coverFileInput.addEventListener("change", () => {
-        const count = coverFileInput.files?.length || 0;
+        const selected = Array.from(coverFileInput.files || []);
         const counter = $("#esp-cover-file-count");
-        if (counter) counter.textContent = count
-          ? count + " image(s) sélectionnée(s). Une cover par fichier."
-          : "Tu peux sélectionner plusieurs images : une cover sera créée pour chaque fichier. Les noms des fichiers serviront de titres.";
+        if (counter) {
+          const videos = selected.filter(isVideoFile).length;
+          counter.textContent = selected.length
+            ? selected.length + " fichier(s) sélectionné(s)" + (videos ? " · " + videos + " vidéo(s)" : "") + ". Une seule vidéo à la fois."
+            : "Tu peux sélectionner plusieurs images : une cover sera créée pour chaque fichier.";
+        }
+        renderMediaPreview();
       });
+    } else if (coverFileInput) {
+      coverFileInput.addEventListener("change", renderMediaPreview);
     }
+
     if (item) {
       $("#esp-cover-hide").onclick = async () => { await togglePublished(item); closeMenu(); };
       $("#esp-cover-delete").onclick = async () => { closeMenu(); await deleteCover(item); };
@@ -949,9 +1015,15 @@
       const status = $("#esp-cover-translation-status");
 
       if (selectedFiles.length > 1 && !item) {
-        if (selectedFiles.length > 100) {
-          message("Maximum 100 images par ajout. Tu peux faire plusieurs lots.");
+        if (selectedFiles.some(isVideoFile)) {
+          message("Pour ajouter une vidéo, sélectionne un seul fichier à la fois. L'import multiple accepte les images.");
           return;
+        }
+        if (category === "edits" || category !== "edits") {
+          if (selectedFiles.length > 100) {
+            message("Maximum 100 images par ajout. Tu peux faire plusieurs lots.");
+            return;
+          }
         }
         const validFiles = selectedFiles.filter(image =>
           image.type.startsWith("image/") && image.size <= 12 * 1024 * 1024
@@ -1030,12 +1102,21 @@
         return;
       }
 
+      const existingIsVideo = isVideoUrl(item?.image_url);
+      if ((file && isVideoFile(file) || !file && existingIsVideo) && category !== "edits") {
+        message("Les vidéos sont autorisées uniquement dans la catégorie EDITS.");
+        return;
+      }
+      if (file && isVideoFile(file) && file.size > 25 * 1024 * 1024) {
+        message("Vidéo trop lourde : maximum 25 Mo.");
+        return;
+      }
+
       button.disabled = true;
-      button.textContent = "TRADUCTION EN COURS…";
-      status.textContent = "Création de la version française et anglaise…";
+      button.textContent = "ENREGISTREMENT…";
+      status.textContent = "Préparation du média et des traductions…";
 
       try {
-        const otherLanguage = currentLanguage === "fr" ? "en" : "fr";
         const translatedTitle = await translateCoverText(titleValue, currentLanguage);
         const translatedDescription = await translateCoverText(descriptionValue, currentLanguage);
 
@@ -1047,8 +1128,8 @@
           : { fr: translatedDescription, en: descriptionValue };
 
         let imageUrl = item?.image_url || "";
-        if (file) imageUrl = await uploadImage(file);
-        if (!imageUrl) throw new Error("Sélectionne une image.");
+        if (file) imageUrl = await uploadMedia(file);
+        if (!imageUrl) throw new Error("Sélectionne une image ou une vidéo.");
 
         const changes = {
           title,
@@ -1081,7 +1162,7 @@
 
         closeMenu();
         await refreshAdminAndPublic();
-        message("Cover enregistrée. Les versions française et anglaise sont prêtes.");
+        message("Média enregistré. Les versions française et anglaise sont prêtes.");
       } catch (error) {
         button.disabled = false;
         button.textContent = "RÉESSAYER";
@@ -1089,6 +1170,42 @@
         message("Erreur : " + error.message);
       }
     };
+  }
+
+  async function uploadVideo(file) {
+    const allowedTypes = ["video/mp4", "video/webm", "video/quicktime", "video/x-m4v"];
+    if (!allowedTypes.includes(String(file.type || "").toLowerCase())) {
+      throw new Error("Format vidéo non pris en charge. Utilise MP4, WebM ou MOV.");
+    }
+    if (file.size > 25 * 1024 * 1024) {
+      throw new Error("Vidéo trop lourde : maximum 25 Mo. Compresse-la en MP4 si besoin.");
+    }
+
+    const extension = (file.name.split(".").pop() || "mp4")
+      .toLowerCase().replace(/[^a-z0-9]/g, "");
+    const path = `catalogue/videos/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+
+    const { error } = await db.storage.from(BUCKET).upload(path, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type
+    });
+
+    if (error) {
+      const detail = String(error.message || error);
+      if (/mime|type|size|limit|payload/i.test(detail)) {
+        throw new Error(detail + " — Vérifie dans Storage > covers que les vidéos sont autorisées (video/mp4, video/webm, video/quicktime) et que la limite dépasse la taille du fichier.");
+      }
+      throw error;
+    }
+
+    return db.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+  }
+
+  async function uploadMedia(file) {
+    if (file.type.startsWith("image/")) return uploadImage(file);
+    if (isVideoFile(file)) return uploadVideo(file);
+    throw new Error("Choisis une image ou une vidéo MP4, WebM ou MOV.");
   }
 
   async function uploadImage(file) {
