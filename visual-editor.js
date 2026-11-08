@@ -435,6 +435,8 @@
   }
 
   function closeMenu() {
+    const preview = menu.querySelector("#esp-cover-preview");
+    if (preview?.dataset.objectUrl) URL.revokeObjectURL(preview.dataset.objectUrl);
     menu.classList.remove("open");
     menu.innerHTML = "";
   }
@@ -967,10 +969,12 @@
       if (previewObjectUrl) {
         URL.revokeObjectURL(previewObjectUrl);
         previewObjectUrl = null;
+        delete preview.dataset.objectUrl;
       }
       preview.replaceChildren();
       const selected = coverFileInput?.files?.[0] || null;
       const url = selected ? (previewObjectUrl = URL.createObjectURL(selected)) : existingUrl;
+      if (previewObjectUrl) preview.dataset.objectUrl = previewObjectUrl;
       const video = selected ? isVideoFile(selected) : existingVideo;
       if (!url) {
         preview.textContent = "Aucun média sélectionné.";
