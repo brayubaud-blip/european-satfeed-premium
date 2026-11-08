@@ -1534,7 +1534,7 @@ html[dir="rtl"] .header-actions {direction:ltr;}
 .review-card:hover {border-color:#727b39;transform:translateY(-3px)}
 .review-card-top {display:flex;align-items:center;justify-content:space-between;gap:8px}
 .review-card-top>span:last-child {font-size:8px;letter-spacing:1.3px;color:#7e8995;font-weight:800}
-.review-stars {font-size:12px;letter-spacing:2px;color:var(--yellow);white-space:nowrap}
+.review-mark {display:inline-grid;place-items:center;width:25px;height:22px;border:1px solid #eaff005c;border-radius:4px;color:var(--yellow);font:900 9px "Barlow Condensed",sans-serif;letter-spacing:.3px;white-space:nowrap}
 .review-card blockquote {margin:0;color:#edf0f3;font-size:14px;line-height:1.7;font-weight:600}
 @media(max-width:900px) {.reviews-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px) {
