@@ -465,6 +465,10 @@
     })[char]);
   }
 
+  function isVideoUrl(url) {
+    return /\.(mp4|webm|mov|m4v)(?:[?#]|$)/i.test(String(url || ""));
+  }
+
   function normalizeCategory(value) {
     const category = String(value || "unclassified")
       .trim().toLowerCase();
@@ -635,9 +639,38 @@
   function renderLightboxItem() {
     if (!lightbox || !viewerItems.length) return;
     const item = viewerItems[viewerIndex];
-    const image = lightbox.querySelector(".lightbox-image");
-    image.src = item.image_url || item.image || "";
-    image.alt = localized(item.title) || "Football archive";
+    const url = item.image_url || item.image || "";
+    const figure = lightbox.querySelector(".lightbox-figure");
+    let media = figure.querySelector(".lightbox-image,.lightbox-video");
+
+    if (isVideoUrl(url)) {
+      if (media?.tagName !== "VIDEO") {
+        const video = document.createElement("video");
+        video.className = "lightbox-video";
+        video.controls = true;
+        video.playsInline = true;
+        video.preload = "metadata";
+        if (media) media.replaceWith(video);
+        else figure.prepend(video);
+        media = video;
+      }
+      if (media.src !== url) {
+        media.src = url;
+        media.load();
+      }
+      media.play().catch(() => {});
+    } else {
+      if (media?.tagName !== "IMG") {
+        const image = document.createElement("img");
+        image.className = "lightbox-image";
+        if (media) media.replaceWith(image);
+        else figure.prepend(image);
+        media = image;
+      }
+      media.src = url;
+      media.alt = localized(item.title) || "Football archive";
+    }
+
     lightbox.querySelector(".lightbox-title").textContent = localized(item.title) || "";
     lightbox.querySelector(".lightbox-description").textContent = localized(item.description) || "";
     lightbox.querySelector(".lightbox-counter").textContent = (viewerIndex + 1) + " / " + viewerItems.length;
@@ -658,6 +691,12 @@
 
   function closeLightbox() {
     if (!lightbox) return;
+    const video = lightbox.querySelector(".lightbox-video");
+    if (video) {
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+    }
     lightbox.hidden = true;
     document.body.classList.remove("lightbox-open");
   }
@@ -737,15 +776,29 @@
       const cover = document.createElement("div");
       cover.className = "cover";
 
-      const img = document.createElement("img");
-      img.src = item.image_url || item.image || "";
-      img.alt = localized(item.title) || "Football archive";
-      img.loading = "lazy";
-
-      img.addEventListener("error", () => {
-        img.style.display = "none";
-        cover.classList.add("image-error");
-      });
+      const mediaUrl = item.image_url || item.image || "";
+      let media;
+      if (isVideoUrl(mediaUrl)) {
+        media = document.createElement("video");
+        media.className = "cover-video";
+        media.src = mediaUrl;
+        media.muted = true;
+        media.loop = true;
+        media.autoplay = true;
+        media.playsInline = true;
+        media.preload = "metadata";
+        media.setAttribute("aria-hidden", "true");
+        media.addEventListener("error", () => cover.classList.add("image-error"));
+      } else {
+        media = document.createElement("img");
+        media.src = mediaUrl;
+        media.alt = localized(item.title) || "Football archive";
+        media.loading = "lazy";
+        media.addEventListener("error", () => {
+          media.style.display = "none";
+          cover.classList.add("image-error");
+        });
+      }
 
       const tag = document.createElement("span");
       tag.className = "card-tag";
@@ -753,7 +806,13 @@
         .replace("national teams", "archive")
         .toUpperCase();
 
-      cover.append(img, tag);
+      cover.append(media, tag);
+      if (isVideoUrl(mediaUrl)) {
+        const videoLabel = document.createElement("span");
+        videoLabel.className = "card-media-type";
+        videoLabel.textContent = "VIDEO";
+        cover.append(videoLabel);
+      }
 
       const info = document.createElement("div");
       info.className = "card-info";
