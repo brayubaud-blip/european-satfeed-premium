@@ -28,6 +28,8 @@
   document.documentElement.lang = language;
   document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
   let activeFilter = "all";
+  const CATALOGUE_PAGE_SIZE = 12;
+  let cardsLimit = CATALOGUE_PAGE_SIZE;
   let catalogueItems = [];
   let loadingPromise = null;
   let viewerItems = [];
@@ -98,12 +100,12 @@
   const creatorOf = item => item.creator || item.author || "";
 
   const categories = [
-    { id:"all", fr:"TOUT", en:"ALL", es:"TODO", uk:"УСЕ", zh:"全部", ar:"الكل" },
-    { id:"comps", fr:"COMPS", en:"COMPS", es:"COMPS", uk:"КОМПІЛЯЦІЇ", zh:"集锦", ar:"تجميعات" },
-    { id:"folders", fr:"DOSSIERS", en:"FOLDERS", es:"CARPETAS", uk:"ПАПКИ", zh:"文件夹", ar:"مجلدات" },
-    { id:"old", fr:"ANCIEN", en:"OLD", es:"CLÁSICO", uk:"АРХІВ", zh:"经典", ar:"قديم" },
-    { id:"edits", fr:"EDITS", en:"EDITS", es:"EDITS", uk:"ЕДІТИ", zh:"剪辑", ar:"تعديلات" },
-    { id:"collections", fr:"COLLECTIONS", en:"COLLECTIONS", es:"COLECCIONES", uk:"КОЛЕКЦІЇ", zh:"收藏", ar:"مجموعات" }
+    { id:"all", icon:"◎", fr:"TOUT", en:"ALL", es:"TODO", uk:"УСЕ", zh:"全部", ar:"الكل" },
+    { id:"comps", icon:"▶", fr:"COMPS", en:"COMPS", es:"COMPS", uk:"КОМПІЛЯЦІЇ", zh:"集锦", ar:"تجميعات" },
+    { id:"folders", icon:"▰", fr:"DOSSIERS", en:"FOLDERS", es:"CARPETAS", uk:"ПАПКИ", zh:"文件夹", ar:"مجلدات" },
+    { id:"old", icon:"◷", fr:"ANCIEN", en:"OLD", es:"CLÁSICO", uk:"АРХІВ", zh:"经典", ar:"قديم" },
+    { id:"edits", icon:"♪", fr:"EDITS", en:"EDITS", es:"EDITS", uk:"ЕДІТИ", zh:"剪辑", ar:"تعديلات" },
+    { id:"collections", icon:"▦", fr:"COLLECTIONS", en:"COLLECTIONS", es:"COLECCIONES", uk:"КОЛЕКЦІЇ", zh:"收藏", ar:"مجموعات" }
   ];
 
   const translations = {
@@ -157,7 +159,13 @@
       tickerDrops:"NOUVEAUX DROPS", tickerCulture:"CULTURE FOOTBALL",
       premiumTitle:"PASSE EN<br><span>PREMIUM.</span>", faqTitle:"FAQ.",
       footerBuild:"CRÉÉ POUR LA CULTURE FOOTBALL.",
-      payhipLink:"PAYHIP ↗", supportLink:"SUPPORT ↗"
+      payhipLink:"PAYHIP ↗", supportLink:"SUPPORT ↗",
+      navReviews:"Avis", showMore:"AFFICHER PLUS",
+      reviewsEyebrow:"AVIS DES ACHETEURS", reviewsTitle:"LA COMMUNAUTÉ<br><span class=\"yellow\">S'EXPRIME.</span>",
+      reviewsDescription:"Les retours partagés par les personnes qui ont rejoint European Satfeed Premium.",
+      buyersSoFar:"ACHETEURS AU TOTAL", nextDropTitle:"PROCHAIN OBJECTIF COMMUNAUTAIRE",
+      unlockMessage:"À 20 acheteurs, je publierai 6 comps gratuits sur le canal teaser public.",
+      joinTeaser:"SUIVRE LE TEASER PUBLIC ↗"
     },
     en: {
       topline:"FOOTBALL CULTURE. ARCHIVED.", navArchive:"Archive", navLatest:"Latest drops",
@@ -208,7 +216,13 @@
       tickerDrops:"FRESH DROPS", tickerCulture:"FOOTBALL CULTURE",
       premiumTitle:"GO<br><span>PREMIUM.</span>", faqTitle:"FAQ.",
       footerBuild:"BUILT FOR FOOTBALL CULTURE.",
-      payhipLink:"PAYHIP ↗", supportLink:"SUPPORT ↗"
+      payhipLink:"PAYHIP ↗", supportLink:"SUPPORT ↗",
+      navReviews:"Reviews", showMore:"SHOW MORE",
+      reviewsEyebrow:"REAL BUYER FEEDBACK", reviewsTitle:"THE COMMUNITY<br><span class=\"yellow\">SPEAKS.</span>",
+      reviewsDescription:"Feedback shared by people who have joined European Satfeed Premium.",
+      buyersSoFar:"BUYERS SO FAR", nextDropTitle:"NEXT COMMUNITY MILESTONE",
+      unlockMessage:"At 20 buyers, I'll release 6 free comps on the public teaser channel.",
+      joinTeaser:"FOLLOW THE PUBLIC TEASER ↗"
     },
     es: {
       topline:"CULTURA DEL FÚTBOL. ARCHIVADA.", navArchive:"Archivo", navLatest:"Últimas novedades",
@@ -260,7 +274,13 @@
       tickerDrops:"NUEVAS PUBLICACIONES", tickerCulture:"CULTURA DEL FÚTBOL",
       premiumTitle:"PÁSATE A<br><span>PREMIUM.</span>", faqTitle:"PREGUNTAS FRECUENTES.",
       footerBuild:"HECHO PARA LA CULTURA DEL FÚTBOL.",
-      payhipLink:"PAYHIP ↗", supportLink:"SOPORTE ↗"
+      payhipLink:"PAYHIP ↗", supportLink:"SOPORTE ↗",
+      navReviews:"Opiniones", showMore:"MOSTRAR MÁS",
+      reviewsEyebrow:"OPINIONES DE COMPRADORES", reviewsTitle:"LA COMUNIDAD<br><span class=\"yellow\">OPINA.</span>",
+      reviewsDescription:"Opiniones compartidas por quienes se han unido a European Satfeed Premium.",
+      buyersSoFar:"COMPRADORES EN TOTAL", nextDropTitle:"PRÓXIMO OBJETIVO DE LA COMUNIDAD",
+      unlockMessage:"Al llegar a 20 compradores, publicaré 6 comps gratis en el canal teaser público.",
+      joinTeaser:"SEGUIR EL TEASER PÚBLICO ↗"
     },
     uk: {
       topline:"ФУТБОЛЬНА КУЛЬТУРА. В АРХІВІ.", navArchive:"Архів", navLatest:"Нові надходження",
@@ -312,7 +332,13 @@
       tickerDrops:"НОВІ ДОДАВАННЯ", tickerCulture:"ФУТБОЛЬНА КУЛЬТУРА",
       premiumTitle:"ОБИРАЙ<br><span>PREMIUM.</span>", faqTitle:"ПИТАННЯ ТА ВІДПОВІДІ.",
       footerBuild:"СТВОРЕНО ДЛЯ ФУТБОЛЬНОЇ КУЛЬТУРИ.",
-      payhipLink:"PAYHIP ↗", supportLink:"ПІДТРИМКА ↗"
+      payhipLink:"PAYHIP ↗", supportLink:"ПІДТРИМКА ↗",
+      navReviews:"Відгуки", showMore:"ПОКАЗАТИ БІЛЬШЕ",
+      reviewsEyebrow:"ВІДГУКИ ПОКУПЦІВ", reviewsTitle:"ДУМКА<br><span class=\"yellow\">СПІЛЬНОТИ.</span>",
+      reviewsDescription:"Відгуки людей, які приєдналися до European Satfeed Premium.",
+      buyersSoFar:"ПОКУПЦІВ ЗАГАЛОМ", nextDropTitle:"НАСТУПНА ЦІЛЬ СПІЛЬНОТИ",
+      unlockMessage:"Коли буде 20 покупців, я опублікую 6 безкоштовних компіляцій у відкритому каналі.",
+      joinTeaser:"СТЕЖИТИ ЗА ВІДКРИТИМ КАНАЛОМ ↗"
     },
     zh: {
       topline:"足球文化 · 精选典藏", navArchive:"档案", navLatest:"最新更新",
@@ -364,7 +390,13 @@
       tickerDrops:"最新发布", tickerCulture:"足球文化",
       premiumTitle:"解锁<br><span>PREMIUM.</span>", faqTitle:"常见问题。",
       footerBuild:"为足球文化而打造。",
-      payhipLink:"PAYHIP ↗", supportLink:"客服 ↗"
+      payhipLink:"PAYHIP ↗", supportLink:"客服 ↗",
+      navReviews:"买家评价", showMore:"显示更多",
+      reviewsEyebrow:"真实买家反馈", reviewsTitle:"社区<br><span class=\"yellow\">怎么说。</span>",
+      reviewsDescription:"来自已加入 European Satfeed Premium 用户的反馈。",
+      buyersSoFar:"累计买家", nextDropTitle:"下一个社区目标",
+      unlockMessage:"达到 20 位买家后，我将在公开预览频道免费发布 6 个 comps。",
+      joinTeaser:"关注公开预览频道 ↗"
     },
     ar: {
       topline:"ثقافة كرة القدم. محفوظة في الأرشيف.", navArchive:"الأرشيف", navLatest:"أحدث الإضافات",
@@ -416,7 +448,13 @@
       tickerDrops:"إضافات جديدة", tickerCulture:"ثقافة كرة القدم",
       premiumTitle:"انتقل إلى<br><span>بريميوم.</span>", faqTitle:"الأسئلة الشائعة.",
       footerBuild:"صُمّم لعشاق ثقافة كرة القدم.",
-      payhipLink:"PAYHIP ↗", supportLink:"الدعم ↗"
+      payhipLink:"PAYHIP ↗", supportLink:"الدعم ↗",
+      navReviews:"آراء المشترين", showMore:"عرض المزيد",
+      reviewsEyebrow:"آراء المشترين", reviewsTitle:"المجتمع<br><span class=\"yellow\">يتحدث.</span>",
+      reviewsDescription:"آراء الأشخاص الذين انضموا إلى European Satfeed Premium.",
+      buyersSoFar:"إجمالي المشترين", nextDropTitle:"الهدف المجتمعي القادم",
+      unlockMessage:"عند الوصول إلى 20 مشتريًا، سأنشر 6 تجميعات مجانية في قناة المعاينة العامة.",
+      joinTeaser:"تابع قناة المعاينة العامة ↗"
     }
   };
 
@@ -520,7 +558,7 @@
     filtersContainer.replaceChildren();
     const filterCategories = [
       ...categories,
-      { id: "favorites", fr: "FAVORIS", en: "FAVORITES" }
+      { id: "favorites", icon:"★", fr: "FAVORIS", en: "FAVORITES", es:"FAVORITOS", uk:"ОБРАНЕ", zh:"收藏", ar:"المفضلة" }
     ];
     filterCategories.forEach(category => {
       const button = document.createElement('button');
@@ -532,9 +570,10 @@
         if (category.id === "favorites") return favoriteIds.has(favoriteKey(item));
         return category.id === "all" || normalizeCategory(item.category) === category.id;
       }).length;
-      button.innerHTML = '<span>' + category[language] + '</span><small>' + count + '</small>';
+      const filterIcon = category.icon || "◈";
+      button.innerHTML = '<span class="filter-icon filter-icon-' + category.id + '" aria-hidden="true">' + filterIcon + '</span><span class="filter-label">' + category[language] + '</span><small>' + count + '</small>';
       if (category.id === activeFilter) button.classList.add('active');
-      button.addEventListener('click', () => { activeFilter = category.id; renderFilters(); renderCards(); });
+      button.addEventListener('click', () => { activeFilter = category.id; cardsLimit = CATALOGUE_PAGE_SIZE; renderFilters(); renderCards(); });
       filtersContainer.append(button);
     });
   }
@@ -665,12 +704,21 @@
       return !query || haystack.includes(query);
     });
 
+    const moreWrap = $("#archiveMore");
+    const moreButton = $("#catalogueShowMore");
+    const remaining = $("#catalogueRemaining");
     if (!visible.length) {
+      if (moreWrap) moreWrap.hidden = true;
       updateStatus(query || selectedTeam || selectedSeason || selectedCreator ? t('noResults') : t('empty'));
       return;
     }
 
-    visible.forEach((item, itemIndex) => {
+    const shown = visible.slice(0, cardsLimit);
+    if (moreWrap) moreWrap.hidden = visible.length <= shown.length;
+    if (moreButton) moreButton.setAttribute("aria-label", t("showMore"));
+    if (remaining) remaining.textContent = visible.length > shown.length ? "+" + (visible.length - shown.length) : "";
+
+    shown.forEach((item, itemIndex) => {
       const card = document.createElement("article");
       card.className = "archive-card";
       card.tabIndex = 0;
@@ -747,8 +795,8 @@
 
     updateStatus(
       language === "fr"
-        ? `${visible.length} contenu(s) disponible(s).`
-        : `${visible.length} item(s) available.`
+        ? `${shown.length} / ${visible.length} contenu(s) affiché(s).`
+        : `${shown.length} / ${visible.length} item(s) shown.`
     );
   }
 
@@ -1057,6 +1105,7 @@
     }
 
     loadingPromise = (async () => {
+      if (forceRefresh) cardsLimit = CATALOGUE_PAGE_SIZE;
       updateStatus(t("loading"));
 
       const results = await Promise.allSettled([
@@ -1133,8 +1182,13 @@
     if (lightbox && !lightbox.hidden) renderLightboxItem();
   }
 
-  [searchInput, teamSelect, seasonSelect, creatorSelect].forEach(control => control && control.addEventListener('input', renderCards));
-  [teamSelect, seasonSelect, creatorSelect].forEach(control => control && control.addEventListener('change', renderCards));
+  const resetCataloguePage = () => { cardsLimit = CATALOGUE_PAGE_SIZE; renderCards(); };
+  [searchInput, teamSelect, seasonSelect, creatorSelect].forEach(control => control && control.addEventListener('input', resetCataloguePage));
+  [teamSelect, seasonSelect, creatorSelect].forEach(control => control && control.addEventListener('change', resetCataloguePage));
+  $("#catalogueShowMore")?.addEventListener("click", () => {
+    cardsLimit += CATALOGUE_PAGE_SIZE;
+    renderCards();
+  });
 
   $("#langToggle")?.addEventListener("click", event => {
     event.stopPropagation();
