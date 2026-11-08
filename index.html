@@ -34,6 +34,7 @@
       <a href="#latest" data-i18n="navLatest">Latest drops</a>
       <a href="#included" data-i18n="navIncluded">What's inside</a>
       <a href="#premium" data-i18n="navPremium">Premium</a>
+      <a href="#reviews" data-i18n="navReviews">Reviews</a>
       <a href="#faq" data-i18n="navFaq">FAQ</a>
     </nav>
 
@@ -155,7 +156,10 @@
         </button>
       </div>
 
-      <div class="catalogue-layout"><aside class="catalogue-sidebar"><p class="catalogue-side-title" data-i18n="browseCategories">BROWSE CATEGORIES</p><div class="filters" id="filters"></div></aside><div class="catalogue-main"><div class="catalogue-tools"><label class="catalogue-search"><span>⌕</span><input id="catalogueSearch" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="Search the archive..."></label><select id="teamFilter"><option value="">All teams</option></select><select id="seasonFilter"><option value="">All seasons</option></select><select id="creatorFilter"><option value="">All creators</option></select><button class="catalogue-refresh" id="catalogueRefresh" type="button" aria-label="Refresh catalogue" title="Refresh catalogue" data-i18n-aria-label="refreshCatalogue" data-i18n-title="refreshCatalogue"><span class="catalogue-refresh-icon" aria-hidden="true">↻</span><span data-i18n="refreshCatalogue">REFRESH</span></button></div><div class="archive-grid" id="archiveGrid"></div></div></div>
+      <div class="catalogue-layout"><aside class="catalogue-sidebar"><p class="catalogue-side-title" data-i18n="browseCategories">BROWSE CATEGORIES</p><div class="filters" id="filters"></div></aside><div class="catalogue-main"><div class="catalogue-tools"><label class="catalogue-search"><span>⌕</span><input id="catalogueSearch" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="Search the archive..."></label><select id="teamFilter"><option value="">All teams</option></select><select id="seasonFilter"><option value="">All seasons</option></select><select id="creatorFilter"><option value="">All creators</option></select><button class="catalogue-refresh" id="catalogueRefresh" type="button" aria-label="Refresh catalogue" title="Refresh catalogue" data-i18n-aria-label="refreshCatalogue" data-i18n-title="refreshCatalogue"><span class="catalogue-refresh-icon" aria-hidden="true">↻</span><span data-i18n="refreshCatalogue">REFRESH</span></button></div><div class="archive-grid" id="archiveGrid"></div>
+        <div class="archive-more" id="archiveMore" hidden>
+          <button type="button" id="catalogueShowMore"><span data-i18n="showMore">SHOW MORE</span><small id="catalogueRemaining"></small></button>
+        </div></div></div>
 
       <p id="archiveStatus" class="archive-status" aria-live="polite"></p>
 
@@ -262,6 +266,50 @@
             Possibilité de proposer des demandes et de découvrir d'autres contenus.
           </p>
         </article>
+      </div>
+    </section>
+
+
+    <!-- BUYER REVIEWS -->
+    <section class="section reviews-section" id="reviews">
+      <div class="section-head reviews-head">
+        <div>
+          <div class="eyebrow">
+            <span class="eyebrow-line"></span>
+            <span data-i18n="reviewsEyebrow">REAL BUYER FEEDBACK</span>
+          </div>
+          <h2 data-i18n="reviewsTitle">THE COMMUNITY<br><span class="yellow">SPEAKS.</span></h2>
+        </div>
+        <p data-i18n="reviewsDescription">Feedback shared by people who have joined European Satfeed Premium.</p>
+      </div>
+
+      <div class="reviews-milestone">
+        <div class="reviews-buyer-count">
+          <strong>18</strong>
+          <span data-i18n="buyersSoFar">BUYERS SO FAR</span>
+        </div>
+        <div class="reviews-milestone-content">
+          <div class="reviews-milestone-top">
+            <span data-i18n="nextDropTitle">NEXT COMMUNITY MILESTONE</span>
+            <strong>18 <i>/</i> 20</strong>
+          </div>
+          <div class="reviews-progress" role="progressbar" aria-label="18 out of 20 buyers" aria-valuemin="0" aria-valuemax="20" aria-valuenow="18">
+            <span style="width:90%"></span>
+          </div>
+          <p data-i18n="unlockMessage">At 20 buyers, I'll release 6 free comps on the public teaser channel.</p>
+          <a href="https://t.me/EUROPEAN_PREM_TEASER" target="_blank" rel="noopener" data-i18n="joinTeaser">FOLLOW THE PUBLIC TEASER ↗</a>
+        </div>
+      </div>
+
+      <div class="reviews-grid">
+        <article class="review-card"><div class="review-card-top"><span class="review-stars" aria-label="5 out of 5">★★★★★</span><span>BUYER FEEDBACK</span></div><blockquote>“10/10 its Worth it”</blockquote></article>
+        <article class="review-card"><div class="review-card-top"><span class="review-stars" aria-label="5 out of 5">★★★★★</span><span>BUYER FEEDBACK</span></div><blockquote>“Absolutely 10/10, I've requested a folder and he made at next day, that was fast as fuck, quality of the comps is amazing, owner it's so kind and amazing comp maker, fast replies and a whole bunch of comps from every league itw, buy right Now 😘🥰”</blockquote></article>
+        <article class="review-card"><div class="review-card-top"><span class="review-stars" aria-label="5 out of 5">★★★★★</span><span>BUYER FEEDBACK</span></div><blockquote>“W Guys...will recommend to buy...high quality comps and collabs.....it's soo good....10/10 for me😍”</blockquote></article>
+        <article class="review-card"><div class="review-card-top"><span class="review-stars" aria-label="5 out of 5">★★★★★</span><span>BUYER FEEDBACK</span></div><blockquote>“This premium is SOOO GOOD, has lots of great comps, in great quality. For a very cheap price, would totally recommend buying!!”</blockquote></article>
+        <article class="review-card"><div class="review-card-top"><span class="review-stars" aria-label="5 out of 5">★★★★★</span><span>BUYER FEEDBACK</span></div><blockquote>“W ASF PREM 🔥”</blockquote></article>
+        <article class="review-card"><div class="review-card-top"><span class="review-stars" aria-label="5 out of 5">★★★★★</span><span>BUYER FEEDBACK</span></div><blockquote>“This prem is a absolute 100/10”</blockquote></article>
+        <article class="review-card"><div class="review-card-top"><span class="review-stars" aria-label="5 out of 5">★★★★★</span><span>BUYER FEEDBACK</span></div><blockquote>“W prem ❤️‍🩹”</blockquote></article>
+        <article class="review-card"><div class="review-card-top"><span class="review-stars" aria-label="5 out of 5">★★★★★</span><span>BUYER FEEDBACK</span></div><blockquote>“The premium channel is 10/10, it's incredible.”</blockquote></article>
       </div>
     </section>
 
