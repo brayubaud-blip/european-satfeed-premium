@@ -158,7 +158,7 @@
     @media(max-width:650px) {
       #esp-edit-controls {
         top:auto!important;right:8px!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;left:8px!important;
-        display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;
+        grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;
         max-width:none!important;padding:7px;background:#101927f2;border:1px solid #eaff00;
         border-radius:7px;box-shadow:0 8px 30px #000b;backdrop-filter:blur(12px);
       }
@@ -177,6 +177,7 @@
       outline:1px dashed #eaff00;outline-offset:3px;
     }
     @media(max-width:650px) {
+      body.esp-editing #esp-edit-controls {display:grid!important}
       #esp-admin {padding:10px 10px calc(82px + env(safe-area-inset-bottom))}
       .esp-list-item {grid-template-columns:65px 1fr}
       .esp-list-item img {width:65px;height:58px}
