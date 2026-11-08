@@ -784,6 +784,7 @@
         preview.src = item.image_url || "";
         preview.muted = true;
         preview.loop = true;
+        preview.autoplay = true;
         preview.playsInline = true;
         preview.preload = "metadata";
       } else {
@@ -851,6 +852,7 @@
         preview.src = item.image_url || "";
         preview.muted = true;
         preview.loop = true;
+        preview.autoplay = true;
         preview.playsInline = true;
         preview.preload = "metadata";
       } else {
@@ -1187,22 +1189,26 @@
   }
 
   async function uploadVideo(file) {
+    const extension = (file.name.split(".").pop() || "mp4")
+      .toLowerCase().replace(/[^a-z0-9]/g, "");
+    const inferredType = ({
+      mp4:"video/mp4", m4v:"video/x-m4v", webm:"video/webm", mov:"video/quicktime"
+    })[extension] || "";
+    const fileType = String(file.type || inferredType).toLowerCase();
     const allowedTypes = ["video/mp4", "video/webm", "video/quicktime", "video/x-m4v"];
-    if (!allowedTypes.includes(String(file.type || "").toLowerCase())) {
+    if (!allowedTypes.includes(fileType)) {
       throw new Error("Format vidéo non pris en charge. Utilise MP4, WebM ou MOV.");
     }
     if (file.size > 25 * 1024 * 1024) {
       throw new Error("Vidéo trop lourde : maximum 25 Mo. Compresse-la en MP4 si besoin.");
     }
 
-    const extension = (file.name.split(".").pop() || "mp4")
-      .toLowerCase().replace(/[^a-z0-9]/g, "");
     const path = `catalogue/videos/${Date.now()}-${crypto.randomUUID()}.${extension}`;
 
     const { error } = await db.storage.from(BUCKET).upload(path, file, {
       cacheControl: "3600",
       upsert: false,
-      contentType: file.type
+      contentType: fileType
     });
 
     if (error) {
