@@ -115,11 +115,23 @@
       gap:13px;align-items:center;padding:12px 0;
       border-bottom:1px solid #293447;
     }
-    .esp-list-item img {
-      width:85px;height:65px;object-fit:cover;background:#172131;
+    .esp-list-item img,.esp-list-item video {
+      width:85px;height:65px;object-fit:cover;background:#172131;border-radius:4px;
     }
     .esp-list-item strong {display:block;font-size:13px}
     .esp-muted {font-size:11px;color:#9ba7b8;margin-top:5px}
+    #esp-menu .esp-help {margin:6px 0 13px;color:#93a2b5;font-size:11px;line-height:1.55}
+    #esp-menu .esp-media-preview {
+      display:grid;place-items:center;min-height:76px;max-height:185px;overflow:hidden;
+      margin:8px 0 14px;padding:8px;border:1px dashed #40516a;border-radius:6px;
+      background:#080d15;color:#77879b;font-size:11px;
+    }
+    #esp-menu .esp-media-preview.is-empty {min-height:55px}
+    #esp-menu .esp-media-preview img,#esp-menu .esp-media-preview video {
+      display:block;max-width:100%;max-height:165px;width:auto;height:auto;object-fit:contain;border-radius:4px;
+    }
+    #esp-menu label {margin-top:8px;font-weight:700;letter-spacing:.2px}
+    #esp-menu input,#esp-menu textarea,#esp-menu select {margin:5px 0 9px}
     .esp-actions {display:flex;gap:5px;flex-wrap:wrap}
     .esp-actions button {padding:8px;font-size:10px}
     #esp-menu {
@@ -180,7 +192,7 @@
       body.esp-editing #esp-edit-controls {display:grid!important}
       #esp-admin {padding:10px 10px calc(82px + env(safe-area-inset-bottom))}
       .esp-list-item {grid-template-columns:65px 1fr}
-      .esp-list-item img {width:65px;height:58px}
+      .esp-list-item img,.esp-list-item video {width:65px;height:58px}
       .esp-list-item .esp-actions {grid-column:1/-1}
       .esp-toolbar {left:8px;right:8px;bottom:8px;justify-content:center}
       .esp-toolbar button {flex:1;padding:11px 5px;font-size:10px}
@@ -1019,11 +1031,9 @@
           message("Pour ajouter une vidéo, sélectionne un seul fichier à la fois. L'import multiple accepte les images.");
           return;
         }
-        if (category === "edits" || category !== "edits") {
-          if (selectedFiles.length > 100) {
-            message("Maximum 100 images par ajout. Tu peux faire plusieurs lots.");
-            return;
-          }
+        if (selectedFiles.length > 100) {
+          message("Maximum 100 images par ajout. Tu peux faire plusieurs lots.");
+          return;
         }
         const validFiles = selectedFiles.filter(image =>
           image.type.startsWith("image/") && image.size <= 12 * 1024 * 1024
