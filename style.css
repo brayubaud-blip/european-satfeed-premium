@@ -1457,3 +1457,96 @@ html[dir="rtl"] .language-menu {
 html[dir="rtl"] .language-option {text-align:right;direction:rtl;}
 html[dir="rtl"] .header-actions {direction:ltr;}
 
+
+
+/* SATFEED CATEGORY MARKS */
+.catalogue-sidebar .filter {
+  display:grid;
+  grid-template-columns:24px minmax(0,1fr) auto;
+  gap:9px;
+  align-items:center;
+}
+.filter-icon {
+  display:inline-grid;
+  place-items:center;
+  width:22px;
+  height:22px;
+  font-size:16px;
+  line-height:1;
+  color:#eaff00;
+  text-align:center;
+}
+.filter-icon-edits {
+  color:#fff;
+  font-size:21px;
+  font-weight:900;
+  text-shadow:-1.5px 0 #fe2c55,1.5px 0 #25f4ee;
+}
+.filter-icon-comps {color:#eaff00}
+.filter-icon-folders {color:#63b5ff}
+.filter-icon-old {color:#b8c4d5}
+.filter-icon-collections {color:#d7b7ff}
+.filter-icon-favorites {color:#eaff00}
+.catalogue-sidebar .filter-label {min-width:0}
+
+/* CATALOGUE PAGINATION */
+.archive-more {display:flex;justify-content:center;padding:28px 0 4px}
+.archive-more[hidden] {display:none!important}
+#catalogueShowMore {
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;
+  min-width:190px;min-height:48px;padding:0 23px;
+  border:1px solid #eaff00;border-radius:4px;
+  background:linear-gradient(135deg,#eaff00,#c9d900);
+  color:#080b12;font:900 11px "DM Sans",sans-serif;letter-spacing:1.2px;
+  cursor:pointer;box-shadow:0 8px 24px #eaff001b;transition:transform .2s ease,filter .2s ease;
+}
+#catalogueShowMore:hover {transform:translateY(-2px);filter:brightness(1.06)}
+
+/* BUYER REVIEWS */
+.reviews-section {position:relative;overflow:hidden}
+.reviews-head h2 {max-width:680px}
+.reviews-milestone {
+  display:grid;grid-template-columns:minmax(150px,.65fr) minmax(0,2fr);
+  gap:26px;align-items:center;margin:0 0 28px;padding:26px;
+  border:1px solid #4b4b32;border-radius:9px;
+  background:radial-gradient(ellipse at 8% 50%,#eaff0017,transparent 46%),linear-gradient(135deg,#111a22,#0b1018);
+}
+.reviews-buyer-count {display:flex;flex-direction:column;gap:4px}
+.reviews-buyer-count strong {font:900 clamp(54px,7vw,84px)/.9 "Barlow Condensed",sans-serif;color:var(--yellow)}
+.reviews-buyer-count span,.reviews-milestone-top span {
+  color:#aab2bf;font-size:9px;font-weight:900;letter-spacing:1.7px
+}
+.reviews-milestone-content {min-width:0}
+.reviews-milestone-top {display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
+.reviews-milestone-top strong {font:800 22px "Barlow Condensed",sans-serif;color:#fff}
+.reviews-milestone-top strong i {color:#77808d;font-style:normal}
+.reviews-progress {height:9px;overflow:hidden;border-radius:99px;background:#26303a}
+.reviews-progress span {display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#b8c900,#eaff00);box-shadow:0 0 15px #eaff0066}
+.reviews-milestone-content p {color:#d1d7df;font-size:13px;line-height:1.65;margin:12px 0 8px}
+.reviews-milestone-content>a {font-size:9px;font-weight:900;letter-spacing:1.2px;color:var(--yellow);text-decoration:none}
+.reviews-milestone-content>a:hover {color:#fff}
+.reviews-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.review-card {
+  min-width:0;padding:20px 19px 22px;border:1px solid #29313a;border-radius:8px;
+  background:linear-gradient(150deg,#141b20,#0d1116);display:flex;flex-direction:column;gap:15px;
+  transition:border-color .2s ease,transform .2s ease;
+}
+.review-card:hover {border-color:#727b39;transform:translateY(-3px)}
+.review-card-top {display:flex;align-items:center;justify-content:space-between;gap:8px}
+.review-card-top>span:last-child {font-size:8px;letter-spacing:1.3px;color:#7e8995;font-weight:800}
+.review-stars {font-size:12px;letter-spacing:2px;color:var(--yellow);white-space:nowrap}
+.review-card blockquote {margin:0;color:#edf0f3;font-size:14px;line-height:1.7;font-weight:600}
+@media(max-width:900px) {.reviews-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px) {
+  .catalogue-sidebar .filter {grid-template-columns:20px auto auto;gap:7px;padding:9px 10px}
+  .filter-icon {width:19px;font-size:15px}
+  .filter-icon-edits {font-size:19px}
+  .archive-more {padding:20px 0 0}
+  #catalogueShowMore {width:100%;min-height:46px}
+  .reviews-milestone {grid-template-columns:1fr;gap:16px;padding:20px}
+  .reviews-buyer-count {flex-direction:row;align-items:baseline;gap:12px}
+  .reviews-buyer-count strong {font-size:58px}
+  .reviews-grid {grid-template-columns:1fr;gap:10px}
+  .review-card {padding:17px}
+  .review-card blockquote {font-size:13px}
+}
