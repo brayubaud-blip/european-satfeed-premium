@@ -155,9 +155,17 @@
     #esp-edit-controls #esp-finish-edit-control:hover {
       background:#fff;color:#080b12;border-color:#fff;
     }
-    @media(max-width:560px) {
-      #esp-edit-controls {top:80px!important;right:10px!important;left:10px;justify-content:flex-end}
-      #esp-edit-controls button {font-size:10px;padding:9px}
+    @media(max-width:650px) {
+      #esp-edit-controls {
+        top:auto!important;right:8px!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;left:8px!important;
+        display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;
+        max-width:none!important;padding:7px;background:#101927f2;border:1px solid #eaff00;
+        border-radius:7px;box-shadow:0 8px 30px #000b;backdrop-filter:blur(12px);
+      }
+      #esp-edit-controls button {
+        width:100%;min-width:0;min-height:43px;padding:8px 3px;font-size:9px;
+        line-height:1.15;white-space:normal;letter-spacing:.2px;
+      }
     }
     body.esp-editing .premium-aside {
       outline:1px dashed #eaff00;outline-offset:7px;cursor:pointer;
@@ -169,13 +177,31 @@
       outline:1px dashed #eaff00;outline-offset:3px;
     }
     @media(max-width:650px) {
-      #esp-admin {padding:10px}
+      #esp-admin {padding:10px 10px calc(82px + env(safe-area-inset-bottom))}
       .esp-list-item {grid-template-columns:65px 1fr}
       .esp-list-item img {width:65px;height:58px}
       .esp-list-item .esp-actions {grid-column:1/-1}
       .esp-toolbar {left:8px;right:8px;bottom:8px;justify-content:center}
       .esp-toolbar button {flex:1;padding:11px 5px;font-size:10px}
       .esp-admin-head h2 {font-size:18px}
+      .esp-admin-head>.esp-row {width:100%;display:grid!important;grid-template-columns:1fr}
+      .esp-admin-head>.esp-row .esp-btn {width:100%;min-height:44px}
+      .esp-admin-tabs {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+      .esp-admin-tabs button,.esp-btn {min-height:44px}
+      .esp-panel {padding:12px}
+      #esp-menu {
+        left:50%;top:auto;bottom:calc(8px + env(safe-area-inset-bottom));
+        transform:translateX(-50%);width:calc(100vw - 16px);
+        max-height:calc(100dvh - 16px);padding:16px;border-radius:10px 10px 7px 7px;
+        overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+      }
+      #esp-menu input,#esp-menu textarea,#esp-menu select {min-height:44px;font-size:16px}
+      #esp-menu input[type="file"] {min-height:52px;padding:11px;background:#172131}
+      #esp-menu .esp-btn {width:100%;min-height:46px;margin:5px 0}
+      #esp-login {padding:12px}
+      #esp-login .esp-window {padding:20px;max-height:calc(100dvh - 24px);overflow:auto}
+      #esp-login input {min-height:46px;font-size:16px}
+      #esp-login .esp-btn {width:100%;min-height:46px;margin-top:7px}
     }
   `;
   document.head.append(css);
@@ -317,13 +343,41 @@
   const undoControl = document.createElement("button");
   undoControl.id = "esp-undo-control";
   undoControl.type = "button";
-  undoControl.textContent = "↶ RETOUR ARRIÈRE";
+  undoControl.textContent = "↶ RETOUR";
+  const backgroundControl = document.createElement("button");
+  backgroundControl.id = "esp-background-control";
+  backgroundControl.type = "button";
+  backgroundControl.textContent = "FOND";
+  backgroundControl.setAttribute("aria-label", "Modifier le fond du site ou choisir une image du téléphone");
+  const addCoverControl = document.createElement("button");
+  addCoverControl.id = "esp-mobile-add-cover-control";
+  addCoverControl.type = "button";
+  addCoverControl.textContent = "+ COVER";
   const finishEditControl = document.createElement("button");
   finishEditControl.id = "esp-finish-edit-control";
   finishEditControl.type = "button";
-  finishEditControl.textContent = "TERMINER L'ÉDITION";
-  editControls.append(undoControl, finishEditControl);
+  finishEditControl.textContent = "TERMINER";
+  editControls.append(undoControl, backgroundControl, addCoverControl, finishEditControl);
   document.body.append(editControls);
+
+  backgroundControl.addEventListener("click", event => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (owner && editing) openSectionEditor(document.body);
+  });
+  addCoverControl.addEventListener("click", async event => {
+    event.preventDefault();
+    event.stopPropagation();
+    try {
+      if (!(await checkOwner())) { showLogin(); return; }
+      if (!editing) return;
+      await loadCatalogueAdmin();
+      await loadSettings();
+      openCoverEditor(null);
+    } catch (error) {
+      message("Impossible d'ouvrir l'ajout de cover : " + error.message);
+    }
+  });
 
   const menu = document.createElement("div");
   menu.id = "esp-menu";
