@@ -163,8 +163,8 @@
       navReviews:"Avis", showMore:"AFFICHER PLUS",
       reviewsEyebrow:"AVIS DES ACHETEURS", reviewsTitle:"LA COMMUNAUTÉ<br><span class=\"yellow\">S'EXPRIME.</span>",
       reviewsDescription:"Les retours partagés par les personnes qui ont rejoint European Satfeed Premium.",
-      buyersSoFar:"ACHETEURS AU TOTAL", nextDropTitle:"PROCHAIN OBJECTIF COMMUNAUTAIRE",
-      unlockMessage:"À 20 acheteurs, je publierai 6 comps gratuits sur le canal teaser public.",
+      buyersSoFar:"ACHETEURS AU TOTAL", nextDropTitle:"PREMIER OBJECTIF ATTEINT",
+      unlockMessage:"20 acheteurs atteints ! Les 6 comps gratuits sont débloqués pour le teaser public. Prochain objectif : 35 acheteurs — prochaine récompense annoncée bientôt.",
       joinTeaser:"SUIVRE LE TEASER PUBLIC ↗"
     },
     en: {
@@ -220,8 +220,8 @@
       navReviews:"Reviews", showMore:"SHOW MORE",
       reviewsEyebrow:"REAL BUYER FEEDBACK", reviewsTitle:"THE COMMUNITY<br><span class=\"yellow\">SPEAKS.</span>",
       reviewsDescription:"Feedback shared by people who have joined European Satfeed Premium.",
-      buyersSoFar:"BUYERS SO FAR", nextDropTitle:"NEXT COMMUNITY MILESTONE",
-      unlockMessage:"At 20 buyers, I'll release 6 free comps on the public teaser channel.",
+      buyersSoFar:"BUYERS SO FAR", nextDropTitle:"FIRST MILESTONE REACHED",
+      unlockMessage:"20 buyers reached! The 6 free comps are unlocked for the public teaser. Next goal: 35 buyers — the next reward will be announced soon.",
       joinTeaser:"FOLLOW THE PUBLIC TEASER ↗"
     },
     es: {
@@ -278,8 +278,8 @@
       navReviews:"Opiniones", showMore:"MOSTRAR MÁS",
       reviewsEyebrow:"OPINIONES DE COMPRADORES", reviewsTitle:"LA COMUNIDAD<br><span class=\"yellow\">OPINA.</span>",
       reviewsDescription:"Opiniones compartidas por quienes se han unido a European Satfeed Premium.",
-      buyersSoFar:"COMPRADORES EN TOTAL", nextDropTitle:"PRÓXIMO OBJETIVO DE LA COMUNIDAD",
-      unlockMessage:"Al llegar a 20 compradores, publicaré 6 comps gratis en el canal teaser público.",
+      buyersSoFar:"COMPRADORES EN TOTAL", nextDropTitle:"PRIMER OBJETIVO ALCANZADO",
+      unlockMessage:"¡20 compradores alcanzados! Los 6 comps gratuitos están desbloqueados para el teaser público. Próximo objetivo: 35 compradores; pronto anunciaremos la siguiente recompensa.",
       joinTeaser:"SEGUIR EL TEASER PÚBLICO ↗"
     },
     uk: {
@@ -336,8 +336,8 @@
       navReviews:"Відгуки", showMore:"ПОКАЗАТИ БІЛЬШЕ",
       reviewsEyebrow:"ВІДГУКИ ПОКУПЦІВ", reviewsTitle:"ДУМКА<br><span class=\"yellow\">СПІЛЬНОТИ.</span>",
       reviewsDescription:"Відгуки людей, які приєдналися до European Satfeed Premium.",
-      buyersSoFar:"ПОКУПЦІВ ЗАГАЛОМ", nextDropTitle:"НАСТУПНА ЦІЛЬ СПІЛЬНОТИ",
-      unlockMessage:"Коли буде 20 покупців, я опублікую 6 безкоштовних компіляцій у відкритому каналі.",
+      buyersSoFar:"ПОКУПЦІВ ЗАГАЛОМ", nextDropTitle:"ПЕРШУ ЦІЛЬ ДОСЯГНУТО",
+      unlockMessage:"Досягнуто 20 покупців! 6 безкоштовних компіляцій розблоковано для публічного тизера. Наступна ціль: 35 покупців — про наступну винагороду повідомимо пізніше.",
       joinTeaser:"СТЕЖИТИ ЗА ВІДКРИТИМ КАНАЛОМ ↗"
     },
     zh: {
@@ -394,8 +394,8 @@
       navReviews:"买家评价", showMore:"显示更多",
       reviewsEyebrow:"真实买家反馈", reviewsTitle:"社区<br><span class=\"yellow\">怎么说。</span>",
       reviewsDescription:"来自已加入 European Satfeed Premium 用户的反馈。",
-      buyersSoFar:"累计买家", nextDropTitle:"下一个社区目标",
-      unlockMessage:"达到 20 位买家后，我将在公开预览频道免费发布 6 个 comps。",
+      buyersSoFar:"累计买家", nextDropTitle:"首个目标已达成",
+      unlockMessage:"买家人数已达 20！为公开预览频道准备的 6 个免费 comps 已解锁。下一个目标：35 位买家；下一份奖励稍后公布。",
       joinTeaser:"关注公开预览频道 ↗"
     },
     ar: {
@@ -452,8 +452,8 @@
       navReviews:"آراء المشترين", showMore:"عرض المزيد",
       reviewsEyebrow:"آراء المشترين", reviewsTitle:"المجتمع<br><span class=\"yellow\">يتحدث.</span>",
       reviewsDescription:"آراء الأشخاص الذين انضموا إلى European Satfeed Premium.",
-      buyersSoFar:"إجمالي المشترين", nextDropTitle:"الهدف المجتمعي القادم",
-      unlockMessage:"عند الوصول إلى 20 مشتريًا، سأنشر 6 تجميعات مجانية في قناة المعاينة العامة.",
+      buyersSoFar:"إجمالي المشترين", nextDropTitle:"تم تحقيق الهدف الأول",
+      unlockMessage:"وصلنا إلى 20 مشتريًا! تم فتح 6 تجميعات مجانية لقناة المعاينة العامة. الهدف التالي: 35 مشتريًا — سيتم الإعلان عن المكافأة القادمة لاحقًا.",
       joinTeaser:"تابع قناة المعاينة العامة ↗"
     }
   };
