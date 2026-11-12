@@ -165,7 +165,8 @@
       reviewsDescription:"Les retours partagés par les personnes qui ont rejoint European Satfeed Premium.",
       buyersSoFar:"ACHETEURS AU TOTAL", nextDropTitle:"PREMIER OBJECTIF ATTEINT",
       unlockMessage:"20 acheteurs atteints ! Les 6 comps gratuits sont débloqués pour le teaser public. Prochain objectif : 35 acheteurs — prochaine récompense annoncée bientôt.",
-      joinTeaser:"SUIVRE LE TEASER PUBLIC ↗"
+      joinTeaser:"SUIVRE LE TEASER PUBLIC ↗",
+      visitorsToday:"VISITEURS AUJ."
     },
     en: {
       topline:"FOOTBALL CULTURE. ARCHIVED.", navArchive:"Archive", navLatest:"Latest drops",
@@ -222,7 +223,8 @@
       reviewsDescription:"Feedback shared by people who have joined European Satfeed Premium.",
       buyersSoFar:"BUYERS SO FAR", nextDropTitle:"FIRST MILESTONE REACHED",
       unlockMessage:"20 buyers reached! The 6 free comps are unlocked for the public teaser. Next goal: 35 buyers — the next reward will be announced soon.",
-      joinTeaser:"FOLLOW THE PUBLIC TEASER ↗"
+      joinTeaser:"FOLLOW THE PUBLIC TEASER ↗",
+      visitorsToday:"VISITORS TODAY"
     },
     es: {
       topline:"CULTURA DEL FÚTBOL. ARCHIVADA.", navArchive:"Archivo", navLatest:"Últimas novedades",
@@ -280,7 +282,8 @@
       reviewsDescription:"Opiniones compartidas por quienes se han unido a European Satfeed Premium.",
       buyersSoFar:"COMPRADORES EN TOTAL", nextDropTitle:"PRIMER OBJETIVO ALCANZADO",
       unlockMessage:"¡20 compradores alcanzados! Los 6 comps gratuitos están desbloqueados para el teaser público. Próximo objetivo: 35 compradores; pronto anunciaremos la siguiente recompensa.",
-      joinTeaser:"SEGUIR EL TEASER PÚBLICO ↗"
+      joinTeaser:"SEGUIR EL TEASER PÚBLICO ↗",
+      visitorsToday:"VISITANTES HOY"
     },
     uk: {
       topline:"ФУТБОЛЬНА КУЛЬТУРА. В АРХІВІ.", navArchive:"Архів", navLatest:"Нові надходження",
@@ -338,7 +341,8 @@
       reviewsDescription:"Відгуки людей, які приєдналися до European Satfeed Premium.",
       buyersSoFar:"ПОКУПЦІВ ЗАГАЛОМ", nextDropTitle:"ПЕРШУ ЦІЛЬ ДОСЯГНУТО",
       unlockMessage:"Досягнуто 20 покупців! 6 безкоштовних компіляцій розблоковано для публічного тизера. Наступна ціль: 35 покупців — про наступну винагороду повідомимо пізніше.",
-      joinTeaser:"СТЕЖИТИ ЗА ВІДКРИТИМ КАНАЛОМ ↗"
+      joinTeaser:"СТЕЖИТИ ЗА ВІДКРИТИМ КАНАЛОМ ↗",
+      visitorsToday:"ВІДВІДУВАЧІ СЬОГОДНІ"
     },
     zh: {
       topline:"足球文化 · 精选典藏", navArchive:"档案", navLatest:"最新更新",
@@ -396,7 +400,8 @@
       reviewsDescription:"来自已加入 European Satfeed Premium 用户的反馈。",
       buyersSoFar:"累计买家", nextDropTitle:"首个目标已达成",
       unlockMessage:"买家人数已达 20！为公开预览频道准备的 6 个免费 comps 已解锁。下一个目标：35 位买家；下一份奖励稍后公布。",
-      joinTeaser:"关注公开预览频道 ↗"
+      joinTeaser:"关注公开预览频道 ↗",
+      visitorsToday:"今日访客"
     },
     ar: {
       topline:"ثقافة كرة القدم. محفوظة في الأرشيف.", navArchive:"الأرشيف", navLatest:"أحدث الإضافات",
@@ -454,9 +459,95 @@
       reviewsDescription:"آراء الأشخاص الذين انضموا إلى European Satfeed Premium.",
       buyersSoFar:"إجمالي المشترين", nextDropTitle:"تم تحقيق الهدف الأول",
       unlockMessage:"وصلنا إلى 20 مشتريًا! تم فتح 6 تجميعات مجانية لقناة المعاينة العامة. الهدف التالي: 35 مشتريًا — سيتم الإعلان عن المكافأة القادمة لاحقًا.",
-      joinTeaser:"تابع قناة المعاينة العامة ↗"
+      joinTeaser:"تابع قناة المعاينة العامة ↗",
+      visitorsToday:"زوار اليوم"
     }
   };
+
+
+  // PUBLIC DAILY VISITOR COUNTER
+  const VISITOR_ID_STORAGE_KEY = "esp-public-visitor-id";
+
+  function getPublicVisitorId() {
+    try {
+      let id = localStorage.getItem(VISITOR_ID_STORAGE_KEY);
+      if (id && /^[0-9a-f-]{36}$/i.test(id)) return id;
+      id = globalThis.crypto?.randomUUID?.();
+      if (!id) {
+        const bytes = new Uint8Array(16);
+        globalThis.crypto.getRandomValues(bytes);
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+        id = [...bytes].map((value, index) =>
+          ([4, 6, 8, 10].includes(index) ? "-" : "") + value.toString(16).padStart(2, "0")
+        ).join("");
+      }
+      localStorage.setItem(VISITOR_ID_STORAGE_KEY, id);
+      return id;
+    } catch (error) {
+      // Private browsing/storage restrictions: this visit can still be counted,
+      // but the browser identity cannot be remembered for future page loads.
+      return globalThis.crypto?.randomUUID?.() ||
+        "temporary-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+    }
+  }
+
+  async function requestDailyVisitorCount(trackThisBrowser = false) {
+    const functionName = trackThisBrowser
+      ? "track_daily_site_visitor"
+      : "get_daily_site_visitors";
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${functionName}`, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: trackThisBrowser
+        ? JSON.stringify({ p_visitor_id: getPublicVisitorId() })
+        : "{}",
+      cache: "no-store"
+    });
+    if (!response.ok) {
+      const detail = await response.text().catch(() => "");
+      throw new Error("Daily visitor counter " + response.status + (detail ? ": " + detail : ""));
+    }
+    const count = await response.json();
+    if (!Number.isFinite(Number(count))) throw new Error("Invalid visitor count response");
+    return Math.max(0, Number(count));
+  }
+
+  function initDailyVisitorCounter() {
+    const display = $("#todayVisitorCount");
+    if (!display) return;
+
+    let firstRequest = true;
+    let requestInFlight = false;
+    const refresh = async (trackThisBrowser = false) => {
+      if (requestInFlight) return;
+      requestInFlight = true;
+      try {
+        const count = await requestDailyVisitorCount(trackThisBrowser);
+        display.textContent = Math.round(count).toLocaleString(
+          document.documentElement.lang || "en"
+        );
+        display.dataset.ready = "true";
+      } catch (error) {
+        // Keep the small placeholder until the Supabase SQL setup is completed.
+        if (!display.dataset.ready) display.textContent = "—";
+        if (firstRequest) console.warn("Daily visitor counter is not configured yet:", error);
+      } finally {
+        firstRequest = false;
+        requestInFlight = false;
+      }
+    };
+
+    refresh(true);
+    window.setInterval(() => refresh(false), 15000);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) refresh(false);
+    });
+  }
 
   function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -1308,6 +1399,7 @@
   };
 
   updateTranslations();
+  initDailyVisitorCounter();
   loadPublicVisualSettings();
   renderFilters();
 
