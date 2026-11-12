@@ -488,7 +488,10 @@
       // Private browsing/storage restrictions: this visit can still be counted,
       // but the browser identity cannot be remembered for future page loads.
       return globalThis.crypto?.randomUUID?.() ||
-        "temporary-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+        "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, char => {
+          const random = Math.random() * 16 | 0;
+          return (char === "x" ? random : (random & 3 | 8)).toString(16);
+        });
     }
   }
 
