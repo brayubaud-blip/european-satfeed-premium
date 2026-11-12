@@ -1573,3 +1573,48 @@ html[dir="rtl"] .header-actions {direction:ltr;}
 @media(max-width:700px) {
   .lightbox-video {max-width:100%;max-height:calc(100% - 88px)}
 }
+
+
+/* PUBLIC DAILY VISITOR COUNT */
+.topline-right {
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:15px;
+  white-space:nowrap;
+}
+.topline-visitors {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:8px;
+  line-height:1;
+  letter-spacing:1px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.topline-visitors strong {
+  min-width:12px;
+  font-size:10px;
+  font-weight:900;
+  font-variant-numeric:tabular-nums;
+}
+.topline-visitors-pulse {
+  width:6px;height:6px;display:inline-block;flex:0 0 6px;
+  border-radius:50%;background:#16864b;
+  box-shadow:0 0 0 3px #16864b22,0 0 8px #16864b88;
+  animation:visitorPulse 1.8s ease-in-out infinite;
+}
+@keyframes visitorPulse {
+  0%,100% {opacity:1;transform:scale(1)}
+  50% {opacity:.55;transform:scale(.82)}
+}
+.topline-est {opacity:.65}
+@media(max-width:650px) {
+  .topline {padding-inline:4%;font-size:7px;letter-spacing:.8px;gap:6px}
+  .topline-right {gap:8px}
+  .topline-visitors {font-size:6px;letter-spacing:.35px;gap:4px}
+  .topline-visitors strong {font-size:8px}
+  .topline-visitors-pulse {width:5px;height:5px;flex-basis:5px}
+  .topline-est {display:none}
+}
