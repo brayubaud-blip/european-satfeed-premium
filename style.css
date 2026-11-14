@@ -1618,3 +1618,92 @@ html[dir="rtl"] .header-actions {direction:ltr;}
   .topline-visitors-pulse {width:5px;height:5px;flex-basis:5px}
   .topline-est {display:none}
 }
+
+
+/* ACCESSIBILITY, CONTRAST & SMOOTHER NAVIGATION */
+:root {
+  --muted:#b3bdcb;
+  scroll-behavior:smooth;
+  scroll-padding-top:108px;
+}
+html { scroll-behavior:smooth; }
+body { text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; }
+main section[id] { scroll-margin-top:108px; }
+.header nav a,
+.text-link,
+.footer-links a,
+.catalogue-tools select,
+.catalogue-search input,
+summary,
+button,
+a { -webkit-tap-highlight-color:transparent; }
+:focus-visible {
+  outline:2px solid var(--yellow);
+  outline-offset:4px;
+}
+.topline-visitors {
+  color:#f4f5f7;
+  background:#080b12;
+  border:1px solid #26354b;
+  border-radius:999px;
+  padding:6px 10px;
+  letter-spacing:.9px;
+  box-shadow:0 2px 10px #080b1222;
+}
+.topline-visitors strong { color:var(--yellow); }
+.topline-visitors-pulse { background:#42d392; }
+.topline-est { color:#080b12; opacity:.78; font-weight:900; }
+.section-head>p,
+.hero-copy,
+.latest-copy p,
+.feature p,
+.card-info p,
+details p,
+.premium-content>p,
+.secure-note { color:#b7c1cf; }
+.card-meta,
+.archive-bottom,
+.hero-meta,
+.hero-side { color:#9aa7b8; }
+.review-card {
+  background:linear-gradient(145deg,#172233,#0d1420);
+  border-color:#34445a;
+  box-shadow:0 10px 30px #00000018;
+}
+.review-card-top>span:last-child { color:#aebbd0; }
+.review-card blockquote { color:#f4f6fa; }
+.review-mark { border-color:#eaff0080; }
+.catalogue-search,
+.catalogue-tools select { color:#eef2f7; }
+.catalogue-tools select option { background:#0d1420; color:#f4f5f7; }
+.catalogue-search input::placeholder { color:#aab6c6; opacity:1; }
+.catalogue-sidebar .filter { color:#c1ccda; }
+.archive-status { color:#c1ccda; }
+.header nav a { color:#c1cad7; }
+.footer-links a { color:#bdc7d5; }
+.copyright { color:#9aa7b8; }
+.button-ghost { border-color:#7c899b; }
+@media (hover:hover) {
+  .review-card:hover { border-color:var(--yellow); transform:translateY(-4px); }
+  .header nav a:hover { color:var(--yellow); }
+}
+@media (max-width:650px) {
+  :root { scroll-padding-top:82px; }
+  main section[id] { scroll-margin-top:82px; }
+  .topline { min-height:34px; height:auto; padding-block:5px; }
+  .topline-right { gap:6px; }
+  .topline-visitors { padding:5px 7px; font-size:6px; letter-spacing:.2px; }
+  .topline-visitors strong { font-size:8px; }
+  .reviews-milestone { grid-template-columns:1fr; gap:15px; padding:20px; }
+  .reviews-grid { grid-template-columns:1fr; }
+  .review-card { padding:18px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto; }
+  *,*::before,*::after {
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+    scroll-behavior:auto!important;
+  }
+}
