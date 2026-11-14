@@ -1384,12 +1384,28 @@
   const menuToggle = $("#menuToggle");
   const nav = $("#nav");
 
+  function setMobileMenu(open) {
+    if (!menuToggle || !nav) return;
+    nav.classList.toggle("open", open);
+    menuToggle.setAttribute("aria-expanded", String(open));
+    menuToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    menuToggle.textContent = open ? "×" : "☰";
+  }
+
   menuToggle?.addEventListener("click", () => {
-    nav?.classList.toggle("open");
+    setMobileMenu(!nav?.classList.contains("open"));
   });
 
   nav?.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", () => nav.classList.remove("open"));
+    link.addEventListener("click", () => setMobileMenu(false));
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") setMobileMenu(false);
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 1050) setMobileMenu(false);
   });
 
   window.ESP_CATALOGUE = {
