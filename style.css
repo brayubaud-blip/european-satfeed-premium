@@ -2415,6 +2415,8 @@ body{
   color:var(--yellow);
 }
 .giveaway-draw:disabled{opacity:.55;cursor:wait}
+.giveaway-draw:disabled.is-locked{opacity:.42;cursor:not-allowed}
+.giveaway-draw:disabled.is-drawing{opacity:.55;cursor:wait}
 @media(max-width:850px){
   .giveaway-shell{grid-template-columns:1fr;gap:35px}
 }
