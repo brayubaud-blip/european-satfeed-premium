@@ -292,19 +292,19 @@
 
       <div class="reviews-milestone">
         <div class="reviews-buyer-count">
-          <strong>20</strong>
-          <span data-i18n="buyersSoFar">BUYERS SO FAR</span>
+          <strong id="buyerCount">20</strong>
+          <span>BUYERS SO FAR</span>
         </div>
         <div class="reviews-milestone-content">
           <div class="reviews-milestone-top">
-            <span data-i18n="nextDropTitle">FIRST MILESTONE REACHED</span>
-            <strong>20 <i>/</i> 20</strong>
+            <span>GIVEAWAY MILESTONE</span>
+            <strong><span id="buyerGoalCurrent">20</span> <i>/</i> 30</strong>
           </div>
-          <div class="reviews-progress" role="progressbar" aria-label="20 out of 20 buyers — first milestone reached" aria-valuemin="0" aria-valuemax="20" aria-valuenow="20">
-            <span style="width:100%"></span>
+          <div class="reviews-progress" role="progressbar" aria-label="20 out of 30 buyers" aria-valuemin="0" aria-valuemax="30" aria-valuenow="20">
+            <span id="buyerProgress" style="width:66.67%"></span>
           </div>
-          <p data-i18n="unlockMessage">At 20 buyers, I'll release 6 free comps on the public teaser channel.</p>
-          <a href="https://t.me/EUROPEAN_PREM_TEASER" target="_blank" rel="noopener" data-i18n="joinTeaser">FOLLOW THE PUBLIC TEASER ↗</a>
+          <p>At 30 buyers, I'll give one person from the channel free Premium access. Stay active on the site and don't miss the giveaway.</p>
+          <a href="#giveaway" class="text-link">GO TO THE GIVEAWAY ↓</a>
         </div>
       </div>
 
@@ -320,6 +320,48 @@
         <article class="review-card"><div class="review-card-top"><span class="review-mark" aria-hidden="true">ES+</span><span>BUYER FEEDBACK</span></div><blockquote>“Ay gng this prem gas frfr lit any player or club comps r here”</blockquote></article>
         <article class="review-card"><div class="review-card-top"><span class="review-mark" aria-hidden="true">ES+</span><span>BUYER FEEDBACK</span></div><blockquote>“1000/10 premium, best quality of telegram, really really good”</blockquote></article>
         <article class="review-card"><div class="review-card-top"><span class="review-mark" aria-hidden="true">ES+</span><span>BUYER FEEDBACK</span></div><blockquote>“what a prem one of the best prems ive been in 100/10 (not better than mine in 2024) 😂”</blockquote></article>
+      </div>
+    </section>
+
+    <!-- 30 BUYERS GIVEAWAY -->
+    <section class="section giveaway-section" id="giveaway">
+      <div class="giveaway-shell">
+        <div class="giveaway-copy">
+          <div class="eyebrow">
+            <span class="eyebrow-line"></span>
+            <span>30 BUYERS MILESTONE</span>
+          </div>
+          <h2>ONE FREE<br><span class="yellow">PREMIUM ACCESS.</span></h2>
+          <p>When European Satfeed reaches 30 buyers, one active person from the channel will win free Premium access.</p>
+
+          <div class="giveaway-rules">
+            <div><b>01</b><span>Reply to the giveaway announcement in the channel with your name.</span></div>
+            <div><b>02</b><span>Enter your name below to join the draw.</span></div>
+            <div><b>03</b><span>Stay active on the site and wait for the draw.</span></div>
+          </div>
+        </div>
+
+        <div class="giveaway-card">
+          <div class="giveaway-card-top">
+            <span>GIVEAWAY</span>
+            <strong id="giveawayStatus">NOT OPEN YET</strong>
+          </div>
+
+          <form id="giveawayForm" class="giveaway-form">
+            <label for="giveawayName">YOUR NAME</label>
+            <input id="giveawayName" name="name" type="text" maxlength="40" autocomplete="nickname" placeholder="Enter your name" required>
+            <button class="button button-yellow giveaway-submit" type="submit">
+              <span>JOIN THE DRAW</span><span>↗</span>
+            </button>
+          </form>
+
+          <div class="giveaway-result" id="giveawayResult" aria-live="polite"></div>
+
+          <div class="giveaway-footer">
+            <span><strong id="giveawayCount">0</strong> PARTICIPANTS</span>
+            <button type="button" id="giveawayDraw" class="giveaway-draw">DRAW WINNER</button>
+          </div>
+        </div>
       </div>
     </section>
 
