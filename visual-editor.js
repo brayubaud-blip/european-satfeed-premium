@@ -370,7 +370,47 @@
   finishEditControl.id = "esp-finish-edit-control";
   finishEditControl.type = "button";
   finishEditControl.textContent = "TERMINER";
-  editControls.append(undoControl, backgroundControl, addCoverControl, finishEditControl);
+  const drawGiveawayControl = document.createElement("button");
+  drawGiveawayControl.id = "esp-draw-giveaway-control";
+  drawGiveawayControl.type = "button";
+  drawGiveawayControl.textContent = "DRAW WINNER";
+  drawGiveawayControl.title = "Tirer un gagnant ; TERMINER enregistre le résultat";
+  editControls.append(undoControl, backgroundControl, addCoverControl, drawGiveawayControl, finishEditControl);
+
+  drawGiveawayControl.addEventListener("click", async event => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!(await checkOwner()) || !editing) return;
+    drawGiveawayControl.disabled = true;
+    drawGiveawayControl.textContent = "DRAWING…";
+    try {
+      const { data, error } = await db.from("site_giveaway_entries")
+        .select("id,name,created_at")
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      if (!data?.length) {
+        message("Aucun participant dans le giveaway.");
+        return;
+      }
+      const chosen = data[Math.floor(Math.random() * data.length)];
+      settings.giveawayWinner = String(chosen.name || "").trim();
+      const result = document.querySelector("#giveawayResult");
+      if (result) {
+        const label = document.createElement("span");
+        label.className = "giveaway-winner-label";
+        label.textContent = "WINNER";
+        const strong = document.createElement("strong");
+        strong.textContent = settings.giveawayWinner;
+        result.replaceChildren(label, strong);
+      }
+      message("Gagnant sélectionné : " + settings.giveawayWinner + ". Clique sur TERMINER pour enregistrer et publier le résultat.");
+    } catch (error) {
+      message("Tirage impossible : " + (error.message || "Erreur inconnue"));
+    } finally {
+      drawGiveawayControl.disabled = false;
+      drawGiveawayControl.textContent = "DRAW WINNER";
+    }
+  });
   document.body.append(editControls);
 
   backgroundControl.addEventListener("click", event => {
