@@ -1220,6 +1220,7 @@
       const row = (rows || []).find(item => item.content && typeof item.content === "object");
       savedVisualSettings = row?.content?.visual || null;
       if (savedVisualSettings) applyPublicVisualSettings(savedVisualSettings);
+      renderSavedGiveawayWinner();
     } catch (error) {
       console.warn("Impossible de charger les personnalisations du site :", error);
     }
@@ -1447,105 +1448,29 @@
     }).join("");
   }
 
-  const GIVEAWAY_OWNER_UID = "1f2e7add-fe3d-4792-8c8c-9708e584b9d6";
-  const giveawayAuth = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-  async function isGiveawayOwner() {
-    try {
-      const { data, error } = await giveawayAuth.auth.getUser();
-      return !error && data?.user?.id === GIVEAWAY_OWNER_UID;
-    } catch (_) {
-      return false;
-    }
-  }
-
-  function setGiveawayDrawAccess(isOwner) {
-    const button = $("#giveawayDraw");
-    if (!button) return;
-    button.disabled = !isOwner;
-    button.setAttribute("aria-disabled", String(!isOwner));
-    button.title = isOwner
-      ? "Admin: draw a winner"
-      : "Only the site admin can draw a winner";
-    button.classList.toggle("is-locked", !isOwner);
+  function renderSavedGiveawayWinner() {
+    const result = $("#giveawayResult");
+    const winner = savedVisualSettings?.giveawayWinner;
+    if (!result || !winner) return;
+    const safeWinner = String(winner).replace(/[&<>"]/g, c => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"
+    }[c]));
+    result.innerHTML =
+      '<span class="giveaway-winner-label">WINNER</span><strong>' +
+      safeWinner + '</strong>';
   }
 
   async function initGiveaway() {
-    const result = $("#giveawayResult");
     const drawButton = $("#giveawayDraw");
-    if (!result || !drawButton) return;
-
-    // The button remains visible to everyone, but only the authenticated
-    // site owner can use it. getUser() verifies the session with Supabase Auth.
-    setGiveawayDrawAccess(await isGiveawayOwner());
-    giveawayAuth.auth.onAuthStateChange((_event, session) => {
-      setGiveawayDrawAccess(session?.user?.id === GIVEAWAY_OWNER_UID);
-    });
-
-    let entries = [];
+    // Winner selection is an admin-editor action, never a public-page action.
+    if (drawButton) drawButton.hidden = true;
     try {
-      entries = await loadGiveawayEntries();
+      const entries = await loadGiveawayEntries();
       renderGiveawayEntries(entries);
     } catch (error) {
       console.warn("Giveaway unavailable:", error);
-      result.textContent = "Giveaway temporarily unavailable. Please try again later.";
-      setGiveawayDrawAccess(false);
-      return;
     }
-
-    drawButton.addEventListener("click", async () => {
-      // Re-check ownership on every click instead of trusting the button state.
-      if (!(await isGiveawayOwner())) {
-        setGiveawayDrawAccess(false);
-        return;
-      }
-
-      drawButton.disabled = true;
-      drawButton.classList.add("is-drawing");
-      result.textContent = "Drawing…";
-
-      const finishDraw = async () => {
-        drawButton.classList.remove("is-drawing");
-        setGiveawayDrawAccess(await isGiveawayOwner());
-      };
-
-      try {
-        const freshEntries = await loadGiveawayEntries();
-        renderGiveawayEntries(freshEntries);
-
-        if (!freshEntries.length) {
-          result.textContent = "No participants yet.";
-          await finishDraw();
-          return;
-        }
-
-        let ticks = 0;
-        const timer = setInterval(() => {
-          const preview = freshEntries[Math.floor(Math.random() * freshEntries.length)];
-          const safePreview = String(preview.name || "").replace(/[&<>"]/g, c => ({
-            "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"
-          }[c]));
-          result.innerHTML = "🎲 " + safePreview;
-          ticks++;
-
-          if (ticks >= 12) {
-            clearInterval(timer);
-            const winner = freshEntries[Math.floor(Math.random() * freshEntries.length)];
-            const safeWinner = String(winner.name || "").replace(/[&<>"]/g, c => ({
-              "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"
-            }[c]));
-            result.innerHTML =
-              '<span class="giveaway-winner-label">WINNER</span><strong>' +
-              safeWinner + '</strong>';
-            finishDraw();
-          }
-        }, 90);
-      } catch (error) {
-        console.error("Giveaway draw:", error);
-        result.textContent = "Couldn't load participants.";
-        await finishDraw();
-      }
-    });
+    renderSavedGiveawayWinner();
   }
 
   window.ESP_CATALOGUE = {
