@@ -1422,92 +1422,79 @@
     return response.json();
   }
 
-  function renderGiveawayCount(entries) {
+  function renderGiveawayEntries(entries) {
     const count = entries.length;
     const countEl = $("#giveawayCount");
+    const footerCountEl = $("#giveawayCountFooter");
+    const list = $("#giveawayParticipantList");
+
     if (countEl) countEl.textContent = String(count);
+    if (footerCountEl) footerCountEl.textContent = String(count);
+    if (!list) return;
+
+    if (!count) {
+      list.innerHTML = '<span class="giveaway-empty">No participants added yet.</span>';
+      return;
+    }
+
+    list.innerHTML = entries.map((entry, index) => {
+      const safeName = String(entry.name || "").replace(/[&<>"]/g, c => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"
+      }[c]));
+      return '<div class="giveaway-participant"><span>' +
+        String(index + 1).padStart(2, "0") +
+        '</span><strong>' + safeName + '</strong></div>';
+    }).join("");
   }
 
   async function initGiveaway() {
-    const form = $("#giveawayForm");
-    const nameInput = $("#giveawayName");
     const result = $("#giveawayResult");
     const drawButton = $("#giveawayDraw");
-    if (!form || !nameInput || !result) return;
+    if (!result) return;
 
     let entries = [];
     try {
       entries = await loadGiveawayEntries();
-      renderGiveawayCount(entries);
+      renderGiveawayEntries(entries);
     } catch (error) {
       console.warn("Giveaway unavailable:", error);
       result.textContent = "Giveaway temporarily unavailable. Please try again later.";
+      if (drawButton) drawButton.disabled = true;
+      return;
     }
-
-    form.addEventListener("submit", async event => {
-      event.preventDefault();
-      const name = nameInput.value.trim();
-      if (name.length < 2 || name.length > 40) {
-        result.textContent = "Please enter a name between 2 and 40 characters.";
-        return;
-      }
-
-      const submit = form.querySelector("button");
-      if (submit) submit.disabled = true;
-      result.textContent = "Joining the draw…";
-
-      try {
-        const existing = entries.some(item => item.name.trim().toLowerCase() === name.toLowerCase());
-        if (existing) {
-          result.textContent = "You're already in the draw.";
-          return;
-        }
-
-        const response = await fetch(SUPABASE_URL + "/rest/v1/" + GIVEAWAY_TABLE, {
-          method: "POST",
-          headers: {
-            apikey: SUPABASE_KEY,
-            Authorization: "Bearer " + SUPABASE_KEY,
-            "Content-Type": "application/json",
-            Prefer: "return=representation"
-          },
-          body: JSON.stringify({ name })
-        });
-
-        if (!response.ok) throw new Error("Entry: " + response.status);
-        const added = await response.json();
-        entries.push(added[0] || { name });
-        renderGiveawayCount(entries);
-        try { localStorage.setItem("esp-giveaway-entered", name); } catch (_) {}
-        result.textContent = "You're in! Good luck 🤞";
-        nameInput.value = "";
-      } catch (error) {
-        console.error("Giveaway entry:", error);
-        result.textContent = "Couldn't join the draw. Please try again.";
-      } finally {
-        if (submit) submit.disabled = false;
-      }
-    });
 
     drawButton?.addEventListener("click", async () => {
       drawButton.disabled = true;
       result.textContent = "Drawing…";
+
       try {
         const freshEntries = await loadGiveawayEntries();
+        renderGiveawayEntries(freshEntries);
+
         if (!freshEntries.length) {
           result.textContent = "No participants yet.";
+          drawButton.disabled = false;
           return;
         }
 
         let ticks = 0;
         const timer = setInterval(() => {
           const preview = freshEntries[Math.floor(Math.random() * freshEntries.length)];
-          result.innerHTML = "🎲 " + preview.name;
+          const safePreview = String(preview.name || "").replace(/[&<>"]/g, c => ({
+            "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"
+          }[c]));
+          result.innerHTML = "🎲 " + safePreview;
           ticks++;
+
           if (ticks >= 12) {
             clearInterval(timer);
             const winner = freshEntries[Math.floor(Math.random() * freshEntries.length)];
-            result.innerHTML = '<span class="giveaway-winner-label">WINNER</span><strong>' + winner.name.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])) + '</strong>';
+            const safeWinner = String(winner.name || "").replace(/[&<>"]/g, c => ({
+              "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"
+            }[c]));
+            result.innerHTML =
+              '<span class="giveaway-winner-label">WINNER</span><strong>' +
+              safeWinner + '</strong>';
             drawButton.disabled = false;
           }
         }, 90);
