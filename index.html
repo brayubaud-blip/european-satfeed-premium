@@ -336,7 +336,7 @@
 
           <div class="giveaway-rules">
             <div><b>01</b><span>Reply to the giveaway announcement in the channel with your name.</span></div>
-            <div><b>02</b><span>Enter your name below to join the draw.</span></div>
+            <div><b>02</b><span>Your name will be added to the participant list by the admin.</span></div>
             <div><b>03</b><span>Stay active on the site and wait for the draw.</span></div>
           </div>
         </div>
@@ -347,18 +347,28 @@
             <strong id="giveawayStatus">NOT OPEN YET</strong>
           </div>
 
-          <form id="giveawayForm" class="giveaway-form">
-            <label for="giveawayName">YOUR NAME</label>
-            <input id="giveawayName" name="name" type="text" maxlength="40" autocomplete="nickname" placeholder="Enter your name" required>
-            <button class="button button-yellow giveaway-submit" type="submit">
-              <span>JOIN THE DRAW</span><span>↗</span>
-            </button>
-          </form>
+          <div class="giveaway-participant-note">
+            <span class="giveaway-note-icon">✓</span>
+            <div>
+              <strong>YOUR NAME IS ADDED BY THE ADMIN</strong>
+              <p>Reply to the giveaway message in the Telegram channel with your name. Once verified, it will appear here.</p>
+            </div>
+          </div>
 
           <div class="giveaway-result" id="giveawayResult" aria-live="polite"></div>
 
+          <div class="giveaway-participants">
+            <div class="giveaway-participants-head">
+              <span>PARTICIPANTS</span>
+              <strong id="giveawayCount">0</strong>
+            </div>
+            <div class="giveaway-participant-list" id="giveawayParticipantList">
+              <span class="giveaway-empty">No participants added yet.</span>
+            </div>
+          </div>
+
           <div class="giveaway-footer">
-            <span><strong id="giveawayCount">0</strong> PARTICIPANTS</span>
+            <span><strong id="giveawayCountFooter">0</strong> PARTICIPANTS</span>
             <button type="button" id="giveawayDraw" class="giveaway-draw">DRAW WINNER</button>
           </div>
         </div>
