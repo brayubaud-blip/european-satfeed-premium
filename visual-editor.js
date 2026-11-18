@@ -383,47 +383,7 @@
   finishEditControl.id = "esp-finish-edit-control";
   finishEditControl.type = "button";
   finishEditControl.textContent = "TERMINER";
-  const drawGiveawayControl = document.createElement("button");
-  drawGiveawayControl.id = "esp-draw-giveaway-control";
-  drawGiveawayControl.type = "button";
-  drawGiveawayControl.textContent = "DRAW WINNER";
-  drawGiveawayControl.title = "Tirer un gagnant ; TERMINER enregistre le résultat";
-  editControls.append(undoControl, backgroundControl, addCoverControl, drawGiveawayControl, finishEditControl);
-
-  drawGiveawayControl.addEventListener("click", async event => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (!(await checkOwner()) || !editing) return;
-    drawGiveawayControl.disabled = true;
-    drawGiveawayControl.textContent = "DRAWING…";
-    try {
-      const { data, error } = await db.from("site_giveaway_entries")
-        .select("id,name,created_at")
-        .order("created_at", { ascending: true });
-      if (error) throw error;
-      if (!data?.length) {
-        message("Aucun participant dans le giveaway.");
-        return;
-      }
-      const chosen = data[Math.floor(Math.random() * data.length)];
-      settings.giveawayWinner = String(chosen.name || "").trim();
-      const result = document.querySelector("#giveawayResult");
-      if (result) {
-        const label = document.createElement("span");
-        label.className = "giveaway-winner-label";
-        label.textContent = "WINNER";
-        const strong = document.createElement("strong");
-        strong.textContent = settings.giveawayWinner;
-        result.replaceChildren(label, strong);
-      }
-      message("Gagnant sélectionné : " + settings.giveawayWinner + ". Clique sur TERMINER pour enregistrer et publier le résultat.");
-    } catch (error) {
-      message("Tirage impossible : " + (error.message || "Erreur inconnue"));
-    } finally {
-      drawGiveawayControl.disabled = false;
-      drawGiveawayControl.textContent = "DRAW WINNER";
-    }
-  });
+  editControls.append(undoControl, backgroundControl, finishEditControl);
   document.body.append(editControls);
 
   backgroundControl.addEventListener("click", event => {
@@ -431,20 +391,6 @@
     event.stopPropagation();
     if (owner && editing) openSectionEditor(document.body);
   });
-  addCoverControl.addEventListener("click", async event => {
-    event.preventDefault();
-    event.stopPropagation();
-    try {
-      if (!(await checkOwner())) { showLogin(); return; }
-      if (!editing) return;
-      await loadCatalogueAdmin();
-      await loadSettings();
-      openCoverEditor(null);
-    } catch (error) {
-      message("Impossible d'ouvrir l'ajout de cover : " + error.message);
-    }
-  });
-
   const menu = document.createElement("div");
   menu.id = "esp-menu";
   document.body.append(menu);
@@ -2101,6 +2047,37 @@
     };
   }
 
+  async function loadGiveawayAdmin() {
+    const list = $("#esp-giveaway-list");
+    const count = $("#esp-giveaway-count");
+    if (list) list.textContent = "Chargement…";
+    const { data, error } = await db.from("site_giveaway_entries").select("id,name,created_at").order("created_at", { ascending: true });
+    if (error) throw error;
+    const entries = data || [];
+    if (count) count.textContent = entries.length + (entries.length === 1 ? " participant" : " participants");
+    if (list) list.innerHTML = entries.length ? entries.map((entry,index) => `<div class="esp-list-item"><div style="width:65px;height:42px;display:grid;place-items:center;background:#172131;border-radius:4px;color:#eaff00;font-weight:800">${String(index+1).padStart(2,"0")}</div><div><strong>${escapeHTML(String(entry.name || "").trim() || "Sans nom")}</strong><span class="esp-muted">${escapeHTML(entry.created_at ? new Date(entry.created_at).toLocaleString() : "")}</span></div></div>`).join("") : '<p class="esp-muted">Aucun participant pour le moment.</p>';
+    const result = $("#esp-giveaway-result");
+    const winner = String(settings.giveawayWinner || "").trim();
+    if (result) result.textContent = winner ? "Winner actuel : " + winner : "Aucun gagnant tiré.";
+  }
+
+  async function drawGiveaway() {
+    const button = $("#esp-draw-giveaway");
+    if (button) { button.disabled = true; button.textContent = "DRAWING…"; }
+    try {
+      const { data, error } = await db.from("site_giveaway_entries").select("id,name,created_at").order("created_at", { ascending: true });
+      if (error) throw error;
+      if (!data?.length) { message("Aucun participant dans le giveaway."); return; }
+      const chosen = data[Math.floor(Math.random() * data.length)];
+      settings.giveawayWinner = String(chosen.name || "").trim();
+      const result = $("#esp-giveaway-result");
+      if (result) result.textContent = "Winner actuel : " + settings.giveawayWinner;
+      await saveSettings(true);
+      message("Gagnant sélectionné : " + settings.giveawayWinner + ".");
+    } catch (error) { message("Tirage impossible : " + (error.message || "Erreur inconnue")); }
+    finally { if (button) { button.disabled = false; button.textContent = "DRAW WINNER"; } }
+  }
+
   function switchTab(tab) {
     currentTab = tab;
 
@@ -2108,7 +2085,7 @@
       button.classList.toggle("active", button.dataset.tab === tab);
     });
 
-    ["catalogue", "hidden", "site", "appearance"].forEach(name => {
+    ["catalogue", "hidden", "site", "appearance", "giveaway"].forEach(name => {
       const section = $(`#esp-tab-${name}`);
       if (section) section.hidden = name !== tab;
     });
