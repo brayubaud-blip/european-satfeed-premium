@@ -525,7 +525,7 @@ function renderCatalogue() {
   const tbody = $("catalogueRows");
 
   if (!catalogue.length) {
-    tbody.innerHTML = '<tr><td colspan="5">Aucun élément dans le catalogue.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6">Aucun élément dans le catalogue.</td></tr>';
     return;
   }
 
@@ -539,7 +539,7 @@ function renderCatalogue() {
         <td>
           ${
             image
-              ? `<img src="${escapeHtml(image)}" alt="" loading="lazy">`
+              ? `<img class="cover" src="${escapeHtml(image)}" alt="" loading="lazy">`
               : '<span class="muted">Pas d’image</span>'
           }
         </td>
@@ -589,7 +589,8 @@ function resetCatalogueForm() {
   $("itemPublished").checked = true;
   $("coverUrl").value = "";
   $("coverFile").value = "";
-  $("coverPreview").textContent = "Aperçu de la couverture";
+  $("coverPreview").src = "";
+  $("coverPreview").alt = "Aperçu de la couverture";
   $("catalogueFormTitle").textContent = "Ajouter un élément";
   $("saveItem").textContent = "Enregistrer l'élément";
   $("cancelEdit").classList.add("hidden");
@@ -630,9 +631,8 @@ function editCatalogueItem(id) {
   $("coverFile").value = "";
 
   const image = safeUrl(item.image_url);
-  $("coverPreview").innerHTML = image
-    ? `<img src="${escapeHtml(image)}" alt="Aperçu de la couverture">`
-    : "Aperçu de la couverture";
+  $("coverPreview").src = image || "";
+  $("coverPreview").alt = image ? "Aperçu de la couverture" : "Aperçu de la couverture";
 
   $("catalogueFormTitle").textContent = "Modifier un élément";
   $("saveItem").textContent = "Enregistrer les modifications";
@@ -804,8 +804,8 @@ function previewCover() {
     const reader = new FileReader();
 
     reader.onload = () => {
-      $("coverPreview").innerHTML =
-        `<img src="${reader.result}" alt="Aperçu de la couverture">`;
+      $("coverPreview").src = reader.result;
+      $("coverPreview").alt = "Aperçu de la couverture";
     };
 
     reader.readAsDataURL(file);
@@ -813,12 +813,13 @@ function previewCover() {
   }
 
   if (url && safeUrl(url)) {
-    $("coverPreview").innerHTML =
-      `<img src="${escapeHtml(url)}" alt="Aperçu de la couverture">`;
+    $("coverPreview").src = url;
+    $("coverPreview").alt = "Aperçu de la couverture";
     return;
   }
 
-  $("coverPreview").textContent = "Aperçu de la couverture";
+  $("coverPreview").src = "";
+  $("coverPreview").alt = "Aperçu de la couverture";
 }
 
 /* =========================================
