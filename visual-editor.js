@@ -255,22 +255,23 @@
         <button data-tab="hidden">COVERS MASQUÉES</button>
         <button data-tab="site">ÉDITER LE SITE</button>
         <button data-tab="appearance">APPARENCE</button>
+        <button data-tab="giveaway">GIVEAWAY</button>
       </nav>
 
       <section id="esp-tab-catalogue">
-        <div class="esp-catalogue-addbar">
-          <button class="esp-btn primary esp-add-cover-main" type="button" id="esp-add-cover">
-            + AJOUTER UNE NOUVELLE COVER
-          </button>
-          <span>Ajout individuel · ou utilise l'import multiple juste en dessous</span>
+        <div class="esp-page-head">
+          <div>
+            <h3>CATALOGUE</h3>
+            <p class="esp-muted">Ajoute, modifie, masque ou supprime tes covers.</p>
+          </div>
+          <div class="esp-page-actions">
+            <button class="esp-btn primary" type="button" id="esp-add-cover">+ AJOUTER UNE COVER</button>
+          </div>
         </div>
         <div class="esp-panel">
-          <div class="esp-row">
-            <div>
-              <h3>TOUTES LES COVERS</h3>
-              <p class="esp-muted">Gère tes covers depuis une seule liste.</p>
-              <button class="esp-btn primary" type="button" id="esp-add-cover-inline">+ AJOUTER UNE COVER</button>
-            </div>
+          <div>
+            <h3>TOUTES LES COVERS</h3>
+            <p class="esp-muted">Gère tes covers depuis une seule liste.</p>
           </div>
 
           <div class="esp-panel" style="margin:16px 0;background:#101927">
@@ -302,38 +303,54 @@
       </section>
 
       <section id="esp-tab-hidden" hidden>
+        <div class="esp-page-head">
+          <div>
+            <h3>COVERS MASQUÉES</h3>
+            <p class="esp-muted">Retrouve ici les covers non publiées.</p>
+          </div>
+          <div class="esp-page-actions">
+            <button class="esp-btn" type="button" id="esp-refresh-hidden">ACTUALISER</button>
+          </div>
+        </div>
         <div class="esp-panel">
-          <h3>COVERS MASQUÉES</h3>
           <div id="esp-hidden-list"></div>
         </div>
       </section>
 
       <section id="esp-tab-site" hidden>
+        <div class="esp-page-head">
+          <div>
+            <h3>ÉDITION DIRECTE DU SITE</h3>
+            <p class="esp-muted">Modifie directement les textes, boutons, images et sections du site.</p>
+          </div>
+          <div class="esp-page-actions">
+            <button class="esp-btn primary" id="esp-toggle-edit">ACTIVER L'ÉDITION DIRECTE</button>
+            <button class="esp-btn" id="esp-save-settings">ENREGISTRER</button>
+          </div>
+        </div>
         <div class="esp-panel">
-          <h3>ÉDITION DIRECTE DU SITE</h3>
           <p class="esp-muted">
             Active le mode édition, puis touche ou clique sur un texte,
             un titre, un bouton ou une section pour le modifier.
           </p>
-          <button class="esp-btn primary" id="esp-toggle-edit">
-            ACTIVER L'ÉDITION DIRECTE
-          </button>
-          <button class="esp-btn" id="esp-save-settings">
-            ENREGISTRER LES MODIFICATIONS
-          </button>
         </div>
       </section>
 
       <section id="esp-tab-appearance" hidden>
+        <div class="esp-page-head">
+          <div>
+            <h3>APPARENCE GÉNÉRALE</h3>
+            <p class="esp-muted">Modifie les couleurs globales du site.</p>
+          </div>
+          <div class="esp-page-actions">
+            <button class="esp-btn primary" id="esp-save-appearance">ENREGISTRER</button>
+          </div>
+        </div>
         <div class="esp-panel">
-          <h3>APPARENCE GÉNÉRALE</h3>
           <label>Couleur principale</label>
           <input type="color" id="esp-main-color" value="#eaff00">
           <label>Couleur de fond</label>
           <input type="color" id="esp-bg-color" value="#080b12">
-          <button class="esp-btn primary" id="esp-save-appearance">
-            ENREGISTRER L'APPARENCE
-          </button>
         </div>
       </section>
     </div>
