@@ -2758,9 +2758,4 @@ body{
   .card-meta { font-size:7px; margin-bottom:7px; }
   .card-info h3 { font-size:16px; line-height:1.12; margin-bottom:10px; }
   .card-access-note { font-size:9px; margin-bottom:6px; }
-  .card-info p { font-size:9.5px; line-height:1.45; min-height:25px; }
-  .card-actions { margin:15px -11px 0; min-height:48px; padding:0 11px; }
-  .cover-favorite,.card-share { min-height:48px; font-size:8.5px; }
-  .favorite-star { font-size:15px; }
-  .card-share span:first-child { font-size:13px; }
-}
+  .card-info p { font-size:9.5px; line-height:1.45; min-height:25px; }}
