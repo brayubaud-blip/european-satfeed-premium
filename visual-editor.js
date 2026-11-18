@@ -355,8 +355,6 @@
         </div>
       </section>
 
->
-      </section>
     </div>
   `;
   document.body.append(admin);
