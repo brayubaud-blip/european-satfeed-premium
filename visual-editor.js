@@ -2181,7 +2181,7 @@
     await loadSettings();
     prepareEditableElements();
     editControls.style.display = "flex";
-    syncPublicAddCover();
+
   };
 
 
@@ -2425,7 +2425,7 @@
       document.body.classList.remove("esp-editing");
       editControls.style.display = "none";
       closeMenu();
-      syncPublicAddCover();
+
       message("Modifications enregistrées. Le site public sera mis à jour après rechargement.");
     } catch (error) {
       message("La sauvegarde a échoué : " + error.message + ". Le mode édition reste ouvert.");
@@ -2454,7 +2454,6 @@
 
   db.auth.onAuthStateChange((_event, session) => {
     owner = isOwnerSession(session);
-    syncPublicAddCover();
 
     if (!owner) {
       admin.classList.remove("open");
