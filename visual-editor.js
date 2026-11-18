@@ -399,10 +399,6 @@
   backgroundControl.type = "button";
   backgroundControl.textContent = "FOND";
   backgroundControl.setAttribute("aria-label", "Modifier le fond du site ou choisir une image du téléphone");
-  const addCoverControl = document.createElement("button");
-  addCoverControl.id = "esp-mobile-add-cover-control";
-  addCoverControl.type = "button";
-  addCoverControl.textContent = "+ COVER";
   const finishEditControl = document.createElement("button");
   finishEditControl.id = "esp-finish-edit-control";
   finishEditControl.type = "button";
@@ -445,14 +441,6 @@
     return !!session?.user && session.user.id === OWNER_UID;
   }
 
-  function syncPublicAddCover() {
-    const button = $("#publicAddCover");
-    if (button) {
-      // Visible uniquement au propriétaire, pendant le mode édition directe.
-      button.hidden = !(owner && editing && !admin.classList.contains("open"));
-    }
-  }
-
   function showLogin() {
     login.classList.add("open");
   }
@@ -474,7 +462,6 @@
     if (error) throw error;
 
     owner = isOwnerSession(data.session);
-    syncPublicAddCover();
 
     if (!owner) {
       admin.classList.remove("open");
@@ -576,7 +563,7 @@
     document.querySelectorAll(
       "h1,h2,h3,p,a,button,summary,.brand-name,.brand-mark,.brand img"
     ).forEach(element => {
-      if (element.closest("#esp-admin,#esp-login,#esp-menu,.esp-toolbar,#esp-edit-controls") || element.id === "publicAddCover") return;
+      if (element.closest("#esp-admin,#esp-login,#esp-menu,.esp-toolbar,#esp-edit-controls")) return;
       element.dataset.espEditable = "true";
       element.dataset.espKey ||= elementKey(element);
     });
@@ -2286,7 +2273,7 @@
   document.addEventListener("click", event => {
     if (!owner || !editing || admin.classList.contains("open")) return;
 
-    if (event.target.closest("#esp-edit-controls") || event.target.closest("#publicAddCover")) return;
+    if (event.target.closest("#esp-edit-controls")) return;
     if (event.target.closest("#esp-admin,#esp-login,#esp-menu,.esp-toolbar")) return;
 
     const card = event.target.closest(".archive-card");
