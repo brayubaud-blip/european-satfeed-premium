@@ -28,6 +28,7 @@
   document.documentElement.lang = language;
   document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
   let activeFilter = "all";
+  window.ESP_ACTIVE_CATALOGUE_FILTER = activeFilter;
   const CATALOGUE_PAGE_SIZE = 12;
   let cardsLimit = CATALOGUE_PAGE_SIZE;
   let catalogueItems = [];
@@ -671,7 +672,7 @@
       const filterIcon = category.icon || "◈";
       button.innerHTML = '<span class="filter-icon filter-icon-' + category.id + '" aria-hidden="true">' + filterIcon + '</span><span class="filter-label">' + category[language] + '</span><small>' + count + '</small>';
       if (category.id === activeFilter) button.classList.add('active');
-      button.addEventListener('click', () => { activeFilter = category.id; cardsLimit = CATALOGUE_PAGE_SIZE; renderFilters(); renderCards(); });
+      button.addEventListener('click', () => { activeFilter = category.id; window.ESP_ACTIVE_CATALOGUE_FILTER = activeFilter; window.dispatchEvent(new CustomEvent("esp:catalogue-filter-change", { detail: { category: activeFilter } })); cardsLimit = CATALOGUE_PAGE_SIZE; renderFilters(); renderCards(); });
       filtersContainer.append(button);
     });
   }
