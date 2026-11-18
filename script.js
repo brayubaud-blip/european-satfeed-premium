@@ -926,6 +926,12 @@
       description.className = "catalogue-description";
       description.textContent = localized(item.description);
 
+      const accessNote = document.createElement("div");
+      accessNote.className = "card-access-note";
+      accessNote.textContent = language === "fr"
+        ? "INCLUS AVEC PREMIUM"
+        : "INCLUDED WITH PREMIUM";
+
       const favorite = document.createElement("button");
       const isFavorite = favoriteIds.has(favoriteKey(item));
       favorite.type = "button";
@@ -942,7 +948,32 @@
       });
       favorite.addEventListener("keydown", event => event.stopPropagation());
 
-      info.append(meta, title, description, favorite);
+      const cardActions = document.createElement("div");
+      cardActions.className = "card-actions";
+
+      const shareButton = document.createElement("button");
+      shareButton.type = "button";
+      shareButton.className = "card-share";
+      shareButton.innerHTML = '<span aria-hidden="true">↗</span><span>' +
+        (language === "fr" ? "PARTAGER" : "SHARE") + '</span>';
+      shareButton.setAttribute("aria-label",
+        language === "fr" ? "Ouvrir le dossier ou la compilation" : "Open the folder or compilation");
+      shareButton.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        const url = String(item.content_url || "").trim();
+        if (!url) {
+          updateStatus(language === "fr"
+            ? "Aucun lien comp/folder n'est encore associé à cette archive."
+            : "No comp/folder link is attached to this archive yet.");
+          return;
+        }
+        window.open(url, "_blank", "noopener,noreferrer");
+      });
+      shareButton.addEventListener("keydown", event => event.stopPropagation());
+
+      cardActions.append(favorite, shareButton);
+      info.append(meta, title, accessNote, description, cardActions);
       card.append(cover, info);
       grid.append(card);
     });
@@ -959,7 +990,7 @@
 
     query.searchParams.set(
       "select",
-      "id,title,description,category,image_url,published,position"
+      "id,title,description,category,image_url,content_url,published,position"
     );
     query.searchParams.set("published", "eq.true");
     query.searchParams.set("order", "position.asc");
