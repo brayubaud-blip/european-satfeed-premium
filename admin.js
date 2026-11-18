@@ -588,6 +588,7 @@ function resetCatalogueForm() {
   $("itemPosition").value = "0";
   $("itemPublished").checked = true;
   $("coverUrl").value = "";
+  $("contentUrl").value = "";
   $("coverFile").value = "";
   $("coverPreview").src = "";
   $("coverPreview").alt = "Aperçu de la couverture";
@@ -628,6 +629,7 @@ function editCatalogueItem(id) {
   $("itemPosition").value = item.position ?? 0;
   $("itemPublished").checked = item.published === true;
   $("coverUrl").value = item.image_url || "";
+  $("contentUrl").value = item.content_url || "";
   $("coverFile").value = "";
 
   const image = safeUrl(item.image_url);
@@ -721,6 +723,7 @@ async function saveCatalogueItem(event) {
       },
       category: $("itemCategory").value,
       image_url: imageUrl || null,
+      content_url: $("contentUrl").value.trim() || null,
       published: $("itemPublished").checked,
       position: Number($("itemPosition").value) || 0,
       updated_at: new Date().toISOString()
