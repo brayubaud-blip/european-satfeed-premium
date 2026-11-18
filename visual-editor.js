@@ -1018,8 +1018,10 @@
     return translated.join(" ");
   }
 
-  function openCoverEditor(item = null) {
+  function openCoverEditor(item = null, options = {}) {
     editingItemId = item?.id ?? null;
+    const forceCategory = options.forceCategory || "";
+    const videoOnly = !!options.videoOnly;
 
     const currentLanguage = window.ESP_CATALOGUE?.getLanguage?.() || "fr";
     const titleValue = getText(item?.title, currentLanguage);
@@ -1033,7 +1035,7 @@
       <p class="esp-muted">Saisis le contenu en ${languageName}. La traduction française/anglaise est générée à l'enregistrement.</p>
 
       <label>${item ? "Remplacer le média" : "Image ou vidéo"}</label>
-      <input type="file" id="esp-cover-file" accept="image/*,video/mp4,video/webm,video/quicktime,video/x-m4v" ${item ? "" : "multiple"}>
+      <input type="file" id="esp-cover-file" accept="${videoOnly ? "video/mp4,video/webm,video/quicktime,video/x-m4v" : "image/*,video/mp4,video/webm,video/quicktime,video/x-m4v"}" ${item || videoOnly ? "" : "multiple"}>
       <p class="esp-help">Les vidéos sont réservées à la catégorie EDITS. Formats conseillés : MP4 ou WebM, 25 Mo maximum. Pour plusieurs fichiers, sélectionne uniquement des images.</p>
       ${item ? "" : '<p id="esp-cover-file-count" class="esp-muted">Tu peux sélectionner plusieurs images : une cover sera créée pour chaque fichier.</p>'}
       <div id="esp-cover-preview" class="esp-media-preview" aria-live="polite"></div>
@@ -1045,11 +1047,9 @@
       <textarea id="esp-cover-description" rows="3">${escapeHTML(descriptionValue)}</textarea>
 
       <label>Catégorie</label>
-      <select id="esp-cover-category">
-        ${categorySelect(item?.category || "edits")}
-      </select>
-
-      <label>Position dans le catalogue</label>
+      <select id="esp-cover-category" ${forceCategory ? "disabled" : ""}>
+        ${categorySelect(forceCategory || item?.category || "edits")}
+      </select>    <label>Position dans le catalogue</label>
       <input type="number" min="0" id="esp-cover-position"
         value="${Number(item?.position ?? allItems.length)}">
 
@@ -1127,7 +1127,7 @@
       const file = selectedFiles[0];
       const titleValue = $("#esp-cover-title").value.trim();
       const descriptionValue = $("#esp-cover-description").value.trim();
-      const category = $("#esp-cover-category").value;
+      const category = forceCategory || $("#esp-cover-category").value;
       const status = $("#esp-cover-translation-status");
 
       if (selectedFiles.length > 1 && !item) {
@@ -1213,6 +1213,10 @@
 
       if (!titleValue) {
         message("Ajoute un titre.");
+        return;
+      }
+      if (videoOnly && (!file || !isVideoFile(file))) {
+        message("Sélectionne une vidéo.");
         return;
       }
 
