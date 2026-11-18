@@ -87,24 +87,18 @@
       background:#0d121c;border:1px solid #293447;
       padding:16px;margin:12px 0;border-radius:5px;
     }
-    .esp-catalogue-addbar {
-      position:sticky;top:8px;z-index:20;display:flex;align-items:center;
-      gap:12px;padding:10px;margin:0 0 14px;background:#080b12ee;
-      border:1px solid #eaff00;border-radius:5px;backdrop-filter:blur(10px);
+    .esp-page-head {
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      margin:0 0 14px;padding:0 0 12px;border-bottom:1px solid #293447;
     }
-    .esp-catalogue-addbar span {font-size:11px;color:#aab2bf}
-    .esp-add-cover-main {
-      display:block;flex:0 0 auto;min-width:280px;min-height:54px;margin:0;
-      font-size:15px;letter-spacing:.4px;text-align:center;
-      background:#eaff00;color:#080b12;border:2px solid #eaff00;
-      box-shadow:0 0 18px #eaff0026;
-    }
-    .esp-add-cover-main:hover {
-      filter:brightness(1.08);transform:translateY(-1px);
-    }
-    @media(max-width:700px) {
-      .esp-catalogue-addbar {align-items:stretch;flex-direction:column}
-      .esp-add-cover-main {width:100%;min-width:0}
+    .esp-page-head h3 {margin:0}
+    .esp-page-head .esp-muted {margin:3px 0 0}
+    .esp-page-actions {display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+    .esp-page-actions .esp-btn {min-height:42px}
+    @media(max-width:650px) {
+      .esp-page-head {align-items:stretch;flex-direction:column}
+      .esp-page-actions {display:grid;grid-template-columns:1fr;gap:7px}
+      .esp-page-actions .esp-btn {width:100%;min-height:44px}
     }
     .esp-row {
       display:flex;gap:12px;align-items:center;flex-wrap:wrap;
@@ -169,14 +163,15 @@
     }
     @media(max-width:650px) {
       #esp-edit-controls {
-        top:auto!important;right:8px!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;left:8px!important;
-        grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;
-        max-width:none!important;padding:7px;background:#101927f2;border:1px solid #eaff00;
+        top:calc(8px + env(safe-area-inset-top))!important;
+        right:8px!important;left:auto!important;bottom:auto!important;
+        display:flex!important;gap:6px;max-width:calc(100vw - 16px)!important;
+        padding:6px;background:#101927f2;border:1px solid #eaff00;
         border-radius:7px;box-shadow:0 8px 30px #000b;backdrop-filter:blur(12px);
       }
       #esp-edit-controls button {
-        width:100%;min-width:0;min-height:43px;padding:8px 3px;font-size:9px;
-        line-height:1.15;white-space:normal;letter-spacing:.2px;
+        min-width:0;min-height:42px;padding:8px 9px;font-size:9px;
+        line-height:1.15;white-space:nowrap;letter-spacing:.2px;
       }
     }
     body.esp-editing .premium-aside {
@@ -190,11 +185,11 @@
     }
     @media(max-width:650px) {
       body.esp-editing #esp-edit-controls {display:grid!important}
-      #esp-admin {padding:10px 10px calc(82px + env(safe-area-inset-bottom))}
+      #esp-admin {padding:10px}
       .esp-list-item {grid-template-columns:65px 1fr}
       .esp-list-item img,.esp-list-item video {width:65px;height:58px}
       .esp-list-item .esp-actions {grid-column:1/-1}
-      .esp-toolbar {left:8px;right:8px;bottom:8px;justify-content:center}
+      .esp-toolbar {left:8px;right:8px;top:8px;bottom:auto;justify-content:center}
       .esp-toolbar button {flex:1;padding:11px 5px;font-size:10px}
       .esp-admin-head h2 {font-size:18px}
       .esp-admin-head>.esp-row {width:100%;display:grid!important;grid-template-columns:1fr}
@@ -203,9 +198,10 @@
       .esp-admin-tabs button,.esp-btn {min-height:44px}
       .esp-panel {padding:12px}
       #esp-menu {
-        left:50%;top:auto;bottom:calc(10px + env(safe-area-inset-bottom));
-        transform:translateX(-50%);width:min(410px,calc(100vw - 28px));
-        max-height:78dvh;padding:15px 16px 18px;border-radius:12px;
+        left:50%;top:50%;bottom:auto;
+        transform:translate(-50%,-50%);
+        width:min(410px,calc(100vw - 24px));
+        max-height:88dvh;padding:15px 16px 18px;border-radius:12px;
         overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
       }
       #esp-menu input,#esp-menu textarea,#esp-menu select {min-height:44px;font-size:16px}
