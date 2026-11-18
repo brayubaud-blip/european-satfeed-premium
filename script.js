@@ -948,32 +948,7 @@
       });
       favorite.addEventListener("keydown", event => event.stopPropagation());
 
-      const cardActions = document.createElement("div");
-      cardActions.className = "card-actions";
-
-      const shareButton = document.createElement("button");
-      shareButton.type = "button";
-      shareButton.className = "card-share";
-      shareButton.innerHTML = '<span aria-hidden="true">↗</span><span>' +
-        (language === "fr" ? "PARTAGER" : "SHARE") + '</span>';
-      shareButton.setAttribute("aria-label",
-        language === "fr" ? "Ouvrir le dossier ou la compilation" : "Open the folder or compilation");
-      shareButton.addEventListener("click", event => {
-        event.preventDefault();
-        event.stopPropagation();
-        const url = String(item.content_url || "").trim();
-        if (!url) {
-          updateStatus(language === "fr"
-            ? "Aucun lien comp/folder n'est encore associé à cette archive."
-            : "No comp/folder link is attached to this archive yet.");
-          return;
-        }
-        window.open(url, "_blank", "noopener,noreferrer");
-      });
-      shareButton.addEventListener("keydown", event => event.stopPropagation());
-
-      cardActions.append(favorite, shareButton);
-      info.append(meta, title, accessNote, description, cardActions);
+      info.append(meta, title, accessNote, description, favorite);
       card.append(cover, info);
       grid.append(card);
     });
