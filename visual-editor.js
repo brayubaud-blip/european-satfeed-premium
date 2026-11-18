@@ -2124,6 +2124,37 @@
     };
   }
 
+  async function drawGiveaway() {
+    try {
+      const { data, error } = await db.from("site_giveaway_entries")
+        .select("id,name,created_at")
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      if (!data?.length) {
+        message("Aucun participant dans le giveaway.");
+        return;
+      }
+
+      const chosen = data[Math.floor(Math.random() * data.length)];
+      settings.giveawayWinner = String(chosen.name || "").trim();
+
+      const result = $("#giveawayResult");
+      if (result) {
+        const label = document.createElement("span");
+        label.className = "giveaway-winner-label";
+        label.textContent = "WINNER";
+        const strong = document.createElement("strong");
+        strong.textContent = settings.giveawayWinner;
+        result.replaceChildren(label, strong);
+      }
+
+      await saveSettings(true);
+      message("Gagnant sélectionné : " + settings.giveawayWinner + ".");
+    } catch (error) {
+      message("Tirage impossible : " + (error.message || "Erreur inconnue"));
+    }
+  }
+
   function switchTab(tab) {
     currentTab = tab;
 
