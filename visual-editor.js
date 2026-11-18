@@ -2117,6 +2117,7 @@
     try {
       await loadCatalogueAdmin();
       await loadSettings();
+      await loadGiveawayAdmin();
       switchTab("catalogue");
     } catch (error) {
       message("Erreur de chargement ADMIN : " + error.message);
