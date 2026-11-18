@@ -257,7 +257,6 @@
         <button data-tab="hidden">COVERS MASQUÉES</button>
         <button data-tab="site">ÉDITER LE SITE</button>
         <button data-tab="appearance">APPARENCE</button>
-        <button data-tab="giveaway">GIVEAWAY</button>
       </nav>
 
       <section id="esp-tab-catalogue">
@@ -356,30 +355,7 @@
         </div>
       </section>
 
-      <section id="esp-tab-giveaway" hidden>
-        <div class="esp-page-head">
-          <div>
-            <h3>GIVEAWAY</h3>
-            <p class="esp-muted">Tire le gagnant uniquement depuis l’administration.</p>
-          </div>
-          <div class="esp-page-actions">
-            <button class="esp-btn primary" type="button" id="esp-draw-giveaway">DRAW WINNER</button>
-          </div>
-        </div>
-        <div class="esp-panel">
-          <div class="esp-row">
-            <div>
-              <strong id="esp-giveaway-count">— participants</strong>
-              <p class="esp-muted">Les participants sont récupérés depuis le giveaway du site.</p>
-            </div>
-            <div id="esp-giveaway-result" class="esp-muted">Aucun gagnant tiré.</div>
-          </div>
-        </div>
-        <div class="esp-panel">
-          <h3>PARTICIPANTS</h3>
-          <div id="esp-giveaway-list">Chargement…</div>
-        </div>
-      </section>
+>
       </section>
     </div>
   `;
@@ -2150,37 +2126,6 @@
     };
   }
 
-  async function loadGiveawayAdmin() {
-    const list = $("#esp-giveaway-list");
-    const count = $("#esp-giveaway-count");
-    if (list) list.textContent = "Chargement…";
-    const { data, error } = await db.from("site_giveaway_entries").select("id,name,created_at").order("created_at", { ascending: true });
-    if (error) throw error;
-    const entries = data || [];
-    if (count) count.textContent = entries.length + (entries.length === 1 ? " participant" : " participants");
-    if (list) list.innerHTML = entries.length ? entries.map((entry,index) => `<div class="esp-list-item"><div style="width:65px;height:42px;display:grid;place-items:center;background:#172131;border-radius:4px;color:#eaff00;font-weight:800">${String(index+1).padStart(2,"0")}</div><div><strong>${escapeHTML(String(entry.name || "").trim() || "Sans nom")}</strong><span class="esp-muted">${escapeHTML(entry.created_at ? new Date(entry.created_at).toLocaleString() : "")}</span></div></div>`).join("") : '<p class="esp-muted">Aucun participant pour le moment.</p>';
-    const result = $("#esp-giveaway-result");
-    const winner = String(settings.giveawayWinner || "").trim();
-    if (result) result.textContent = winner ? "Winner actuel : " + winner : "Aucun gagnant tiré.";
-  }
-
-  async function drawGiveaway() {
-    const button = $("#esp-draw-giveaway");
-    if (button) { button.disabled = true; button.textContent = "DRAWING…"; }
-    try {
-      const { data, error } = await db.from("site_giveaway_entries").select("id,name,created_at").order("created_at", { ascending: true });
-      if (error) throw error;
-      if (!data?.length) { message("Aucun participant dans le giveaway."); return; }
-      const chosen = data[Math.floor(Math.random() * data.length)];
-      settings.giveawayWinner = String(chosen.name || "").trim();
-      const result = $("#esp-giveaway-result");
-      if (result) result.textContent = "Winner actuel : " + settings.giveawayWinner;
-      await saveSettings(true);
-      message("Gagnant sélectionné : " + settings.giveawayWinner + ".");
-    } catch (error) { message("Tirage impossible : " + (error.message || "Erreur inconnue")); }
-    finally { if (button) { button.disabled = false; button.textContent = "DRAW WINNER"; } }
-  }
-
   function switchTab(tab) {
     currentTab = tab;
 
@@ -2188,7 +2133,7 @@
       button.classList.toggle("active", button.dataset.tab === tab);
     });
 
-    ["catalogue", "hidden", "site", "appearance", "giveaway"].forEach(name => {
+    ["catalogue", "hidden", "site", "appearance"].forEach(name => {
       const section = $(`#esp-tab-${name}`);
       if (section) section.hidden = name !== tab;
     });
@@ -2207,7 +2152,6 @@
     try {
       await loadCatalogueAdmin();
       await loadSettings();
-      await loadGiveawayAdmin();
       switchTab("catalogue");
     } catch (error) {
       message("Erreur de chargement ADMIN : " + error.message);
@@ -2301,7 +2245,6 @@
     }
   });
 
-  $("#esp-draw-giveaway").addEventListener("click", drawGiveaway);
     switchTab("catalogue");
     openCoverEditor(null);
   });
