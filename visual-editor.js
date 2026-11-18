@@ -1003,6 +1003,7 @@
     const languageName = currentLanguage === "en" ? "anglais" : "français";
     const existingUrl = item?.image_url || "";
     const existingVideo = isVideoUrl(existingUrl);
+    const contentUrlValue = item?.content_url || "";
 
     showMenu(`
       <h3>${item ? "MODIFIER LE MÉDIA" : "AJOUTER AU CATALOGUE"}</h3>
@@ -1023,7 +1024,16 @@
       <label>Catégorie</label>
       <select id="esp-cover-category" ${forceCategory ? "disabled" : ""}>
         ${categorySelect(forceCategory || item?.category || "edits")}
-      </select>    <label>Position dans le catalogue</label>
+      </select>
+
+      <label>Lien vers la comp / le folder</label>
+      <input id="esp-cover-content-url" type="url"
+        value="${escapeHTML(contentUrlValue)}"
+        placeholder="https://drive.google.com/...">
+
+      <p class="esp-help">Ce lien sera utilisé par le bouton PARTAGER de la carte pour ouvrir directement la ressource.</p>
+
+      <label>Position dans le catalogue</label>
       <input type="number" min="0" id="esp-cover-position"
         value="${Number(item?.position ?? allItems.length)}">
 
@@ -1101,6 +1111,7 @@
       const file = selectedFiles[0];
       const titleValue = $("#esp-cover-title").value.trim();
       const descriptionValue = $("#esp-cover-description").value.trim();
+      const contentUrl = $("#esp-cover-content-url").value.trim();
       const category = forceCategory || $("#esp-cover-category").value;
       const status = $("#esp-cover-translation-status");
 
@@ -1146,6 +1157,7 @@
                 description,
                 category,
                 image_url: imageUrl,
+                content_url: contentUrl || null,
                 position: position++,
                 published: true
               };
@@ -1228,6 +1240,7 @@
           description,
           category,
           image_url: imageUrl,
+          content_url: contentUrl || null,
           position: Math.max(0, Number($("#esp-cover-position").value || 0)),
           published: item?.published ?? true
         };
