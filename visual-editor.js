@@ -2228,6 +2228,7 @@
     editing = false;
     document.body.classList.remove("esp-editing");
     editControls.style.display = "none";
+    updateContextualActions();
   };
 
   $("#esp-admin-close").onclick = () => {
@@ -2300,6 +2301,7 @@
       ? "TERMINER L'ÉDITION DIRECTE"
       : "ACTIVER L'ÉDITION DIRECTE";
     prepareEditableElements();
+    updateContextualActions();
   };
 
   $("#esp-save-settings").onclick = async () => {
@@ -2489,6 +2491,7 @@
       editing = false;
       document.body.classList.remove("esp-editing");
       editControls.style.display = "none";
+      updateContextualActions();
       closeMenu();
 
       message("Modifications enregistrées. Le site public sera mis à jour après rechargement.");
