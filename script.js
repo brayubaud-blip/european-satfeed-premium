@@ -990,7 +990,7 @@
 
     query.searchParams.set(
       "select",
-      "id,title,description,category,image_url,content_url,published,position"
+      "id,title,description,category,image_url,published,position"
     );
     query.searchParams.set("published", "eq.true");
     query.searchParams.set("order", "position.asc");
