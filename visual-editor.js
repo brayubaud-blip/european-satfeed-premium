@@ -352,6 +352,30 @@
           <label>Couleur de fond</label>
           <input type="color" id="esp-bg-color" value="#080b12">
         </div>
+      <section id="esp-tab-giveaway" hidden>
+        <div class="esp-page-head">
+          <div>
+            <h3>GIVEAWAY</h3>
+            <p class="esp-muted">Tire le gagnant uniquement depuis l’administration.</p>
+          </div>
+          <div class="esp-page-actions">
+            <button class="esp-btn primary" type="button" id="esp-draw-giveaway">DRAW WINNER</button>
+          </div>
+        </div>
+        <div class="esp-panel">
+          <div class="esp-row">
+            <div>
+              <strong id="esp-giveaway-count">— participants</strong>
+              <p class="esp-muted">Les participants sont récupérés depuis le giveaway du site.</p>
+            </div>
+            <div id="esp-giveaway-result" class="esp-muted">Aucun gagnant tiré.</div>
+          </div>
+        </div>
+        <div class="esp-panel">
+          <h3>PARTICIPANTS</h3>
+          <div id="esp-giveaway-list">Chargement…</div>
+        </div>
+      </section>
       </section>
     </div>
   `;
@@ -2176,34 +2200,32 @@
 
 
 
-  $("#esp-add-cover").addEventListener("click", () => {
+  $("#esp-add-cover").addEventListener("click", async () => {
+    try {
+      if (!(await checkOwner())) { showLogin(); return; }
+      await loadCatalogueAdmin();
+      await loadSettings();
+      switchTab("catalogue");
+      openCoverEditor(null);
+    } catch (error) {
+      message("Impossible d’ouvrir l’ajout de cover : " + (error.message || "Erreur inconnue"));
+    }
+  });
+
+  $("#esp-refresh-hidden").addEventListener("click", async () => {
+    try {
+      await loadCatalogueAdmin();
+      message("Covers masquées actualisées.");
+    } catch (error) {
+      message("Actualisation impossible : " + (error.message || "Erreur inconnue"));
+    }
+  });
+
+  $("#esp-draw-giveaway").addEventListener("click", drawGiveaway);
     switchTab("catalogue");
     openCoverEditor(null);
   });
-  const publicAddCover = $("#publicAddCover");
-  if (publicAddCover) {
-    publicAddCover.addEventListener("click", async () => {
-      try {
-        if (!(await checkOwner())) {
-          showLogin();
-          return;
-        }
-        if (!editing || admin.classList.contains("open")) {
-          message("Active d'abord le mode édition pour ajouter une cover.");
-          return;
-        }
-        await loadCatalogueAdmin();
-        await loadSettings();
-        openCoverEditor(null);
-      } catch (error) {
-        message("Impossible d'ouvrir l'ajout de cover : " + error.message);
-      }
-    });
-  }
-  $("#esp-add-cover-inline").addEventListener("click", () => {
-    switchTab("catalogue");
-    openCoverEditor(null);
-  });
+  // Cover creation is intentionally restricted to the ADMIN > CATALOGUE page.
   $("#esp-bulk-files").addEventListener("change", () => {
     const count = $("#esp-bulk-files").files?.length || 0;
     $("#esp-bulk-count").textContent = count
