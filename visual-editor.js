@@ -161,18 +161,20 @@
     #esp-edit-controls #esp-finish-edit-control:hover {
       background:#fff;color:#080b12;border-color:#fff;
     }
+    .esp-context-action {
+      position:absolute!important;z-index:20;display:none;min-height:42px;padding:10px 14px;
+      background:#101927f2;color:#eaff00;border:1px solid #eaff00;border-radius:5px;
+      box-shadow:0 6px 24px #000b;font:800 11px "DM Sans",Arial,sans-serif;cursor:pointer;
+      letter-spacing:.3px;
+    }
+    .esp-context-action:hover {background:#eaff00;color:#080b12}
+    body.esp-editing .esp-context-action.is-visible {display:block}
+    #esp-archive-actions {position:absolute;top:26px;right:26px;display:flex;gap:8px;z-index:25}
+    #esp-giveaway-admin-draw {top:26px;right:26px}
     @media(max-width:650px) {
-      #esp-edit-controls {
-        top:calc(8px + env(safe-area-inset-top))!important;
-        right:8px!important;left:auto!important;bottom:auto!important;
-        display:flex!important;gap:6px;max-width:calc(100vw - 16px)!important;
-        padding:6px;background:#101927f2;border:1px solid #eaff00;
-        border-radius:7px;box-shadow:0 8px 30px #000b;backdrop-filter:blur(12px);
-      }
-      #esp-edit-controls button {
-        min-width:0;min-height:42px;padding:8px 9px;font-size:9px;
-        line-height:1.15;white-space:nowrap;letter-spacing:.2px;
-      }
+      #esp-archive-actions {top:18px;right:14px;flex-direction:column;align-items:flex-end}
+      .esp-context-action {min-height:40px;padding:9px 11px;font-size:9px}
+      #esp-giveaway-admin-draw {top:18px;right:14px}
     }
     body.esp-editing .premium-aside {
       outline:1px dashed #eaff00;outline-offset:7px;cursor:pointer;
@@ -407,6 +409,90 @@
   finishEditControl.textContent = "TERMINER";
   editControls.append(undoControl, backgroundControl, finishEditControl);
   document.body.append(editControls);
+
+  const archiveSection = $("#archive");
+  const giveawaySection = $("#giveaway");
+
+  if (archiveSection) {
+    archiveSection.style.position = "relative";
+    const archiveActions = document.createElement("div");
+    archiveActions.id = "esp-archive-actions";
+
+    const addCoverPageButton = document.createElement("button");
+    addCoverPageButton.id = "esp-page-add-cover";
+    addCoverPageButton.className = "esp-context-action is-visible";
+    addCoverPageButton.type = "button";
+    addCoverPageButton.textContent = "+ COVER";
+    addCoverPageButton.title = "Ajouter une cover au catalogue";
+
+    const addVideoPageButton = document.createElement("button");
+    addVideoPageButton.id = "esp-page-add-video";
+    addVideoPageButton.className = "esp-context-action";
+    addVideoPageButton.type = "button";
+    addVideoPageButton.textContent = "+ VIDEO";
+    addVideoPageButton.title = "Ajouter une vidéo dans EDITS";
+
+    archiveActions.append(addCoverPageButton, addVideoPageButton);
+    archiveSection.append(archiveActions);
+
+    addCoverPageButton.addEventListener("click", async event => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (!(await checkOwner()) || !editing) return;
+      await loadCatalogueAdmin();
+      await loadSettings();
+      openCoverEditor(null);
+    });
+
+    addVideoPageButton.addEventListener("click", async event => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (!(await checkOwner()) || !editing) return;
+      await loadCatalogueAdmin();
+      await loadSettings();
+      openCoverEditor(null, { forceCategory: "edits", videoOnly: true });
+    });
+  }
+
+  if (giveawaySection) {
+    giveawaySection.style.position = "relative";
+    const giveawayButton = document.createElement("button");
+    giveawayButton.id = "esp-giveaway-admin-draw";
+    giveawayButton.className = "esp-context-action";
+    giveawayButton.type = "button";
+    giveawayButton.textContent = "DRAW WINNER";
+    giveawayButton.title = "Tirer le gagnant du giveaway";
+    giveawaySection.append(giveawayButton);
+
+    giveawayButton.addEventListener("click", async event => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (!(await checkOwner()) || !editing) return;
+      await drawGiveaway();
+    });
+
+    const publicDraw = $("#giveawayDraw");
+    if (publicDraw) publicDraw.style.display = "none";
+  }
+
+  function updateContextualActions() {
+    const addCover = $("#esp-page-add-cover");
+    const addVideo = $("#esp-page-add-video");
+    const giveawayButton = $("#esp-giveaway-admin-draw");
+    const isActive = !!owner && !!editing && !admin.classList.contains("open");
+
+    if (addCover) addCover.classList.toggle("is-visible", isActive);
+    if (addVideo) {
+      const isEdits = window.ESP_ACTIVE_CATALOGUE_FILTER === "edits";
+      addVideo.classList.toggle("is-visible", isActive && isEdits);
+    }
+    if (giveawayButton) giveawayButton.classList.toggle("is-visible", isActive);
+    const publicDraw = $("#giveawayDraw");
+    if (publicDraw) publicDraw.style.display = "none";
+  }
+
+  window.addEventListener("esp:catalogue-filter-change", updateContextualActions);
+  updateContextualActions();
 
   backgroundControl.addEventListener("click", event => {
     event.preventDefault();
