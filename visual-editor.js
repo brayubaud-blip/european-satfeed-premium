@@ -352,6 +352,8 @@
           <label>Couleur de fond</label>
           <input type="color" id="esp-bg-color" value="#080b12">
         </div>
+      </section>
+
       <section id="esp-tab-giveaway" hidden>
         <div class="esp-page-head">
           <div>
