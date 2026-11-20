@@ -93,12 +93,6 @@
   const grid = $("#archiveGrid");
   const filtersContainer = $("#filters");
   const searchInput = $("#catalogueSearch");
-  const teamSelect = $("#teamFilter");
-  const seasonSelect = $("#seasonFilter");
-  const creatorSelect = $("#creatorFilter");
-  const teamOf = item => item.team || item.club || item.team_name || "";
-  const seasonOf = item => item.season || item.year || "";
-  const creatorOf = item => item.creator || item.author || "";
 
   const categories = [
     { id:"all", icon:"◎", fr:"TOUT", en:"ALL", es:"TODO", uk:"УСЕ", zh:"全部", ar:"الكل" },
@@ -676,19 +670,7 @@
       filtersContainer.append(button);
     });
   }
-  function fillSelect(select, values, label) {
-    if (!select) return;
-    const previous = select.value;
-    select.replaceChildren(new Option(label, ''));
-    [...new Set(values.map(value => String(value || '').trim()).filter(Boolean))].sort((x,y) => x.localeCompare(y, undefined, {numeric:true})).forEach(value => select.add(new Option(value, value)));
-    if ([...select.options].some(option => option.value === previous)) select.value = previous;
-  }
-  function refreshCatalogueControls() {
-    fillSelect(teamSelect, catalogueItems.map(teamOf), t('allTeams'));
-    fillSelect(seasonSelect, catalogueItems.map(seasonOf), t('allSeasons'));
-    fillSelect(creatorSelect, catalogueItems.map(creatorOf), t('allCreators'));
-    renderFilters();
-  }
+  function refreshCatalogueControls() { renderFilters(); }
 
 
   function ensureLightbox() {
@@ -822,18 +804,12 @@
     grid.replaceChildren();
 
     const query = (searchInput && searchInput.value || '').trim().toLocaleLowerCase();
-    const selectedTeam = teamSelect && teamSelect.value || '';
-    const selectedSeason = seasonSelect && seasonSelect.value || '';
-    const selectedCreator = creatorSelect && creatorSelect.value || '';
     const visible = catalogueItems.filter(item => {
       if (item.published === false) return false;
       const category = normalizeCategory(item.category);
       if (['clubs', 'national teams', 'national'].includes(category)) return false;
       if (activeFilter !== 'all' && activeFilter !== 'favorites' && category !== activeFilter) return false;
       if (activeFilter === 'favorites' && !favoriteIds.has(favoriteKey(item))) return false;
-      if (selectedTeam && teamOf(item) !== selectedTeam) return false;
-      if (selectedSeason && String(seasonOf(item)) !== selectedSeason) return false;
-      if (selectedCreator && creatorOf(item) !== selectedCreator) return false;
       const haystack = [localized(item.title), localized(item.description), category, teamOf(item), seasonOf(item), creatorOf(item)].join(' ').toLocaleLowerCase();
       return !query || haystack.includes(query);
     });
@@ -843,7 +819,7 @@
     const remaining = $("#catalogueRemaining");
     if (!visible.length) {
       if (moreWrap) moreWrap.hidden = true;
-      updateStatus(query || selectedTeam || selectedSeason || selectedCreator ? t('noResults') : t('empty'));
+      updateStatus(query ? t('noResults') : t('empty'));
       return;
     }
 
