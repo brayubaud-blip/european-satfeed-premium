@@ -3308,3 +3308,205 @@ h1{font-size:clamp(52px,7.2vw,94px);line-height:.93;margin:25px 0 23px}
 .cover-lightbox{background:rgba(3,6,11,.94);backdrop-filter:blur(20px)}.lightbox-image{border:1px solid #ffffff14;border-radius:12px;box-shadow:0 30px 100px #00000070}.lightbox-close,.lightbox-arrow{background:#0d1624;color:#f1f4f8;border:1px solid #ffffff16;border-radius:12px}.lightbox-close:hover,.lightbox-arrow:hover{border-color:#dfff0048;color:var(--yellow)}
 @media(max-width:760px){.topline{height:30px;padding:0 5%}.topline-est{display:none}.header{height:68px;padding:0 5%}.hero{min-height:620px;padding:82px 7% 42px}h1{font-size:clamp(46px,13vw,72px);line-height:.95}.hero-copy{font-size:11px;line-height:1.8}.section{padding:78px 6%}.section-head h2,.latest-row h2{font-size:clamp(38px,12vw,58px)}.catalogue-layout{gap:17px}.catalogue-sidebar{padding:12px 10px;border-radius:14px}.catalogue-sidebar .filters{gap:6px}.catalogue-sidebar .filter{min-height:42px}.filter-icon{width:26px;height:26px;border-radius:7px}.catalogue-tools{grid-template-columns:minmax(0,1fr) auto}.catalogue-search{min-height:44px}.catalogue-refresh{min-height:44px;padding:0 12px}.archive-grid{gap:12px}.archive-card{border-radius:12px}.card-info{padding:12px}.card-info h3{font-size:13px}.card-info p{font-size:9px}.card-tag{top:9px;left:9px;padding:6px 8px}.features{border-radius:12px}.feature{min-height:190px;padding:22px 16px}.feature-icon{width:34px;height:34px;margin:20px 0 15px}.premium-section{padding:78px 7%}.premium-aside{display:none}}
 @media(max-width:430px){.topline{font-size:7px}.brand-mark{font-size:23px}.brand-name{display:none}.header-cta{padding:9px 10px;font-size:7px}.archive-grid{gap:10px}.card-info h3{font-size:12px}.card-info p{font-size:8.5px}.card-meta{font-size:6.5px}}
+
+/* =========================================================
+   ES+ GAME UI PASS 2 — TEXT / IMAGE LEGIBILITY
+   No fake paper/card text blocks. Text stays integrated
+   with the visual system and remains readable over artwork.
+   ========================================================= */
+
+body{
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* Kill the "Word document" feeling: no unnecessary filled text boxes. */
+.section-head,.latest-row,.hero-copy,.premium-content,.feature,.faq-section{
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+/* Editorial/game typography: compact labels, clean display titles. */
+h1,h2,.latest-row h2,.premium-content h2{
+  font-family:"Barlow Condensed","Manrope",sans-serif!important;
+  font-weight:600!important;
+  letter-spacing:-.045em!important;
+  text-transform:none!important;
+}
+h1{font-size:clamp(58px,8vw,112px)!important;line-height:.88!important}
+.section-head h2,.latest-row h2{font-size:clamp(48px,6.5vw,88px)!important}
+.premium-content h2{font-size:clamp(52px,7vw,94px)!important}
+
+.hero-copy,.section-head>p,.latest-copy p,.feature p,.card-info p,details p{
+  font-family:"Manrope","DM Sans",sans-serif!important;
+  color:#aab4c3!important;
+}
+
+/* Replace paragraph-heavy visual blocks with real game-style HUD separators. */
+.section-head{
+  position:relative;
+  padding-left:18px;
+}
+.section-head:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:8px;
+  width:3px;
+  height:52px;
+  border-radius:3px;
+  background:linear-gradient(180deg,var(--yellow),transparent);
+  box-shadow:0 0 16px #dfff0040;
+}
+.section-head>p{max-width:520px!important}
+
+/* Catalogue: artwork is the hero, text is an overlay/info rail rather than a Word card. */
+.archive-card{
+  position:relative!important;
+  overflow:hidden!important;
+  background:#070b12!important;
+  border:1px solid #ffffff12!important;
+  border-radius:14px!important;
+}
+.archive-card .cover{
+  position:relative!important;
+  overflow:hidden!important;
+  background:#070b12!important;
+  border-radius:13px 13px 0 0!important;
+}
+.archive-card .cover img,
+.archive-card .cover video{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  filter:saturate(.98) contrast(1.04)!important;
+}
+.archive-card .cover:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:
+    linear-gradient(180deg,transparent 35%,rgba(3,7,12,.08) 52%,rgba(3,7,12,.82) 100%),
+    linear-gradient(90deg,rgba(0,0,0,.10),transparent 35%,rgba(0,0,0,.12));
+  pointer-events:none;
+}
+.archive-card .cover:after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0;
+  height:34%;
+  z-index:2;
+  background:linear-gradient(180deg,transparent,rgba(3,7,12,.88));
+  pointer-events:none;
+}
+
+/* Keep labels directly on artwork, but make them HUD-like. */
+.card-tag{
+  z-index:5!important;
+  background:rgba(7,15,12,.78)!important;
+  border:1px solid rgba(157,240,111,.35)!important;
+  border-radius:7px!important;
+  backdrop-filter:blur(8px)!important;
+  box-shadow:0 8px 25px rgba(0,0,0,.28)!important;
+}
+
+/* Card copy is a clean lower information rail, not a white/grey panel. */
+.card-info{
+  position:relative!important;
+  z-index:3!important;
+  background:linear-gradient(180deg,#080d15 0%,#060a10 100%)!important;
+  border-top:1px solid #ffffff0a!important;
+  padding:15px 16px 13px!important;
+}
+.card-info h3{
+  font-family:"Barlow Condensed","Manrope",sans-serif!important;
+  font-size:19px!important;
+  font-weight:600!important;
+  letter-spacing:-.02em!important;
+  color:#f2f5f8!important;
+}
+.card-info p{
+  color:#8f9baa!important;
+  font-size:9px!important;
+  line-height:1.55!important;
+}
+.card-meta{
+  color:#69778a!important;
+  font-size:6.5px!important;
+  letter-spacing:1.7px!important;
+  font-weight:700!important;
+}
+.archive-bottom{
+  background:#070b12!important;
+  border-top:1px solid #ffffff0a!important;
+}
+
+/* Search/sidebar: HUD surfaces, not document boxes. */
+.catalogue-sidebar{
+  background:rgba(8,13,21,.72)!important;
+  border:1px solid #ffffff10!important;
+  box-shadow:0 20px 70px rgba(0,0,0,.30)!important;
+}
+.catalogue-search,.catalogue-refresh{
+  background:rgba(8,13,21,.72)!important;
+  border:1px solid #ffffff10!important;
+}
+
+/* Remove visual noise from old decorative blocks. */
+.feature{
+  position:relative;
+  background:linear-gradient(180deg,#0b121d,#080d15)!important;
+}
+.feature:before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,var(--yellow),transparent 45%);
+  opacity:.45;
+}
+.feature-icon{
+  background:transparent!important;
+  border-color:#dfff0030!important;
+}
+
+/* Game HUD micro-details. */
+.eyebrow{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.eyebrow:after{
+  content:"";
+  width:48px;height:1px;
+  background:linear-gradient(90deg,#dfff0070,transparent);
+}
+.hero-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:22px!important;
+}
+.hero-meta > *{
+  position:relative;
+}
+.hero-meta > *:not(:last-child):after{
+  content:"";
+  position:absolute;
+  right:-12px;
+  top:50%;
+  width:3px;height:3px;
+  border-radius:50%;
+  background:#506078;
+}
+
+/* Keep artwork clean on mobile too. */
+@media(max-width:760px){
+  h1{font-size:clamp(48px,15vw,78px)!important}
+  .section-head{padding-left:14px}
+  .section-head:before{height:42px}
+  .archive-card .cover{border-radius:11px 11px 0 0!important}
+  .card-info{padding:12px 13px!important}
+  .card-info h3{font-size:17px!important}
+}
