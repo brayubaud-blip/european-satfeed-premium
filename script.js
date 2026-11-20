@@ -93,6 +93,9 @@
   const grid = $("#archiveGrid");
   const filtersContainer = $("#filters");
   const searchInput = $("#catalogueSearch");
+  const teamOf = item => item.team || item.club || item.team_name || "";
+  const seasonOf = item => item.season || item.year || "";
+  const creatorOf = item => item.creator || item.author || "";
 
   const categories = [
     { id:"all", icon:"◎", fr:"TOUT", en:"ALL", es:"TODO", uk:"УСЕ", zh:"全部", ar:"الكل" },
@@ -1320,8 +1323,7 @@
   }
 
   const resetCataloguePage = () => { cardsLimit = CATALOGUE_PAGE_SIZE; renderCards(); };
-  [searchInput, teamSelect, seasonSelect, creatorSelect].forEach(control => control && control.addEventListener('input', resetCataloguePage));
-  [teamSelect, seasonSelect, creatorSelect].forEach(control => control && control.addEventListener('change', resetCataloguePage));
+  if (searchInput) searchInput.addEventListener('input', resetCataloguePage);
   $("#catalogueShowMore")?.addEventListener("click", () => {
     cardsLimit += CATALOGUE_PAGE_SIZE;
     renderCards();
