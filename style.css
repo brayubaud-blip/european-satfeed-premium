@@ -4215,3 +4215,19 @@ details p{
     min-height:23px!important;
   }
 }
+
+
+/* Final background polish */
+.latest-section,
+.premium-section,
+.included-section,
+.archive-section{
+  background:linear-gradient(180deg,#09111c 0%,#0d1724 52%,#08101a 100%);
+  color:#f4f7fb;
+}
+.archive-section::before,
+.latest-section::before,
+.premium-section::before,
+.included-section::before{
+  opacity:.18;
+}
