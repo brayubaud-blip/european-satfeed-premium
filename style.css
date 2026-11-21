@@ -4044,3 +4044,63 @@ h1,h2,.latest-row h2{
   background-color:#09121f;
 }
 .latest-section:after{color:#ffffff05}
+
+
+/* FINAL CATALOGUE ICONS — refined, compact, non-geometric */
+.catalogue-sidebar{
+  background:linear-gradient(145deg,#0b1524 0%,#0a111c 100%) !important;
+  border:1px solid #26394f !important;
+  box-shadow:0 12px 40px rgba(0,0,0,.18) !important;
+}
+.catalogue-sidebar .filter{
+  min-height:48px !important;
+  padding:8px 10px !important;
+  border-radius:10px !important;
+  background:transparent !important;
+  border:1px solid transparent !important;
+}
+.catalogue-sidebar .filter:hover{
+  background:#111f31 !important;
+  border-color:#29415b !important;
+}
+.catalogue-sidebar .filter.active{
+  background:linear-gradient(90deg,#172739,#101a28) !important;
+  border-color:#b9d600 !important;
+  color:#f5f7fa !important;
+}
+.filter-icon{
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  display:grid !important;
+  place-items:center !important;
+  border:1px solid #31475f !important;
+  border-radius:9px !important;
+  background:#0a1421 !important;
+  font-size:0 !important;
+}
+.filter-icon svg{
+  width:17px !important;
+  height:17px !important;
+  display:block !important;
+}
+.catalogue-sidebar .filter.active .filter-icon{
+  background:#eaff00 !important;
+  border-color:#eaff00 !important;
+  color:#091019 !important;
+}
+.catalogue-sidebar .filter small{
+  color:#718197 !important;
+  font-size:9px !important;
+  font-weight:800 !important;
+}
+.catalogue-sidebar .filter.active small{color:#eaff00 !important}
+
+/* Keep the homepage artwork-free: no catalogue cover can become the hero background */
+.hero{
+  background:
+    radial-gradient(900px 500px at 82% 42%,rgba(19,72,126,.28),transparent 62%),
+    radial-gradient(700px 500px at 18% 70%,rgba(234,255,0,.045),transparent 64%),
+    linear-gradient(135deg,#07101b 0%,#0a1523 48%,#060b12 100%) !important;
+}
+.hero:before{content:none !important}
