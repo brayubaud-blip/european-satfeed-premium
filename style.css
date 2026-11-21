@@ -3943,12 +3943,6 @@ h1,h2,.latest-row h2{
 }
 
 /* Lower sections stay premium but stop looking like separate template blocks. */
-.latest-section,
-.included-section,
-.reviews-section,
-.giveaway-section{
-  background:#070a10 !important;
-}
 .feature,
 .review-card,
 .giveaway-card{
