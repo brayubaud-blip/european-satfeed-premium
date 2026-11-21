@@ -3700,3 +3700,285 @@ h1{font-size:clamp(58px,8vw,112px)!important;line-height:.88!important}
   .quick-access-grid { grid-template-columns:1fr; }
   .quick-card { min-height:86px; }
 }
+
+
+/* === FINAL VISUAL PASS — EUROPEAN SATFEED === */
+
+/* Remove the old poster-like strips and keep the page clean. */
+.topline,
+.ticker { display:none !important; }
+
+body{
+  background:#070a10;
+  color:#f3f5f7;
+  overflow-x:hidden;
+}
+
+/* Header: simple, dark, spacious — no visitor badge, no unnecessary top strip. */
+.header{
+  height:82px !important;
+  padding:0 clamp(24px,5.5vw,88px) !important;
+  background:rgba(6,9,14,.92) !important;
+  border-bottom:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:0 10px 40px rgba(0,0,0,.18);
+}
+.brand-mark{
+  font-size:30px !important;
+}
+.brand-name{
+  font-size:8px !important;
+  letter-spacing:1.7px !important;
+}
+.brand-name b{font-size:10px !important;}
+.header nav{
+  gap:clamp(18px,2.6vw,38px) !important;
+}
+.header nav a{
+  font-size:10px !important;
+  letter-spacing:1.1px !important;
+  color:#9da7b6 !important;
+}
+.header nav a:hover{color:#fff !important;}
+.header-actions{gap:14px !important;}
+.lang-picker-trigger{
+  height:42px !important;
+  padding:0 14px !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  border-radius:999px !important;
+  background:#0c121c !important;
+}
+.header-cta{
+  border-radius:8px !important;
+  padding:13px 19px !important;
+  background:var(--yellow) !important;
+  color:#070a10 !important;
+  box-shadow:none !important;
+}
+
+/* Hero: actual football artwork, but contained and darkened so every word remains readable. */
+.hero{
+  min-height:600px !important;
+  height:min(68vh,680px) !important;
+  padding:0 !important;
+  display:flex !important;
+  align-items:flex-end !important;
+  isolation:isolate;
+  background:
+    linear-gradient(90deg,rgba(4,7,11,.90) 0%,rgba(4,7,11,.63) 36%,rgba(4,7,11,.28) 67%,rgba(4,7,11,.58) 100%),
+    linear-gradient(0deg,rgba(4,7,11,.96) 0%,rgba(4,7,11,.18) 44%,rgba(4,7,11,.08) 100%),
+    url("https://raw.githubusercontent.com/brayubaud-blip/european-satfeed-premium/main/covers/photo_2026-11-01_22-27-24.jpg") center 42%/cover no-repeat !important;
+}
+.hero::after,
+.hero-grid,
+.hero-stamp,
+.hero-side{display:none !important;}
+
+.hero-content{
+  width:min(760px,100%);
+  max-width:760px !important;
+  padding:0 clamp(28px,8vw,132px) 58px !important;
+  z-index:2;
+}
+.hero-kicker{
+  display:inline-flex;
+  align-items:center;
+  padding:8px 12px;
+  border-left:2px solid var(--yellow);
+  background:rgba(4,7,11,.56);
+  color:#eaff00;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:2.2px;
+  backdrop-filter:blur(5px);
+}
+.hero h1{
+  max-width:720px;
+  margin:20px 0 18px !important;
+  font-size:clamp(54px,7vw,102px) !important;
+  line-height:.88 !important;
+  letter-spacing:-2.4px !important;
+  text-shadow:0 4px 28px rgba(0,0,0,.62);
+}
+.hero h1 span{color:var(--yellow);}
+.hero-copy{
+  max-width:560px !important;
+  color:#e1e6ed !important;
+  font-size:13px !important;
+  line-height:1.7 !important;
+  text-shadow:0 2px 12px rgba(0,0,0,.7);
+}
+.hero-buttons{
+  margin-top:25px !important;
+}
+.button{
+  border-radius:7px !important;
+}
+.hero-meta{
+  margin-top:24px !important;
+  max-width:none !important;
+  justify-content:flex-start !important;
+}
+.hero-meta > *:after{display:none !important;}
+
+/* The quick navigation is now a subtle service bar, not six giant blue boxes. */
+.quick-access{
+  padding:0 clamp(22px,5.5vw,88px) !important;
+  background:#080d14 !important;
+  border-top:1px solid rgba(255,255,255,.07) !important;
+  border-bottom:1px solid rgba(255,255,255,.07) !important;
+}
+.quick-access-grid{
+  display:grid !important;
+  grid-template-columns:repeat(6,minmax(0,1fr)) !important;
+  gap:0 !important;
+  max-width:1400px;
+  margin:auto;
+}
+.quick-card{
+  min-height:88px !important;
+  padding:16px 17px !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  border:0 !important;
+  border-right:1px solid rgba(255,255,255,.07) !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+.quick-card:first-child{border-left:1px solid rgba(255,255,255,.07) !important;}
+.quick-card::before{display:none !important;}
+.quick-card:hover{
+  background:rgba(255,255,255,.025) !important;
+  border-color:rgba(255,255,255,.08) !important;
+  box-shadow:none !important;
+}
+.quick-icon{
+  width:34px !important;
+  height:34px !important;
+  flex:0 0 34px;
+  border-radius:9px !important;
+  background:rgba(255,255,255,.035) !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  color:#c9d1dc !important;
+}
+.quick-card-yellow .quick-icon{color:var(--yellow) !important;border-color:rgba(234,255,0,.35) !important;}
+.quick-card-red .quick-icon{color:#ff7379 !important;border-color:rgba(227,67,75,.35) !important;}
+.quick-copy{gap:3px !important;}
+.quick-copy strong{
+  font-family:"Barlow Condensed",sans-serif !important;
+  font-size:16px !important;
+  letter-spacing:.8px !important;
+  color:#f2f5f8 !important;
+}
+.quick-copy small{
+  color:#69778a !important;
+  font-size:8px !important;
+  letter-spacing:1px !important;
+}
+.quick-arrow{
+  margin-left:auto;
+  color:var(--yellow) !important;
+  font-size:15px !important;
+}
+
+/* Typography: no decorative full stops in headings. */
+h1,h2,.latest-row h2{
+  text-transform:uppercase;
+}
+.section-head h2,
+.latest-row h2{
+  letter-spacing:-1.8px !important;
+}
+.section-head h2 .yellow,
+.latest-row h2 .yellow,
+.premium-content h2 .yellow{
+  color:var(--yellow) !important;
+}
+
+/* Catalogue: keep the real content, make the surrounding UI quieter. */
+.section{
+  padding:96px clamp(24px,7vw,110px) !important;
+}
+.section-head{
+  margin-bottom:34px !important;
+}
+.section-head .eyebrow-line{
+  display:none !important;
+}
+.eyebrow{
+  font-size:9px !important;
+  letter-spacing:2px !important;
+}
+.eyebrow:after{display:none !important;}
+.section-head>p{
+  max-width:420px !important;
+}
+
+/* Covers: preserve the artwork, but keep text off busy areas. */
+.archive-card .cover{
+  height:235px !important;
+}
+.archive-card .cover::before{
+  background:
+    linear-gradient(180deg,rgba(3,7,12,.06) 0%,rgba(3,7,12,.10) 48%,rgba(3,7,12,.72) 100%) !important;
+}
+.card-tag{
+  top:14px !important;
+  left:14px !important;
+  font-size:8px !important;
+}
+.card-info{
+  min-height:96px !important;
+  padding:15px 16px !important;
+}
+.card-info h3{
+  font-size:20px !important;
+  letter-spacing:-.3px !important;
+}
+.card-info p{
+  font-size:10px !important;
+  line-height:1.55 !important;
+}
+
+/* Lower sections stay premium but stop looking like separate template blocks. */
+.latest-section,
+.included-section,
+.reviews-section,
+.giveaway-section{
+  background:#070a10 !important;
+}
+.feature,
+.review-card,
+.giveaway-card{
+  border-color:rgba(255,255,255,.08) !important;
+  box-shadow:none !important;
+}
+
+/* Mobile */
+@media(max-width:900px){
+  .header nav{display:none !important;}
+  .quick-access-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important;}
+  .quick-card:nth-child(3){border-right:0 !important;}
+  .hero{height:570px !important;min-height:570px !important;}
+}
+@media(max-width:620px){
+  .header{height:70px !important;padding:0 18px !important;}
+  .brand-name{display:none !important;}
+  .header-cta{font-size:8px !important;padding:11px 12px !important;}
+  .hero{
+    height:540px !important;
+    min-height:540px !important;
+    background-position:center center !important;
+  }
+  .hero-content{padding:0 20px 38px !important;}
+  .hero h1{font-size:clamp(46px,15vw,76px) !important;}
+  .hero-copy{font-size:12px !important;}
+  .quick-access{padding:0 !important;}
+  .quick-access-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+  .quick-card{min-height:76px !important;padding:12px !important;}
+  .quick-card:nth-child(3){border-right:1px solid rgba(255,255,255,.07) !important;}
+  .quick-card:nth-child(even){border-right:0 !important;}
+  .quick-copy small{display:none !important;}
+}
