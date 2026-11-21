@@ -97,13 +97,27 @@
   const seasonOf = item => item.season || item.year || "";
   const creatorOf = item => item.creator || item.author || "";
 
+  const categoryIcon = (type) => {
+    const common = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+    const paths = {
+      all: '<svg '+common+' aria-hidden="true"><circle cx="12" cy="12" r="7"></circle><path d="M9 12h6M12 9v6"></path></svg>',
+      comps: '<svg '+common+' aria-hidden="true"><path d="M8 6l10 6-10 6V6z"></path></svg>',
+      folders: '<svg '+common+' aria-hidden="true"><path d="M3.5 7.5h6l2 2h9v8.5h-17z"></path></svg>',
+      old: '<svg '+common+' aria-hidden="true"><circle cx="12" cy="12" r="7"></circle><path d="M12 8v4l2.5 2"></path></svg>',
+      edits: '<svg '+common+' aria-hidden="true"><path d="M12 3l1.5 6.5L20 12l-6.5 1.5L12 20l-1.5-6.5L4 12l6.5-2.5z"></path></svg>',
+      collections: '<svg '+common+' aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"></rect><path d="M8 8h8v8H8z"></path></svg>',
+      favorites: '<svg '+common+' aria-hidden="true"><path d="M12 20s-7-4.35-7-10a4 4 0 0 1 7-2.4A4 4 0 0 1 19 10c0 5.65-7 10-7 10z"></path></svg>'
+    };
+    return paths[type] || paths.all;
+  };
+
   const categories = [
-    { id:"all", icon:"◈", fr:"TOUT", en:"ALL", es:"TODO", uk:"УСЕ", zh:"全部", ar:"الكل" },
-    { id:"comps", icon:"▶", fr:"COMPS", en:"COMPS", es:"COMPS", uk:"КОМПІЛЯЦІЇ", zh:"集锦", ar:"تجميعات" },
-    { id:"folders", icon:"▱", fr:"DOSSIERS", en:"FOLDERS", es:"CARPETAS", uk:"ПАПКИ", zh:"文件夹", ar:"مجلدات" },
-    { id:"old", icon:"◌", fr:"ANCIEN", en:"OLD", es:"CLÁSICO", uk:"АРХІВ", zh:"经典", ar:"قديم" },
-    { id:"edits", icon:"✦", fr:"EDITS", en:"EDITS", es:"EDITS", uk:"ЕДІТИ", zh:"剪辑", ar:"تعديلات" },
-    { id:"collections", icon:"◇", fr:"COLLECTIONS", en:"COLLECTIONS", es:"COLECCIONES", uk:"КОЛЕКЦІЇ", zh:"收藏", ar:"مجموعات" }
+    { id:"all", icon:"all", fr:"TOUT", en:"ALL", es:"TODO", uk:"УСЕ", zh:"全部", ar:"الكل" },
+    { id:"comps", icon:"comps", fr:"COMPS", en:"COMPS", es:"COMPS", uk:"КОМПІЛЯЦІЇ", zh:"集锦", ar:"تجميعات" },
+    { id:"folders", icon:"folders", fr:"DOSSIERS", en:"FOLDERS", es:"CARPETAS", uk:"ПАПКИ", zh:"文件夹", ar:"مجلدات" },
+    { id:"old", icon:"old", fr:"ANCIEN", en:"OLD", es:"CLÁSICO", uk:"АРХІВ", zh:"经典", ar:"قديم" },
+    { id:"edits", icon:"edits", fr:"EDITS", en:"EDITS", es:"EDITS", uk:"ЕДІТИ", zh:"剪辑", ar:"تعديلات" },
+    { id:"collections", icon:"collections", fr:"COLLECTIONS", en:"COLLECTIONS", es:"COLECCIONES", uk:"КОЛЕКЦІЇ", zh:"收藏", ar:"مجموعات" }
   ];
 
   const translations = {
@@ -666,7 +680,7 @@
     filtersContainer.replaceChildren();
     const filterCategories = [
       ...categories,
-      { id: "favorites", icon:"★", fr: "FAVORIS", en: "FAVORITES", es:"FAVORITOS", uk:"ОБРАНЕ", zh:"收藏", ar:"المفضلة" }
+      { id: "favorites", icon:"favorites", fr: "FAVORIS", en: "FAVORITES", es:"FAVORITOS", uk:"ОБРАНЕ", zh:"收藏", ar:"المفضلة" }
     ];
     filterCategories.forEach(category => {
       const button = document.createElement('button');
@@ -678,8 +692,8 @@
         if (category.id === "favorites") return favoriteIds.has(favoriteKey(item));
         return category.id === "all" || normalizeCategory(item.category) === category.id;
       }).length;
-      const filterIcon = category.icon || "◈";
-      button.innerHTML = '<span class="filter-icon filter-icon-' + category.id + '" aria-hidden="true">' + filterIcon + '</span><span class="filter-label">' + category[language] + '</span><small>' + count + '</small>';
+      const filterIcon = category.icon || "all";
+      button.innerHTML = '<span class="filter-icon filter-icon-' + category.id + '">' + categoryIcon(filterIcon) + '</span><span class="filter-label">' + category[language] + '</span><small>' + count + '</small>';
       if (category.id === activeFilter) button.classList.add('active');
       button.addEventListener('click', () => { activeFilter = category.id; window.ESP_ACTIVE_CATALOGUE_FILTER = activeFilter; window.dispatchEvent(new CustomEvent("esp:catalogue-filter-change", { detail: { category: activeFilter } })); cardsLimit = CATALOGUE_PAGE_SIZE; renderFilters(); renderCards(); });
       filtersContainer.append(button);
