@@ -4433,3 +4433,78 @@ details p{
     transform:translateY(-3px) !important;
   }
 }
+
+
+/* EUROPEAN SATFEED — YELLOW / BLUE FINAL PALETTE */
+:root{
+  --bg:#06111d;
+  --panel:#0a1828;
+  --panel2:#0e2236;
+  --line:#203c58;
+  --white:#f5f8fc;
+  --muted:#93a7bb;
+  --yellow:#dfff00;
+  --blue:#123f69;
+  --blue2:#0a2948;
+  --cyan:#55bfff;
+  --pink:transparent;
+  --violet:transparent;
+}
+body{
+  background:
+    radial-gradient(900px 520px at 80% 10%,rgba(36,125,210,.16),transparent 65%),
+    radial-gradient(700px 500px at 12% 55%,rgba(223,255,0,.055),transparent 68%),
+    #06111d !important;
+}
+.header{
+  background:rgba(5,14,24,.78) !important;
+  border-bottom:1px solid rgba(99,166,220,.14) !important;
+  backdrop-filter:blur(20px) saturate(125%) !important;
+}
+.header-cta,.button-yellow{
+  background:linear-gradient(135deg,#eaff00 0%,#dfff00 55%,#bfe600 100%) !important;
+  color:#06111d !important;
+}
+.hero{
+  background:
+    radial-gradient(ellipse 58% 78% at 82% 44%,rgba(28,105,178,.24),transparent 64%),
+    radial-gradient(ellipse 45% 65% at 12% 72%,rgba(223,255,0,.07),transparent 66%),
+    linear-gradient(135deg,#06111d 0%,#092038 52%,#06101b 100%) !important;
+}
+.eyebrow{color:#dfff00 !important}
+.eyebrow-line{background:linear-gradient(90deg,#dfff00,#4fa9e8) !important;box-shadow:0 0 14px rgba(223,255,0,.28) !important}
+.button-ghost{border-color:rgba(117,170,214,.3) !important;background:rgba(8,25,42,.42) !important}
+.button-ghost:hover{border-color:#dfff00 !important;box-shadow:0 0 28px rgba(223,255,0,.10) !important}
+.ticker{background:linear-gradient(90deg,#dfff00,#cbe900,#dfff00) !important}
+.archive-section,.latest-section,.included-section,.premium-section,.faq-section{
+  background:
+    radial-gradient(800px 500px at 82% 20%,rgba(23,86,145,.13),transparent 65%),
+    radial-gradient(700px 500px at 10% 70%,rgba(223,255,0,.035),transparent 68%),
+    #071522 !important;
+}
+.catalogue-sidebar{
+  background:linear-gradient(145deg,rgba(10,29,48,.94),rgba(6,17,29,.97)) !important;
+  border-color:rgba(85,159,214,.22) !important;
+}
+.catalogue-sidebar .filter:hover{
+  background:rgba(30,103,164,.13) !important;
+  border-color:rgba(85,159,214,.28) !important;
+}
+.catalogue-sidebar .filter.active{
+  background:linear-gradient(90deg,rgba(223,255,0,.14),rgba(20,70,111,.20)) !important;
+  border-color:rgba(223,255,0,.8) !important;
+  box-shadow:inset 3px 0 0 #dfff00,0 10px 30px rgba(18,76,126,.12) !important;
+}
+.filter-icon{color:#dfff00 !important;border-color:rgba(82,157,214,.3) !important;background:#081a2c !important}
+.catalogue-sidebar .filter.active .filter-icon{background:#dfff00 !important;color:#06111d !important}
+.archive-card{
+  background:linear-gradient(160deg,rgba(11,29,47,.97),rgba(6,16,27,.98)) !important;
+  border-color:rgba(91,155,202,.16) !important;
+}
+.archive-card:hover{border-color:rgba(223,255,0,.35) !important;box-shadow:0 28px 70px rgba(0,0,0,.34),0 0 35px rgba(27,108,181,.08) !important}
+.drop-number,.feature-icon,.text-link{color:#dfff00 !important}
+.drop-status i{background:#dfff00 !important;box-shadow:0 0 12px rgba(223,255,0,.65) !important}
+.premium-section:before{border-color:rgba(223,255,0,.14) !important;box-shadow:0 0 0 55px rgba(223,255,0,.025),0 0 0 110px rgba(35,113,177,.025) !important}
+.price strong{color:#dfff00 !important;text-shadow:0 0 24px rgba(223,255,0,.14) !important}
+.footer{background:#04101a !important;border-top-color:rgba(82,157,214,.16) !important}
+.footer-links a:hover{color:#dfff00 !important}
