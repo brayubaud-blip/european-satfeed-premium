@@ -98,15 +98,15 @@
   const creatorOf = item => item.creator || item.author || "";
 
   const categoryIcon = (type) => {
-    const common = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+    const common = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"';
     const paths = {
-      all: '<svg '+common+' aria-hidden="true"><circle cx="12" cy="12" r="7"></circle><path d="M9 12h6M12 9v6"></path></svg>',
-      comps: '<svg '+common+' aria-hidden="true"><path d="M8 6l10 6-10 6V6z"></path></svg>',
-      folders: '<svg '+common+' aria-hidden="true"><path d="M3.5 7.5h6l2 2h9v8.5h-17z"></path></svg>',
-      old: '<svg '+common+' aria-hidden="true"><circle cx="12" cy="12" r="7"></circle><path d="M12 8v4l2.5 2"></path></svg>',
-      edits: '<svg '+common+' aria-hidden="true"><path d="M12 3l1.5 6.5L20 12l-6.5 1.5L12 20l-1.5-6.5L4 12l6.5-2.5z"></path></svg>',
-      collections: '<svg '+common+' aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"></rect><path d="M8 8h8v8H8z"></path></svg>',
-      favorites: '<svg '+common+' aria-hidden="true"><path d="M12 20s-7-4.35-7-10a4 4 0 0 1 7-2.4A4 4 0 0 1 19 10c0 5.65-7 10-7 10z"></path></svg>'
+      all: '<svg '+common+' aria-hidden="true"><path d="M5 9.5 12 4l7 5.5"></path><path d="M7 9v9h10V9"></path><path d="M10 18v-5h4v5"></path></svg>',
+      comps: '<svg '+common+' aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="3"></rect><path d="m10 9 5 3-5 3V9z"></path></svg>',
+      folders: '<svg '+common+' aria-hidden="true"><path d="M3.5 7.5h6l1.8 2H20.5v8.5h-17z"></path><path d="M3.5 7.5V6h6l1.8 2"></path></svg>',
+      old: '<svg '+common+' aria-hidden="true"><circle cx="12" cy="12" r="7.5"></circle><path d="M12 8v4l2.8 1.8"></path></svg>',
+      edits: '<svg '+common+' aria-hidden="true"><path d="M12 3.5 14 9l5.5 2-5.5 2-2 5.5-2-5.5-5.5-2 5.5-2z"></path></svg>',
+      collections: '<svg '+common+' aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"></rect><path d="M8.5 8.5h7v7h-7z"></path></svg>',
+      favorites: '<svg '+common+' aria-hidden="true"><path d="M12 19.5S5 15.4 5 9.8A3.8 3.8 0 0 1 12 7a3.8 3.8 0 0 1 7 2.8c0 5.6-7 9.7-7 9.7z"></path></svg>'
     };
     return paths[type] || paths.all;
   };
