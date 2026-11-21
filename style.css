@@ -3943,6 +3943,12 @@ h1,h2,.latest-row h2{
 }
 
 /* Lower sections stay premium but stop looking like separate template blocks. */
+.latest-section,
+.included-section,
+.reviews-section,
+.giveaway-section{
+  background:#070a10 !important;
+}
 .feature,
 .review-card,
 .giveaway-card{
@@ -3981,339 +3987,60 @@ h1,h2,.latest-row h2{
 .header-visitors-pulse{width:6px;height:6px;border-radius:50%;background:#48c98b;box-shadow:0 0 9px rgba(72,201,139,.42)}
 .header-visitors strong{color:var(--yellow);font-weight:800}
 .header-actions{gap:12px!important}
-
-@media(max-width:900px){
-  .header-visitors{font-size:7px;height:32px;padding:0 8px;gap:6px}
-}
-@media(max-width:620px){
-  .header-visitors{font-size:6.5px;height:30px;padding:0 7px;letter-spacing:.8px}
-  .header-actions{gap:7px!important}
-  .header-visitors strong{font-size:8px}
-}
+@media(max-width:900px){.header-visitors{display:none}}
+@media(max-width:620px){.header-visitors{display:none}}
 
 
-/* === FINAL VISUAL CLEANUP ===
-   Keep the premium football identity, but remove the heavy/dirty visual treatment.
-   These rules intentionally override older editor-generated styling. */
-:root{
-  --bg:#070b12;
-  --panel:#0c121b;
-  --panel2:#101823;
-  --line:#202b39;
-  --white:#f3f6fa;
-  --muted:#aeb8c7;
-  --yellow:#dfff00;
-  --red:#e34b55;
-  --navy:#0b1422;
-}
-
-body{
-  background:#070b12;
-  color:var(--white);
-  font-family:"Manrope","DM Sans",sans-serif;
-}
-
-p,
-.section-head>p,
-.hero-copy,
-.latest-copy p,
-.feature p,
-.card-info p,
-.secure-note,
-details p{
-  color:#b7c0ce;
-}
-
-.brand-mark{
-  font-size:27px;
-  letter-spacing:-1px;
-}
-
-.brand-mark .esp-custom-logo{
-  width:34px!important;
-  height:34px!important;
-  max-width:34px!important;
-  max-height:34px!important;
-  object-fit:contain!important;
-}
-
-.footer-brand .brand-mark .esp-custom-logo{
-  width:30px!important;
-  height:30px!important;
-  max-width:30px!important;
-  max-height:30px!important;
-}
-
+/* FINAL CATALOGUE POLISH */
 .catalogue-sidebar{
-  background:#0b111a;
-  border:1px solid #263342;
-  box-shadow:none;
-  padding:18px 12px;
+  background:linear-gradient(145deg,#0d1726 0%,#0a111d 100%);
+  border:1px solid #24364b;
+  border-radius:14px;
 }
-
-.catalogue-side-title{
-  color:#c9d2df;
-  font-size:9px;
-  margin-bottom:14px;
-}
-
 .catalogue-sidebar .filter{
   min-height:48px;
   padding:8px 10px;
-  color:#b8c2d0;
-  background:transparent;
-  border:1px solid transparent;
   border-radius:9px;
-}
-
-.catalogue-sidebar .filter.active,
-.catalogue-sidebar .filter:hover{
-  background:#151d28;
-  color:#f4f7fb;
-  border-color:#dfff00;
-}
-
-.catalogue-sidebar .filter.active{
-  box-shadow:inset 3px 0 0 #dfff00;
-}
-
-.catalogue-sidebar .filter svg,
-.catalogue-sidebar .filter i,
-.catalogue-sidebar .filter .icon{
-  width:26px!important;
-  height:26px!important;
-  min-width:26px!important;
-  min-height:26px!important;
-}
-
-.catalogue-sidebar .filter img{
-  width:26px!important;
-  height:26px!important;
-  object-fit:contain!important;
-}
-
-.catalogue-search{
-  background:#0c121b;
-  border-color:#273342;
-  color:#dfff00;
-}
-
-.catalogue-search input{
-  color:#f3f6fa;
-}
-
-.catalogue-search input::placeholder{
-  color:#8995a5;
-}
-
-.catalogue-tools select,
-.catalogue-refresh{
-  background:#0c121b;
-  color:#d5dde8;
-  border-color:#273342;
-}
-
-.archive-card{
-  background:#0c121b;
-  border-color:#202c3b;
-  box-shadow:none;
-}
-
-.archive-card:hover{
-  border-color:#718094;
-  transform:translateY(-3px);
-}
-
-.card-info h3{
-  color:#f3f6fa;
-  font-weight:700;
-}
-
-.card-info p{
-  color:#aeb8c7;
-}
-
-.latest-section{
-  background:#0b1422;
-  box-shadow:none;
-}
-
-.latest-section:after{
-  color:#ffffff03;
-}
-
-.included-section{
-  background:#090e16;
-}
-
-.features{
-  border-color:#202b39;
-}
-
-.feature{
-  border-color:#202b39;
-}
-
-.feature-icon{
-  font-size:20px;
-  margin:22px 0 15px;
-}
-
-.feature h3{
-  font-weight:700;
-  color:#f3f6fa;
-}
-
-.premium-section{
-  background:#0b111a;
-  box-shadow:none;
-}
-
-.premium-section:before{
-  border-color:#ffffff0d;
-  box-shadow:0 0 0 55px #ffffff03,0 0 0 110px #ffffff02;
-}
-
-.premium-content>p{
-  color:#b7c0ce;
-}
-
-.premium-aside{
-  background:#0c121b;
-  border-color:#293645;
-}
-
-.faq-section{
-  background:#070b12;
-}
-
-summary{
-  color:#f3f6fa;
-  font-weight:700;
-}
-
-details p{
-  color:#b7c0ce;
-}
-
-.footer{
-  background:#05080d;
-}
-
-@media(max-width:760px){
-  .catalogue-sidebar .filter{
-    min-height:44px;
-    padding:7px 10px;
-  }
-  .catalogue-sidebar .filter svg,
-  .catalogue-sidebar .filter i,
-  .catalogue-sidebar .filter .icon,
-  .catalogue-sidebar .filter img{
-    width:23px!important;
-    height:23px!important;
-    min-width:23px!important;
-    min-height:23px!important;
-  }
-}
-
-
-/* Final background polish */
-.latest-section,
-.premium-section,
-.included-section,
-.archive-section{
-  background:linear-gradient(180deg,#09111c 0%,#0d1724 52%,#08101a 100%);
-  color:#f4f7fb;
-}
-.archive-section::before,
-.latest-section::before,
-.premium-section::before,
-.included-section::before{
-  opacity:.18;
-}
-
-
-/* === CATALOGUE ICON / VISUAL REFINEMENT === */
-.catalogue-sidebar{
-  background:linear-gradient(150deg,#101a2b 0%,#0b1320 100%) !important;
-  border-color:#27374b !important;
-  border-radius:14px !important;
-}
-.catalogue-sidebar .filter{
-  min-height:50px !important;
-  padding:8px 10px !important;
-  border-radius:10px !important;
-  background:transparent !important;
-  color:#aeb9c8 !important;
-}
-.catalogue-sidebar .filter.active,
-.catalogue-sidebar .filter:hover{
-  background:linear-gradient(90deg,#182537,#111b29) !important;
-  color:#f5f8fc !important;
-  border-color:#dfff00 !important;
 }
 .filter-icon{
-  display:grid !important;
-  place-items:center !important;
-  width:30px !important;
-  height:30px !important;
-  min-width:30px !important;
-  font-size:0 !important;
-  color:#dfff00 !important;
-  border:1px solid #33485e;
-  border-radius:9px;
-  background:#0b1421;
+  display:grid;
+  place-items:center;
+  width:28px;
+  height:28px;
+  min-width:28px;
+  font-size:0;
+  color:#c9d3df;
+  border:1px solid #30455d;
+  border-radius:8px;
+  background:#0a1320;
 }
 .filter-icon svg{
-  width:16px !important;
-  height:16px !important;
+  width:15px;
+  height:15px;
   stroke:currentColor;
 }
-.filter-icon-all{color:#dfff00 !important}
-.filter-icon-comps{color:#8ee7ff !important}
-.filter-icon-folders{color:#b7ff72 !important}
-.filter-icon-old{color:#aeb9c8 !important}
-.filter-icon-edits{color:#ff8fc4 !important}
-.filter-icon-collections{color:#c6a5ff !important}
-.filter-icon-favorites{color:#ffd45a !important}
-
+.filter-icon-all{color:#eaff00}
+.filter-icon-comps{color:#75d9ff}
+.filter-icon-folders{color:#9fe870}
+.filter-icon-old{color:#aeb9c8}
+.filter-icon-edits{color:#ff9acb}
+.filter-icon-collections{color:#c6a6ff}
+.filter-icon-favorites{color:#ffd45a}
 .catalogue-sidebar .filter.active .filter-icon{
-  background:#dfff00 !important;
-  color:#071019 !important;
-  border-color:#dfff00 !important;
+  background:#eaff00;
+  border-color:#eaff00;
+  color:#080b12;
 }
 .catalogue-sidebar .filter small{
-  color:#708198 !important;
-  font-size:9px !important;
-  font-weight:800 !important;
+  color:#718196;
+  font-size:9px;
+  font-weight:800;
 }
-.catalogue-sidebar .filter.active small{color:#dfff00 !important}
+.catalogue-sidebar .filter.active small{color:#eaff00}
 
-/* Better section depth: dark navy, blue and subtle color rather than flat grey/black */
-.archive-section{
-  background:
-    radial-gradient(900px 500px at 10% 18%,rgba(0,140,255,.10),transparent 60%),
-    radial-gradient(700px 450px at 92% 72%,rgba(214,255,0,.06),transparent 62%),
-    linear-gradient(135deg,#08111d 0%,#0d1724 48%,#09101a 100%) !important;
-}
-.latest-section{
-  background:
-    linear-gradient(120deg,rgba(5,18,36,.86),rgba(11,34,61,.72)),
-    url("https://afipejmgjkigcbohsxkt.supabase.co/storage/v1/object/public/covers/catalogue/1793652589119-0e07a2c0-aedb-4602-b20b-de8348083e58.jpg") center/cover no-repeat !important;
-}
-.latest-section:after{color:#ffffff08 !important}
-.included-section{
-  background:
-    radial-gradient(700px 420px at 75% 30%,rgba(0,174,255,.08),transparent 60%),
-    linear-gradient(135deg,#091522 0%,#0c1928 55%,#07111c 100%) !important;
-}
+/* Preserve artwork from the site's own image library without putting catalogue covers behind text */
+.latest-section,
 .premium-section{
-  background:
-    linear-gradient(110deg,rgba(5,13,24,.78),rgba(7,20,34,.70)),
-    url("https://afipejmgjkigcbohsxkt.supabase.co/storage/v1/object/public/covers/catalogue/1793648915664-c292e328-0cde-45a4-9684-3a8ba9f5183c.jpg") center/cover no-repeat !important;
+  background-color:#09121f;
 }
-.faq-section{
-  background:
-    radial-gradient(800px 500px at 50% 0%,rgba(20,94,150,.10),transparent 65%),
-    #08111b !important;
-}
+.latest-section:after{color:#ffffff05}
