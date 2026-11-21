@@ -98,12 +98,12 @@
   const creatorOf = item => item.creator || item.author || "";
 
   const categories = [
-    { id:"all", icon:"01", fr:"TOUT", en:"ALL", es:"TODO", uk:"УСЕ", zh:"全部", ar:"الكل" },
-    { id:"comps", icon:"02", fr:"COMPS", en:"COMPS", es:"COMPS", uk:"КОМПІЛЯЦІЇ", zh:"集锦", ar:"تجميعات" },
-    { id:"folders", icon:"03", fr:"DOSSIERS", en:"FOLDERS", es:"CARPETAS", uk:"ПАПКИ", zh:"文件夹", ar:"مجلدات" },
-    { id:"old", icon:"04", fr:"ANCIEN", en:"OLD", es:"CLÁSICO", uk:"АРХІВ", zh:"经典", ar:"قديم" },
-    { id:"edits", icon:"05", fr:"EDITS", en:"EDITS", es:"EDITS", uk:"ЕДІТИ", zh:"剪辑", ar:"تعديلات" },
-    { id:"collections", icon:"06", fr:"COLLECTIONS", en:"COLLECTIONS", es:"COLECCIONES", uk:"КОЛЕКЦІЇ", zh:"收藏", ar:"مجموعات" }
+    { id:"all", icon:"◈", fr:"TOUT", en:"ALL", es:"TODO", uk:"УСЕ", zh:"全部", ar:"الكل" },
+    { id:"comps", icon:"▶", fr:"COMPS", en:"COMPS", es:"COMPS", uk:"КОМПІЛЯЦІЇ", zh:"集锦", ar:"تجميعات" },
+    { id:"folders", icon:"▱", fr:"DOSSIERS", en:"FOLDERS", es:"CARPETAS", uk:"ПАПКИ", zh:"文件夹", ar:"مجلدات" },
+    { id:"old", icon:"◌", fr:"ANCIEN", en:"OLD", es:"CLÁSICO", uk:"АРХІВ", zh:"经典", ar:"قديم" },
+    { id:"edits", icon:"✦", fr:"EDITS", en:"EDITS", es:"EDITS", uk:"ЕДІТИ", zh:"剪辑", ar:"تعديلات" },
+    { id:"collections", icon:"◇", fr:"COLLECTIONS", en:"COLLECTIONS", es:"COLECCIONES", uk:"КОЛЕКЦІЇ", zh:"收藏", ar:"مجموعات" }
   ];
 
   const translations = {
@@ -649,12 +649,24 @@
     if (status) status.textContent = message;
   }
 
+  document.querySelectorAll("[data-quick-filter]").forEach(link => {
+    link.addEventListener("click", () => {
+      const filter = link.dataset.quickFilter;
+      if (!filter) return;
+      activeFilter = filter;
+      window.ESP_ACTIVE_CATALOGUE_FILTER = filter;
+      window.setTimeout(() => {
+        window.dispatchEvent(new CustomEvent("esp:catalogue-filter-change", { detail: { category: filter } }));
+      }, 0);
+    });
+  });
+
   function renderFilters() {
     if (!filtersContainer) return;
     filtersContainer.replaceChildren();
     const filterCategories = [
       ...categories,
-      { id: "favorites", icon:"07", fr: "FAVORIS", en: "FAVORITES", es:"FAVORITOS", uk:"ОБРАНЕ", zh:"收藏", ar:"المفضلة" }
+      { id: "favorites", icon:"★", fr: "FAVORIS", en: "FAVORITES", es:"FAVORITOS", uk:"ОБРАНЕ", zh:"收藏", ar:"المفضلة" }
     ];
     filterCategories.forEach(category => {
       const button = document.createElement('button');
@@ -875,7 +887,7 @@
       }
 
       const tag = document.createElement("span");
-      tag.className = "card-tag";
+      tag.className = "card-tag card-tag-" + normalizeCategory(item.category).replace(/[^a-z0-9]+/g, "-");
       tag.textContent = normalizeCategory(item.category)
         .replace("national teams", "archive")
         .toUpperCase();
