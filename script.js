@@ -98,17 +98,17 @@
   const creatorOf = item => item.creator || item.author || "";
 
   const categoryIcon = (type) => {
-    const common = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"';
-    const paths = {
-      all: '<svg '+common+' aria-hidden="true"><path d="M5 9.5 12 4l7 5.5"></path><path d="M7 9v9h10V9"></path><path d="M10 18v-5h4v5"></path></svg>',
-      comps: '<svg '+common+' aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="3"></rect><path d="m10 9 5 3-5 3V9z"></path></svg>',
-      folders: '<svg '+common+' aria-hidden="true"><path d="M3.5 7.5h6l1.8 2H20.5v8.5h-17z"></path><path d="M3.5 7.5V6h6l1.8 2"></path></svg>',
-      old: '<svg '+common+' aria-hidden="true"><circle cx="12" cy="12" r="7.5"></circle><path d="M12 8v4l2.8 1.8"></path></svg>',
-      edits: '<svg '+common+' aria-hidden="true"><path d="M12 3.5 14 9l5.5 2-5.5 2-2 5.5-2-5.5-5.5-2 5.5-2z"></path></svg>',
-      collections: '<svg '+common+' aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2"></rect><path d="M8.5 8.5h7v7h-7z"></path></svg>',
-      favorites: '<svg '+common+' aria-hidden="true"><path d="M12 19.5S5 15.4 5 9.8A3.8 3.8 0 0 1 12 7a3.8 3.8 0 0 1 7 2.8c0 5.6-7 9.7-7 9.7z"></path></svg>'
+    const common = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"';
+    const icons = {
+      all: '<svg '+common+' aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="m8.7 7.2 3.3 1.9 3.3-1.9"></path><path d="m8.7 16.8 3.3-1.9 3.3 1.9"></path><path d="M12 9.1v5.8"></path></svg>',
+      comps: '<svg '+common+' aria-hidden="true"><rect x="4" y="6" width="16" height="12" rx="2.5"></rect><path d="m10 9.2 5 2.8-5 2.8z"></path></svg>',
+      folders: '<svg '+common+' aria-hidden="true"><path d="M3.5 7.5h6l1.7 2h9.3v8.8h-17z"></path><path d="M3.5 7.5V6.2h5.7l2 2.1"></path></svg>',
+      old: '<svg '+common+' aria-hidden="true"><path d="M5 8h14v10H5z"></path><path d="M7.5 8V5.5h9V8"></path><path d="M8.5 12h7"></path></svg>',
+      edits: '<svg '+common+' aria-hidden="true"><path d="m14.5 5.5 4 4"></path><path d="m6 18 2.2-.5L18.2 7.5a1.7 1.7 0 0 0-2.4-2.4L5.8 15.1z"></path><path d="M13 7l4 4"></path></svg>',
+      collections: '<svg '+common+' aria-hidden="true"><rect x="4.5" y="6.5" width="12" height="12" rx="2"></rect><path d="M7.5 4.5h10a2 2 0 0 1 2 2v10"></path><path d="M8.5 10.5h4"></path><path d="M8.5 13.5h6"></path></svg>',
+      favorites: '<svg '+common+' aria-hidden="true"><path d="m12 18.7-5.2-4.5A5.1 5.1 0 0 1 12 6.6a5.1 5.1 0 0 1 5.2 7.6z"></path></svg>'
     };
-    return paths[type] || paths.all;
+    return icons[type] || icons.all;
   };
 
   const categories = [
