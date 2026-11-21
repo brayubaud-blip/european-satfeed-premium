@@ -4231,3 +4231,89 @@ details p{
 .included-section::before{
   opacity:.18;
 }
+
+
+/* === CATALOGUE ICON / VISUAL REFINEMENT === */
+.catalogue-sidebar{
+  background:linear-gradient(150deg,#101a2b 0%,#0b1320 100%) !important;
+  border-color:#27374b !important;
+  border-radius:14px !important;
+}
+.catalogue-sidebar .filter{
+  min-height:50px !important;
+  padding:8px 10px !important;
+  border-radius:10px !important;
+  background:transparent !important;
+  color:#aeb9c8 !important;
+}
+.catalogue-sidebar .filter.active,
+.catalogue-sidebar .filter:hover{
+  background:linear-gradient(90deg,#182537,#111b29) !important;
+  color:#f5f8fc !important;
+  border-color:#dfff00 !important;
+}
+.filter-icon{
+  display:grid !important;
+  place-items:center !important;
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  font-size:0 !important;
+  color:#dfff00 !important;
+  border:1px solid #33485e;
+  border-radius:9px;
+  background:#0b1421;
+}
+.filter-icon svg{
+  width:16px !important;
+  height:16px !important;
+  stroke:currentColor;
+}
+.filter-icon-all{color:#dfff00 !important}
+.filter-icon-comps{color:#8ee7ff !important}
+.filter-icon-folders{color:#b7ff72 !important}
+.filter-icon-old{color:#aeb9c8 !important}
+.filter-icon-edits{color:#ff8fc4 !important}
+.filter-icon-collections{color:#c6a5ff !important}
+.filter-icon-favorites{color:#ffd45a !important}
+
+.catalogue-sidebar .filter.active .filter-icon{
+  background:#dfff00 !important;
+  color:#071019 !important;
+  border-color:#dfff00 !important;
+}
+.catalogue-sidebar .filter small{
+  color:#708198 !important;
+  font-size:9px !important;
+  font-weight:800 !important;
+}
+.catalogue-sidebar .filter.active small{color:#dfff00 !important}
+
+/* Better section depth: dark navy, blue and subtle color rather than flat grey/black */
+.archive-section{
+  background:
+    radial-gradient(900px 500px at 10% 18%,rgba(0,140,255,.10),transparent 60%),
+    radial-gradient(700px 450px at 92% 72%,rgba(214,255,0,.06),transparent 62%),
+    linear-gradient(135deg,#08111d 0%,#0d1724 48%,#09101a 100%) !important;
+}
+.latest-section{
+  background:
+    linear-gradient(120deg,rgba(5,18,36,.86),rgba(11,34,61,.72)),
+    url("https://afipejmgjkigcbohsxkt.supabase.co/storage/v1/object/public/covers/catalogue/1793652589119-0e07a2c0-aedb-4602-b20b-de8348083e58.jpg") center/cover no-repeat !important;
+}
+.latest-section:after{color:#ffffff08 !important}
+.included-section{
+  background:
+    radial-gradient(700px 420px at 75% 30%,rgba(0,174,255,.08),transparent 60%),
+    linear-gradient(135deg,#091522 0%,#0c1928 55%,#07111c 100%) !important;
+}
+.premium-section{
+  background:
+    linear-gradient(110deg,rgba(5,13,24,.78),rgba(7,20,34,.70)),
+    url("https://afipejmgjkigcbohsxkt.supabase.co/storage/v1/object/public/covers/catalogue/1793648915664-c292e328-0cde-45a4-9684-3a8ba9f5183c.jpg") center/cover no-repeat !important;
+}
+.faq-section{
+  background:
+    radial-gradient(800px 500px at 50% 0%,rgba(20,94,150,.10),transparent 65%),
+    #08111b !important;
+}
