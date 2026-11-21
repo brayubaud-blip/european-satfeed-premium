@@ -3990,3 +3990,228 @@ h1,h2,.latest-row h2{
   .header-actions{gap:7px!important}
   .header-visitors strong{font-size:8px}
 }
+
+
+/* === FINAL VISUAL CLEANUP ===
+   Keep the premium football identity, but remove the heavy/dirty visual treatment.
+   These rules intentionally override older editor-generated styling. */
+:root{
+  --bg:#070b12;
+  --panel:#0c121b;
+  --panel2:#101823;
+  --line:#202b39;
+  --white:#f3f6fa;
+  --muted:#aeb8c7;
+  --yellow:#dfff00;
+  --red:#e34b55;
+  --navy:#0b1422;
+}
+
+body{
+  background:#070b12;
+  color:var(--white);
+  font-family:"Manrope","DM Sans",sans-serif;
+}
+
+p,
+.section-head>p,
+.hero-copy,
+.latest-copy p,
+.feature p,
+.card-info p,
+.secure-note,
+details p{
+  color:#b7c0ce;
+}
+
+.brand-mark{
+  font-size:27px;
+  letter-spacing:-1px;
+}
+
+.brand-mark .esp-custom-logo{
+  width:34px!important;
+  height:34px!important;
+  max-width:34px!important;
+  max-height:34px!important;
+  object-fit:contain!important;
+}
+
+.footer-brand .brand-mark .esp-custom-logo{
+  width:30px!important;
+  height:30px!important;
+  max-width:30px!important;
+  max-height:30px!important;
+}
+
+.catalogue-sidebar{
+  background:#0b111a;
+  border:1px solid #263342;
+  box-shadow:none;
+  padding:18px 12px;
+}
+
+.catalogue-side-title{
+  color:#c9d2df;
+  font-size:9px;
+  margin-bottom:14px;
+}
+
+.catalogue-sidebar .filter{
+  min-height:48px;
+  padding:8px 10px;
+  color:#b8c2d0;
+  background:transparent;
+  border:1px solid transparent;
+  border-radius:9px;
+}
+
+.catalogue-sidebar .filter.active,
+.catalogue-sidebar .filter:hover{
+  background:#151d28;
+  color:#f4f7fb;
+  border-color:#dfff00;
+}
+
+.catalogue-sidebar .filter.active{
+  box-shadow:inset 3px 0 0 #dfff00;
+}
+
+.catalogue-sidebar .filter svg,
+.catalogue-sidebar .filter i,
+.catalogue-sidebar .filter .icon{
+  width:26px!important;
+  height:26px!important;
+  min-width:26px!important;
+  min-height:26px!important;
+}
+
+.catalogue-sidebar .filter img{
+  width:26px!important;
+  height:26px!important;
+  object-fit:contain!important;
+}
+
+.catalogue-search{
+  background:#0c121b;
+  border-color:#273342;
+  color:#dfff00;
+}
+
+.catalogue-search input{
+  color:#f3f6fa;
+}
+
+.catalogue-search input::placeholder{
+  color:#8995a5;
+}
+
+.catalogue-tools select,
+.catalogue-refresh{
+  background:#0c121b;
+  color:#d5dde8;
+  border-color:#273342;
+}
+
+.archive-card{
+  background:#0c121b;
+  border-color:#202c3b;
+  box-shadow:none;
+}
+
+.archive-card:hover{
+  border-color:#718094;
+  transform:translateY(-3px);
+}
+
+.card-info h3{
+  color:#f3f6fa;
+  font-weight:700;
+}
+
+.card-info p{
+  color:#aeb8c7;
+}
+
+.latest-section{
+  background:#0b1422;
+  box-shadow:none;
+}
+
+.latest-section:after{
+  color:#ffffff03;
+}
+
+.included-section{
+  background:#090e16;
+}
+
+.features{
+  border-color:#202b39;
+}
+
+.feature{
+  border-color:#202b39;
+}
+
+.feature-icon{
+  font-size:20px;
+  margin:22px 0 15px;
+}
+
+.feature h3{
+  font-weight:700;
+  color:#f3f6fa;
+}
+
+.premium-section{
+  background:#0b111a;
+  box-shadow:none;
+}
+
+.premium-section:before{
+  border-color:#ffffff0d;
+  box-shadow:0 0 0 55px #ffffff03,0 0 0 110px #ffffff02;
+}
+
+.premium-content>p{
+  color:#b7c0ce;
+}
+
+.premium-aside{
+  background:#0c121b;
+  border-color:#293645;
+}
+
+.faq-section{
+  background:#070b12;
+}
+
+summary{
+  color:#f3f6fa;
+  font-weight:700;
+}
+
+details p{
+  color:#b7c0ce;
+}
+
+.footer{
+  background:#05080d;
+}
+
+@media(max-width:760px){
+  .catalogue-sidebar .filter{
+    min-height:44px;
+    padding:7px 10px;
+  }
+  .catalogue-sidebar .filter svg,
+  .catalogue-sidebar .filter i,
+  .catalogue-sidebar .filter .icon,
+  .catalogue-sidebar .filter img{
+    width:23px!important;
+    height:23px!important;
+    min-width:23px!important;
+    min-height:23px!important;
+  }
+}
