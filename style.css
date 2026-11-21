@@ -3982,3 +3982,93 @@ h1,h2,.latest-row h2{
   .quick-card:nth-child(even){border-right:0 !important;}
   .quick-copy small{display:none !important;}
 }
+
+/* === FINAL CORRECTION PASS === */
+.topline{
+  display:flex !important;min-height:36px;padding:0 clamp(24px,5.5vw,88px);
+  align-items:center;justify-content:space-between;background:#080b12;
+  border-bottom:1px solid rgba(255,255,255,.055);color:#8e99aa;
+  font:700 8px "Manrope",sans-serif;letter-spacing:2px;
+}
+.topline .pulse{width:5px;height:5px;border-radius:50%;background:#d8e35c;box-shadow:0 0 9px rgba(216,227,92,.35);margin-right:8px}
+.topline-right{display:flex;align-items:center;gap:22px;margin-left:auto}
+.topline-visitors{display:inline-flex;align-items:center;gap:7px;color:#b7c0cd}
+.topline-visitors-pulse{width:6px;height:6px;border-radius:50%;background:#52c98d;box-shadow:0 0 8px rgba(82,201,141,.45)}
+.topline-visitors strong{color:#d8e35c;font-weight:800}.topline-est{color:#596577}
+
+/* Keep the original page artwork. No catalogue cover is injected into the hero. */
+.hero{
+  background:
+    linear-gradient(90deg,rgba(5,8,13,.72),rgba(5,8,13,.30) 50%,rgba(5,8,13,.48)),
+    linear-gradient(0deg,rgba(5,8,13,.82),rgba(5,8,13,.10) 55%,rgba(5,8,13,.14)) !important;
+  min-height:680px !important;height:min(72vh,720px) !important;padding:0 !important;
+}
+.hero::before{
+  display:block !important;
+  background:linear-gradient(90deg,rgba(5,8,13,.10),transparent 60%) !important;
+}
+.hero-grid{display:none !important}
+.hero-content{max-width:760px !important;padding:0 clamp(28px,7vw,110px) 62px !important}
+.hero-kicker{
+  background:rgba(5,8,13,.42) !important;border-left:2px solid #d8e35c !important;
+  color:#d8e35c !important;box-shadow:none !important
+}
+.hero h1{
+  font-size:clamp(58px,7.2vw,92px) !important;line-height:.91 !important;
+  letter-spacing:-1.6px !important;color:#f4f5f7 !important;
+  text-shadow:0 3px 22px rgba(0,0,0,.52) !important
+}
+.hero h1 span{color:#d8e35c !important}
+.hero-copy{max-width:520px !important;color:#c1c9d4 !important;text-shadow:0 2px 12px rgba(0,0,0,.72) !important}
+.hero-buttons .button-yellow{background:#d8e35c !important;box-shadow:0 8px 25px rgba(216,227,92,.10) !important}
+.hero-buttons .button-ghost{background:rgba(8,12,18,.52) !important;border-color:rgba(255,255,255,.18) !important;color:#e4e8ee !important}
+.hero-meta{margin-top:34px !important;color:#8f9bab !important}.hero-meta b{color:#d8e35c !important}
+.hero-meta > *:after{display:none !important}
+
+/* Compact editorial navigation, not six glowing boxes. */
+.quick-access{
+  padding:0 clamp(18px,5vw,76px) !important;background:#090d14 !important;
+  border-top:1px solid rgba(255,255,255,.06) !important;border-bottom:1px solid rgba(255,255,255,.08) !important;
+  box-shadow:none !important
+}
+.quick-access-grid{max-width:1450px !important;grid-template-columns:repeat(6,minmax(0,1fr)) !important}
+.quick-card{
+  min-height:82px !important;padding:14px 20px !important;border-right:1px solid rgba(255,255,255,.065) !important;
+  border-left:0 !important;gap:11px !important
+}
+.quick-card:hover{background:rgba(255,255,255,.018) !important}
+.quick-icon{
+  width:32px !important;height:32px !important;flex:0 0 32px !important;border-radius:8px !important;
+  background:#111722 !important;border:1px solid #303b4b !important;color:#b8c2ce !important
+}
+.quick-icon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.quick-card-yellow .quick-icon{color:#d8e35c !important;border-color:rgba(216,227,92,.42) !important}
+.quick-card-red .quick-icon{color:#d98b91 !important;border-color:rgba(217,139,145,.38) !important}
+.quick-copy strong{font-family:"Barlow Condensed",sans-serif !important;font-size:17px !important;letter-spacing:.35px !important}
+.quick-copy small{color:#6f7a8b !important;font-size:8px !important;letter-spacing:1.05px !important}
+.quick-arrow{color:#d8e35c !important;font-size:14px !important}
+
+/* Catalogue sidebar: subdued, clean and readable. */
+.catalogue-sidebar{
+  background:#090e16 !important;border:1px solid rgba(255,255,255,.075) !important;
+  border-radius:10px !important;box-shadow:none !important
+}
+.catalogue-side-title{color:#7f8b9c !important;letter-spacing:2px !important}
+.filter{border-color:transparent !important;background:transparent !important;color:#9ca7b5 !important;border-radius:9px !important}
+.filter:hover{background:rgba(255,255,255,.025) !important}
+.filter.active{background:#101720 !important;border-color:rgba(216,227,92,.45) !important;color:#f2f4f7 !important;box-shadow:none !important}
+.filter-icon{background:#121a24 !important;border-color:#35404d !important;color:#bfc7d1 !important}
+.filter.active .filter-icon{background:#d8e35c !important;border-color:#d8e35c !important;color:#0a0d12 !important}
+.filter-count{color:#657185 !important}
+.quick-access::before,.quick-access::after,.catalogue-sidebar::before,.catalogue-sidebar::after{display:none !important}
+
+@media(max-width:900px){
+  .topline{padding-inline:20px}.quick-access-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important}
+}
+@media(max-width:620px){
+  .topline{font-size:7px;padding-inline:14px}.topline-right{gap:10px}.topline-est{display:none}
+  .hero{height:560px !important;min-height:560px !important}.hero-content{padding:0 20px 40px !important}
+  .hero h1{font-size:clamp(48px,15vw,76px) !important}
+  .quick-access-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+  .quick-card{min-height:74px !important;padding:11px 13px !important}.quick-copy strong{font-size:15px !important}
+}
