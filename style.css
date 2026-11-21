@@ -3981,5 +3981,12 @@ h1,h2,.latest-row h2{
 .header-visitors-pulse{width:6px;height:6px;border-radius:50%;background:#48c98b;box-shadow:0 0 9px rgba(72,201,139,.42)}
 .header-visitors strong{color:var(--yellow);font-weight:800}
 .header-actions{gap:12px!important}
-@media(max-width:900px){.header-visitors{display:none}}
-@media(max-width:620px){.header-visitors{display:none}}
+
+@media(max-width:900px){
+  .header-visitors{font-size:7px;height:32px;padding:0 8px;gap:6px}
+}
+@media(max-width:620px){
+  .header-visitors{font-size:6.5px;height:30px;padding:0 7px;letter-spacing:.8px}
+  .header-actions{gap:7px!important}
+  .header-visitors strong{font-size:8px}
+}
