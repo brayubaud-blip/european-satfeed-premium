@@ -481,7 +481,7 @@
   const uiTranslations = {
     fr: {
       cardArchive:"ARCHIVE FOOTBALL", includedPremium:"INCLUS AVEC PREMIUM", video:"VIDÉO",
-      viewCoverPrefix:"Agrandir la cover : ", itemsShown:"contenu(s) affiché(s).", unclassified:"NON CLASSÉ",
+      viewCoverPrefix:"Agrandir la cover : ", itemsShown:"contenu(s) affiché(s).", unclassified:"NON CLASSÉ", foldersLabel:"DOSSIERS",
       giveawayMilestone:"OBJECTIF GIVEAWAY", giveawayCopy:"À 30 acheteurs, une personne du canal recevra un accès Premium gratuit. Reste actif sur le site et ne rate pas le giveaway.",
       goGiveaway:"ALLER AU GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"PAS ENCORE OUVERT",
       adminAdded:"TON NOM EST AJOUTÉ PAR L'ADMIN", adminAddedDesc:"Réponds au message du giveaway dans le canal Telegram avec ton nom. Après vérification, il apparaîtra ici.",
@@ -490,7 +490,7 @@
     },
     en: {
       cardArchive:"FOOTBALL ARCHIVE", includedPremium:"INCLUDED WITH PREMIUM", video:"VIDEO",
-      viewCoverPrefix:"View cover: ", itemsShown:"item(s) shown.", unclassified:"UNCLASSIFIED",
+      viewCoverPrefix:"View cover: ", itemsShown:"item(s) shown.", unclassified:"UNCLASSIFIED", foldersLabel:"FOLDERS",
       giveawayMilestone:"GIVEAWAY MILESTONE", giveawayCopy:"At 30 buyers, one person from the channel will receive free Premium access. Stay active on the site and don't miss the giveaway.",
       goGiveaway:"GO TO THE GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"NOT OPEN YET",
       adminAdded:"YOUR NAME IS ADDED BY THE ADMIN", adminAddedDesc:"Reply to the giveaway message in the Telegram channel with your name. Once verified, it will appear here.",
@@ -499,7 +499,7 @@
     },
     es: {
       cardArchive:"ARCHIVO DE FÚTBOL", includedPremium:"INCLUIDO CON PREMIUM", video:"VÍDEO",
-      viewCoverPrefix:"Ampliar cover: ", itemsShown:"elemento(s) mostrados.", unclassified:"SIN CLASIFICAR",
+      viewCoverPrefix:"Ampliar cover: ", itemsShown:"elemento(s) mostrados.", unclassified:"SIN CLASIFICAR", foldersLabel:"CARPETAS",
       giveawayMilestone:"OBJETIVO DEL GIVEAWAY", giveawayCopy:"Al llegar a 30 compradores, una persona del canal recibirá acceso Premium gratis. Mantente activo en el sitio y no te pierdas el giveaway.",
       goGiveaway:"IR AL GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"AÚN NO ABIERTO",
       adminAdded:"TU NOMBRE LO AÑADE EL ADMIN", adminAddedDesc:"Responde al mensaje del giveaway en el canal de Telegram con tu nombre. Una vez verificado, aparecerá aquí.",
@@ -508,7 +508,7 @@
     },
     uk: {
       cardArchive:"ФУТБОЛЬНИЙ АРХІВ", includedPremium:"ВХОДИТЬ ДО PREMIUM", video:"ВІДЕО",
-      viewCoverPrefix:"Відкрити обкладинку: ", itemsShown:"елементів показано.", unclassified:"БЕЗ КАТЕГОРІЇ",
+      viewCoverPrefix:"Відкрити обкладинку: ", itemsShown:"елементів показано.", unclassified:"БЕЗ КАТЕГОРІЇ", foldersLabel:"ПАПКИ",
       giveawayMilestone:"ЦІЛЬ GIVEAWAY", giveawayCopy:"Коли буде 30 покупців, одна людина з каналу отримає безкоштовний Premium-доступ. Будь активним на сайті та не пропусти giveaway.",
       goGiveaway:"ПЕРЕЙТИ ДО GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"ЩЕ НЕ ВІДКРИТО",
       adminAdded:"ТВОЄ ІМ'Я ДОДАЄ АДМІН", adminAddedDesc:"Відповідай на повідомлення giveaway у Telegram-каналі своїм ім'ям. Після перевірки воно з'явиться тут.",
@@ -517,7 +517,7 @@
     },
     zh: {
       cardArchive:"足球档案", includedPremium:"PREMIUM 专属", video:"视频",
-      viewCoverPrefix:"查看封面：", itemsShown:"条内容已显示。", unclassified:"未分类",
+      viewCoverPrefix:"查看封面：", itemsShown:"条内容已显示。", unclassified:"未分类", foldersLabel:"文件夹",
       giveawayMilestone:"抽奖目标", giveawayCopy:"达到 30 位买家后，频道中的一位活跃成员将获得免费 Premium 权限。保持活跃，不要错过抽奖。",
       goGiveaway:"前往抽奖 ↓", giveawayLabel:"抽奖", giveawayNotOpen:"尚未开启",
       adminAdded:"管理员会添加你的名字", adminAddedDesc:"在 Telegram 频道的抽奖消息下回复你的名字。审核后，你的名字会显示在这里。",
@@ -526,7 +526,7 @@
     },
     ar: {
       cardArchive:"أرشيف كرة القدم", includedPremium:"مشمول مع بريميوم", video:"فيديو",
-      viewCoverPrefix:"عرض الغلاف: ", itemsShown:"تم عرض العناصر.", unclassified:"غير مصنف",
+      viewCoverPrefix:"عرض الغلاف: ", itemsShown:"تم عرض العناصر.", unclassified:"غير مصنف", foldersLabel:"مجلدات",
       giveawayMilestone:"هدف السحب", giveawayCopy:"عند الوصول إلى 30 مشتريًا، سيحصل أحد أعضاء القناة على وصول Premium مجانًا. ابقَ نشطًا ولا تفوّت السحب.",
       goGiveaway:"اذهب إلى السحب ↓", giveawayLabel:"السحب", giveawayNotOpen:"لم يُفتح بعد",
       adminAdded:"سيضيف المسؤول اسمك", adminAddedDesc:"أرسل اسمك ردًا على رسالة السحب في قناة تيليجرام. بعد التحقق سيظهر اسمك هنا.",
@@ -650,8 +650,8 @@
   function t(key) {
     return translations[language]?.[key]
       ?? uiTranslations[language]?.[key]
-      ?? translations.fr[key]
-      ?? uiTranslations.fr[key]
+      ?? translations.en[key]
+      ?? uiTranslations.en[key]
       ?? key;
   }
 
@@ -966,7 +966,7 @@
       tag.className = "card-tag card-tag-" + normalizeCategory(item.category).replace(/[^a-z0-9]+/g, "-");
       tag.textContent = normalizeCategory(item.category) === "unclassified"
         ? t("unclassified")
-        : normalizeCategory(item.category).replace("national teams", "archive").toUpperCase();
+        : (normalizeCategory(item.category) === "folders" ? t("foldersLabel") : normalizeCategory(item.category).replace("national teams", "archive").toUpperCase());
 
       cover.append(media, tag);
       if (isVideoUrl(mediaUrl)) {
