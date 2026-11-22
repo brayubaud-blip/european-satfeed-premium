@@ -486,7 +486,7 @@
       goGiveaway:"ALLER AU GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"PAS ENCORE OUVERT",
       adminAdded:"TON NOM EST AJOUTÉ PAR L'ADMIN", adminAddedDesc:"Réponds au message du giveaway dans le canal Telegram avec ton nom. Après vérification, il apparaîtra ici.",
       participants:"PARTICIPANTS", noParticipants:"Aucun participant ajouté pour le moment.", drawWinner:"TIRER LE GAGNANT",
-      membersOnly:"RÉSERVÉ AUX MEMBRES", buyerFeedback:"AVIS D'ACHETEUR"
+      membersOnly:"RÉSERVÉ AUX MEMBRES", buyerFeedback:"AVIS D'ACHETEUR", winner:"GAGNANT"
     },
     en: {
       cardArchive:"FOOTBALL ARCHIVE", includedPremium:"INCLUDED WITH PREMIUM", video:"VIDEO",
@@ -495,7 +495,7 @@
       goGiveaway:"GO TO THE GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"NOT OPEN YET",
       adminAdded:"YOUR NAME IS ADDED BY THE ADMIN", adminAddedDesc:"Reply to the giveaway message in the Telegram channel with your name. Once verified, it will appear here.",
       participants:"PARTICIPANTS", noParticipants:"No participants added yet.", drawWinner:"DRAW WINNER",
-      membersOnly:"MEMBERS ONLY", buyerFeedback:"BUYER FEEDBACK"
+      membersOnly:"MEMBERS ONLY", buyerFeedback:"BUYER FEEDBACK", winner:"WINNER"
     },
     es: {
       cardArchive:"ARCHIVO DE FÚTBOL", includedPremium:"INCLUIDO CON PREMIUM", video:"VÍDEO",
@@ -504,7 +504,7 @@
       goGiveaway:"IR AL GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"AÚN NO ABIERTO",
       adminAdded:"TU NOMBRE LO AÑADE EL ADMIN", adminAddedDesc:"Responde al mensaje del giveaway en el canal de Telegram con tu nombre. Una vez verificado, aparecerá aquí.",
       participants:"PARTICIPANTES", noParticipants:"Todavía no hay participantes.", drawWinner:"ELEGIR GANADOR",
-      membersOnly:"SOLO PARA MIEMBROS", buyerFeedback:"OPINIONES DE COMPRADORES"
+      membersOnly:"SOLO PARA MIEMBROS", buyerFeedback:"OPINIONES DE COMPRADORES", winner:"GANADOR"
     },
     uk: {
       cardArchive:"ФУТБОЛЬНИЙ АРХІВ", includedPremium:"ВХОДИТЬ ДО PREMIUM", video:"ВІДЕО",
@@ -513,7 +513,7 @@
       goGiveaway:"ПЕРЕЙТИ ДО GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"ЩЕ НЕ ВІДКРИТО",
       adminAdded:"ТВОЄ ІМ'Я ДОДАЄ АДМІН", adminAddedDesc:"Відповідай на повідомлення giveaway у Telegram-каналі своїм ім'ям. Після перевірки воно з'явиться тут.",
       participants:"УЧАСНИКИ", noParticipants:"Учасників ще немає.", drawWinner:"ВИЗНАЧИТИ ПЕРЕМОЖЦЯ",
-      membersOnly:"ЛИШЕ ДЛЯ УЧАСНИКІВ", buyerFeedback:"ВІДГУК ПОКУПЦЯ"
+      membersOnly:"ЛИШЕ ДЛЯ УЧАСНИКІВ", buyerFeedback:"ВІДГУК ПОКУПЦЯ", winner:"ПЕРЕМОЖЕЦЬ"
     },
     zh: {
       cardArchive:"足球档案", includedPremium:"PREMIUM 专属", video:"视频",
@@ -522,7 +522,7 @@
       goGiveaway:"前往抽奖 ↓", giveawayLabel:"抽奖", giveawayNotOpen:"尚未开启",
       adminAdded:"管理员会添加你的名字", adminAddedDesc:"在 Telegram 频道的抽奖消息下回复你的名字。审核后，你的名字会显示在这里。",
       participants:"参与者", noParticipants:"暂时还没有参与者。", drawWinner:"抽取获胜者",
-      membersOnly:"仅限会员", buyerFeedback:"买家评价"
+      membersOnly:"仅限会员", buyerFeedback:"买家评价", winner:"获胜者"
     },
     ar: {
       cardArchive:"أرشيف كرة القدم", includedPremium:"مشمول مع بريميوم", video:"فيديو",
@@ -531,7 +531,7 @@
       goGiveaway:"اذهب إلى السحب ↓", giveawayLabel:"السحب", giveawayNotOpen:"لم يُفتح بعد",
       adminAdded:"سيضيف المسؤول اسمك", adminAddedDesc:"أرسل اسمك ردًا على رسالة السحب في قناة تيليجرام. بعد التحقق سيظهر اسمك هنا.",
       participants:"المشاركون", noParticipants:"لا يوجد مشاركون حتى الآن.", drawWinner:"اختيار الفائز",
-      membersOnly:"للأعضاء فقط", buyerFeedback:"آراء المشترين"
+      membersOnly:"للأعضاء فقط", buyerFeedback:"آراء المشترين", winner:"الفائز"
     }
   };
 
@@ -648,7 +648,11 @@
   }
 
   function t(key) {
-    return translations[language]?.[key] ?? translations.fr[key] ?? key;
+    return translations[language]?.[key]
+      ?? uiTranslations[language]?.[key]
+      ?? translations.fr[key]
+      ?? uiTranslations.fr[key]
+      ?? key;
   }
 
   function updateTranslations() {
@@ -1213,7 +1217,7 @@
     if (premiumAside && Object.keys(premium).length) {
       if (!premium.enabled) {
         premiumAside.classList.remove("esp-premium-round");
-        premiumAside.innerHTML = "<span>EUROPEAN<br>SATFEED<br>PREMIUM</span><b>ES+</b><span>MEMBERS ONLY</span>";
+        premiumAside.innerHTML = "<span>EUROPEAN<br>SATFEED<br>PREMIUM</span><b>ES+</b><span data-i18n="membersOnly"></span>";
         premiumAside.removeAttribute("style");
       } else {
         premiumAside.innerHTML = "";
@@ -1495,7 +1499,7 @@
     if (!list) return;
 
     if (!count) {
-      list.innerHTML = '<span class="giveaway-empty">No participants added yet.</span>';
+      list.innerHTML = '<span class="giveaway-empty">' + escapeHTML(t("noParticipants")) + '</span>';
       return;
     }
 
@@ -1517,7 +1521,7 @@
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"
     }[c]));
     result.innerHTML =
-      '<span class="giveaway-winner-label">WINNER</span><strong>' +
+      '<span class="giveaway-winner-label">' + escapeHTML(t("winner")) + '</span><strong>' +
       safeWinner + '</strong>';
   }
 
