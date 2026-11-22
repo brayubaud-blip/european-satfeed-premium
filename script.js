@@ -486,7 +486,7 @@
       goGiveaway:"ALLER AU GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"PAS ENCORE OUVERT",
       adminAdded:"TON NOM EST AJOUTÉ PAR L'ADMIN", adminAddedDesc:"Réponds au message du giveaway dans le canal Telegram avec ton nom. Après vérification, il apparaîtra ici.",
       participants:"PARTICIPANTS", noParticipants:"Aucun participant ajouté pour le moment.", drawWinner:"TIRER LE GAGNANT",
-      membersOnly:"RÉSERVÉ AUX MEMBRES", buyerFeedback:"AVIS D'ACHETEUR", giveawayTitle:"30 ACHETEURS — OBJECTIF", giveawayPrize:"UN ACCÈS PREMIUM GRATUIT", giveawayRule1:"Réponds à l'annonce du giveaway dans le canal avec ton nom.", giveawayRule2:"Ton nom sera ajouté à la liste des participants par l'admin.", giveawayRule3:"Reste actif sur le site et attends le tirage.", winner:"GAGNANT"
+      membersOnly:"RÉSERVÉ AUX MEMBRES", buyerFeedback:"AVIS D'ACHETEUR", giveawayTitle:"30 ACHETEURS — OBJECTIF", giveawayPrize:"UN ACCÈS<br><span class=\"yellow\">PREMIUM GRATUIT</span>", giveawayRule1:"Réponds à l'annonce du giveaway dans le canal avec ton nom.", giveawayRule2:"Ton nom sera ajouté à la liste des participants par l'admin.", giveawayRule3:"Reste actif sur le site et attends le tirage.", winner:"GAGNANT"
     },
     en: {
       cardArchive:"FOOTBALL ARCHIVE", includedPremium:"INCLUDED WITH PREMIUM", video:"VIDEO",
@@ -495,7 +495,7 @@
       goGiveaway:"GO TO THE GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"NOT OPEN YET",
       adminAdded:"YOUR NAME IS ADDED BY THE ADMIN", adminAddedDesc:"Reply to the giveaway message in the Telegram channel with your name. Once verified, it will appear here.",
       participants:"PARTICIPANTS", noParticipants:"No participants added yet.", drawWinner:"DRAW WINNER",
-      membersOnly:"MEMBERS ONLY", buyerFeedback:"BUYER FEEDBACK", giveawayTitle:"30 BUYERS MILESTONE", giveawayPrize:"ONE FREE PREMIUM ACCESS", giveawayRule1:"Reply to the giveaway announcement in the channel with your name.", giveawayRule2:"Your name will be added to the participant list by the admin.", giveawayRule3:"Stay active on the site and wait for the draw.", winner:"WINNER"
+      membersOnly:"MEMBERS ONLY", buyerFeedback:"BUYER FEEDBACK", giveawayTitle:"30 BUYERS MILESTONE", giveawayPrize:"ONE FREE<br><span class=\"yellow\">PREMIUM ACCESS</span>", giveawayRule1:"Reply to the giveaway announcement in the channel with your name.", giveawayRule2:"Your name will be added to the participant list by the admin.", giveawayRule3:"Stay active on the site and wait for the draw.", winner:"WINNER"
     },
     es: {
       cardArchive:"ARCHIVO DE FÚTBOL", includedPremium:"INCLUIDO CON PREMIUM", video:"VÍDEO",
@@ -504,7 +504,7 @@
       goGiveaway:"IR AL GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"AÚN NO ABIERTO",
       adminAdded:"TU NOMBRE LO AÑADE EL ADMIN", adminAddedDesc:"Responde al mensaje del giveaway en el canal de Telegram con tu nombre. Una vez verificado, aparecerá aquí.",
       participants:"PARTICIPANTES", noParticipants:"Todavía no hay participantes.", drawWinner:"ELEGIR GANADOR",
-      membersOnly:"SOLO PARA MIEMBROS", buyerFeedback:"OPINIONES DE COMPRADORES", giveawayTitle:"OBJETIVO: 30 COMPRADORES", giveawayPrize:"UN ACCESO PREMIUM GRATIS", giveawayRule1:"Responde al anuncio del giveaway en el canal con tu nombre.", giveawayRule2:"El admin añadirá tu nombre a la lista de participantes.", giveawayRule3:"Mantente activo en el sitio y espera el sorteo.", winner:"GANADOR"
+      membersOnly:"SOLO PARA MIEMBROS", buyerFeedback:"OPINIONES DE COMPRADORES", giveawayTitle:"OBJETIVO: 30 COMPRADORES", giveawayPrize:"UN ACCESO<br><span class=\"yellow\">PREMIUM GRATIS</span>", giveawayRule1:"Responde al anuncio del giveaway en el canal con tu nombre.", giveawayRule2:"El admin añadirá tu nombre a la lista de participantes.", giveawayRule3:"Mantente activo en el sitio y espera el sorteo.", winner:"GANADOR"
     },
     uk: {
       cardArchive:"ФУТБОЛЬНИЙ АРХІВ", includedPremium:"ВХОДИТЬ ДО PREMIUM", video:"ВІДЕО",
@@ -513,7 +513,7 @@
       goGiveaway:"ПЕРЕЙТИ ДО GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"ЩЕ НЕ ВІДКРИТО",
       adminAdded:"ТВОЄ ІМ'Я ДОДАЄ АДМІН", adminAddedDesc:"Відповідай на повідомлення giveaway у Telegram-каналі своїм ім'ям. Після перевірки воно з'явиться тут.",
       participants:"УЧАСНИКИ", noParticipants:"Учасників ще немає.", drawWinner:"ВИЗНАЧИТИ ПЕРЕМОЖЦЯ",
-      membersOnly:"ЛИШЕ ДЛЯ УЧАСНИКІВ", buyerFeedback:"ВІДГУК ПОКУПЦЯ", giveawayTitle:"ЦІЛЬ: 30 ПОКУПЦІВ", giveawayPrize:"ОДИН БЕЗКОШТОВНИЙ PREMIUM-ДОСТУП", giveawayRule1:"Відповідай на оголошення giveaway у каналі своїм ім'ям.", giveawayRule2:"Адмін додасть твоє ім'я до списку учасників.", giveawayRule3:"Будь активним на сайті та чекай на розіграш.", winner:"ПЕРЕМОЖЕЦЬ"
+      membersOnly:"ЛИШЕ ДЛЯ УЧАСНИКІВ", buyerFeedback:"ВІДГУК ПОКУПЦЯ", giveawayTitle:"ЦІЛЬ: 30 ПОКУПЦІВ", giveawayPrize:"БЕЗКОШТОВНИЙ<br><span class=\"yellow\">PREMIUM-ДОСТУП</span>", giveawayRule1:"Відповідай на оголошення giveaway у каналі своїм ім'ям.", giveawayRule2:"Адмін додасть твоє ім'я до списку учасників.", giveawayRule3:"Будь активним на сайті та чекай на розіграш.", winner:"ПЕРЕМОЖЕЦЬ"
     },
     zh: {
       cardArchive:"足球档案", includedPremium:"PREMIUM 专属", video:"视频",
@@ -522,7 +522,7 @@
       goGiveaway:"前往抽奖 ↓", giveawayLabel:"抽奖", giveawayNotOpen:"尚未开启",
       adminAdded:"管理员会添加你的名字", adminAddedDesc:"在 Telegram 频道的抽奖消息下回复你的名字。审核后，你的名字会显示在这里。",
       participants:"参与者", noParticipants:"暂时还没有参与者。", drawWinner:"抽取获胜者",
-      membersOnly:"仅限会员", buyerFeedback:"买家评价", giveawayTitle:"30 位买家目标", giveawayPrize:"一次免费 PREMIUM 权限", giveawayRule1:"在频道的抽奖公告下回复你的名字。", giveawayRule2:"管理员会将你的名字加入参与者名单。", giveawayRule3:"保持网站活跃并等待抽奖结果。", winner:"获胜者"
+      membersOnly:"仅限会员", buyerFeedback:"买家评价", giveawayTitle:"30 位买家目标", giveawayPrize:"一次免费<br><span class=\"yellow\">PREMIUM 权限</span>", giveawayRule1:"在频道的抽奖公告下回复你的名字。", giveawayRule2:"管理员会将你的名字加入参与者名单。", giveawayRule3:"保持网站活跃并等待抽奖结果。", winner:"获胜者"
     },
     ar: {
       cardArchive:"أرشيف كرة القدم", includedPremium:"مشمول مع بريميوم", video:"فيديو",
@@ -531,7 +531,7 @@
       goGiveaway:"اذهب إلى السحب ↓", giveawayLabel:"السحب", giveawayNotOpen:"لم يُفتح بعد",
       adminAdded:"سيضيف المسؤول اسمك", adminAddedDesc:"أرسل اسمك ردًا على رسالة السحب في قناة تيليجرام. بعد التحقق سيظهر اسمك هنا.",
       participants:"المشاركون", noParticipants:"لا يوجد مشاركون حتى الآن.", drawWinner:"اختيار الفائز",
-      membersOnly:"للأعضاء فقط", buyerFeedback:"آراء المشترين", giveawayTitle:"هدف 30 مشتريًا", giveawayPrize:"وصول بريميوم مجاني واحد", giveawayRule1:"أرسل اسمك ردًا على إعلان السحب في القناة.", giveawayRule2:"سيضيف المسؤول اسمك إلى قائمة المشاركين.", giveawayRule3:"ابقَ نشطًا على الموقع وانتظر السحب.", winner:"الفائز"
+      membersOnly:"للأعضاء فقط", buyerFeedback:"آراء المشترين", giveawayTitle:"هدف 30 مشتريًا", giveawayPrize:"وصول بريميوم<br><span class=\"yellow\">مجاني</span>", giveawayRule1:"أرسل اسمك ردًا على إعلان السحب في القناة.", giveawayRule2:"سيضيف المسؤول اسمك إلى قائمة المشاركين.", giveawayRule3:"ابقَ نشطًا على الموقع وانتظر السحب.", winner:"الفائز"
     }
   };
 
