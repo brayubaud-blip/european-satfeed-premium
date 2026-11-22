@@ -223,7 +223,7 @@
       refreshError:"Could not refresh the catalogue.", prevCover:"Previous cover",
       nextCover:"Next cover", closePreview:"Close preview", chooseLanguage:"Choose language",
       languageHeading:"CHOOSE YOUR LANGUAGE",
-      heroTitle:"THE GAME<br><span>BEYOND</span> THE PITCH",
+      heroTitle:"BUILT FOR<br><span>FOOTBALL</span> EDITORS",
       heroScroll:"SCROLL TO DISCOVER ↓",
       tickerArchive:"FOOTBALL ARCHIVE", tickerPremium:"PREMIUM CONTENT",
       tickerDrops:"FRESH DROPS", tickerCulture:"FOOTBALL CULTURE",
