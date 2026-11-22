@@ -477,6 +477,64 @@
   };
 
 
+
+  const uiTranslations = {
+    fr: {
+      cardArchive:"ARCHIVE FOOTBALL", includedPremium:"INCLUS AVEC PREMIUM", video:"VIDÉO",
+      viewCoverPrefix:"Agrandir la cover : ", itemsShown:"contenu(s) affiché(s).", unclassified:"NON CLASSÉ",
+      giveawayMilestone:"OBJECTIF GIVEAWAY", giveawayCopy:"À 30 acheteurs, une personne du canal recevra un accès Premium gratuit. Reste actif sur le site et ne rate pas le giveaway.",
+      goGiveaway:"ALLER AU GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"PAS ENCORE OUVERT",
+      adminAdded:"TON NOM EST AJOUTÉ PAR L'ADMIN", adminAddedDesc:"Réponds au message du giveaway dans le canal Telegram avec ton nom. Après vérification, il apparaîtra ici.",
+      participants:"PARTICIPANTS", noParticipants:"Aucun participant ajouté pour le moment.", drawWinner:"TIRER LE GAGNANT",
+      membersOnly:"RÉSERVÉ AUX MEMBRES", buyerFeedback:"AVIS D'ACHETEUR"
+    },
+    en: {
+      cardArchive:"FOOTBALL ARCHIVE", includedPremium:"INCLUDED WITH PREMIUM", video:"VIDEO",
+      viewCoverPrefix:"View cover: ", itemsShown:"item(s) shown.", unclassified:"UNCLASSIFIED",
+      giveawayMilestone:"GIVEAWAY MILESTONE", giveawayCopy:"At 30 buyers, one person from the channel will receive free Premium access. Stay active on the site and don't miss the giveaway.",
+      goGiveaway:"GO TO THE GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"NOT OPEN YET",
+      adminAdded:"YOUR NAME IS ADDED BY THE ADMIN", adminAddedDesc:"Reply to the giveaway message in the Telegram channel with your name. Once verified, it will appear here.",
+      participants:"PARTICIPANTS", noParticipants:"No participants added yet.", drawWinner:"DRAW WINNER",
+      membersOnly:"MEMBERS ONLY", buyerFeedback:"BUYER FEEDBACK"
+    },
+    es: {
+      cardArchive:"ARCHIVO DE FÚTBOL", includedPremium:"INCLUIDO CON PREMIUM", video:"VÍDEO",
+      viewCoverPrefix:"Ampliar cover: ", itemsShown:"elemento(s) mostrados.", unclassified:"SIN CLASIFICAR",
+      giveawayMilestone:"OBJETIVO DEL GIVEAWAY", giveawayCopy:"Al llegar a 30 compradores, una persona del canal recibirá acceso Premium gratis. Mantente activo en el sitio y no te pierdas el giveaway.",
+      goGiveaway:"IR AL GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"AÚN NO ABIERTO",
+      adminAdded:"TU NOMBRE LO AÑADE EL ADMIN", adminAddedDesc:"Responde al mensaje del giveaway en el canal de Telegram con tu nombre. Una vez verificado, aparecerá aquí.",
+      participants:"PARTICIPANTES", noParticipants:"Todavía no hay participantes.", drawWinner:"ELEGIR GANADOR",
+      membersOnly:"SOLO PARA MIEMBROS", buyerFeedback:"OPINIONES DE COMPRADORES"
+    },
+    uk: {
+      cardArchive:"ФУТБОЛЬНИЙ АРХІВ", includedPremium:"ВХОДИТЬ ДО PREMIUM", video:"ВІДЕО",
+      viewCoverPrefix:"Відкрити обкладинку: ", itemsShown:"елементів показано.", unclassified:"БЕЗ КАТЕГОРІЇ",
+      giveawayMilestone:"ЦІЛЬ GIVEAWAY", giveawayCopy:"Коли буде 30 покупців, одна людина з каналу отримає безкоштовний Premium-доступ. Будь активним на сайті та не пропусти giveaway.",
+      goGiveaway:"ПЕРЕЙТИ ДО GIVEAWAY ↓", giveawayLabel:"GIVEAWAY", giveawayNotOpen:"ЩЕ НЕ ВІДКРИТО",
+      adminAdded:"ТВОЄ ІМ'Я ДОДАЄ АДМІН", adminAddedDesc:"Відповідай на повідомлення giveaway у Telegram-каналі своїм ім'ям. Після перевірки воно з'явиться тут.",
+      participants:"УЧАСНИКИ", noParticipants:"Учасників ще немає.", drawWinner:"ВИЗНАЧИТИ ПЕРЕМОЖЦЯ",
+      membersOnly:"ЛИШЕ ДЛЯ УЧАСНИКІВ", buyerFeedback:"ВІДГУК ПОКУПЦЯ"
+    },
+    zh: {
+      cardArchive:"足球档案", includedPremium:"PREMIUM 专属", video:"视频",
+      viewCoverPrefix:"查看封面：", itemsShown:"条内容已显示。", unclassified:"未分类",
+      giveawayMilestone:"抽奖目标", giveawayCopy:"达到 30 位买家后，频道中的一位活跃成员将获得免费 Premium 权限。保持活跃，不要错过抽奖。",
+      goGiveaway:"前往抽奖 ↓", giveawayLabel:"抽奖", giveawayNotOpen:"尚未开启",
+      adminAdded:"管理员会添加你的名字", adminAddedDesc:"在 Telegram 频道的抽奖消息下回复你的名字。审核后，你的名字会显示在这里。",
+      participants:"参与者", noParticipants:"暂时还没有参与者。", drawWinner:"抽取获胜者",
+      membersOnly:"仅限会员", buyerFeedback:"买家评价"
+    },
+    ar: {
+      cardArchive:"أرشيف كرة القدم", includedPremium:"مشمول مع بريميوم", video:"فيديو",
+      viewCoverPrefix:"عرض الغلاف: ", itemsShown:"تم عرض العناصر.", unclassified:"غير مصنف",
+      giveawayMilestone:"هدف السحب", giveawayCopy:"عند الوصول إلى 30 مشتريًا، سيحصل أحد أعضاء القناة على وصول Premium مجانًا. ابقَ نشطًا ولا تفوّت السحب.",
+      goGiveaway:"اذهب إلى السحب ↓", giveawayLabel:"السحب", giveawayNotOpen:"لم يُفتح بعد",
+      adminAdded:"سيضيف المسؤول اسمك", adminAddedDesc:"أرسل اسمك ردًا على رسالة السحب في قناة تيليجرام. بعد التحقق سيظهر اسمك هنا.",
+      participants:"المشاركون", noParticipants:"لا يوجد مشاركون حتى الآن.", drawWinner:"اختيار الفائز",
+      membersOnly:"للأعضاء فقط", buyerFeedback:"آراء المشترين"
+    }
+  };
+
   // PUBLIC DAILY VISITOR COUNTER
   const VISITOR_ID_STORAGE_KEY = "esp-public-visitor-id";
 
@@ -862,7 +920,7 @@
       card.className = "archive-card";
       card.tabIndex = 0;
       card.setAttribute("role", "button");
-      card.setAttribute("aria-label", (language === "fr" ? "Agrandir la cover : " : "View cover: ") + (localized(item.title) || "Football archive"));
+      card.setAttribute("aria-label", t("viewCoverPrefix") + (localized(item.title) || t("cardArchive")));
       card.addEventListener("click", () => openLightbox(visible, itemIndex));
       card.addEventListener("keydown", event => {
         if (event.key === "Enter" || event.key === " ") {
@@ -902,15 +960,15 @@
 
       const tag = document.createElement("span");
       tag.className = "card-tag card-tag-" + normalizeCategory(item.category).replace(/[^a-z0-9]+/g, "-");
-      tag.textContent = normalizeCategory(item.category)
-        .replace("national teams", "archive")
-        .toUpperCase();
+      tag.textContent = normalizeCategory(item.category) === "unclassified"
+        ? t("unclassified")
+        : normalizeCategory(item.category).replace("national teams", "archive").toUpperCase();
 
       cover.append(media, tag);
       if (isVideoUrl(mediaUrl)) {
         const videoLabel = document.createElement("span");
         videoLabel.className = "card-media-type";
-        videoLabel.textContent = "VIDEO";
+        videoLabel.textContent = t("video");
         cover.append(videoLabel);
       }
 
@@ -919,9 +977,7 @@
 
       const meta = document.createElement("div");
       meta.className = "card-meta";
-      meta.textContent = language === "fr"
-        ? "ARCHIVE FOOTBALL"
-        : "FOOTBALL ARCHIVE";
+      meta.textContent = t("cardArchive");
 
       const title = document.createElement("h3");
       title.className = "catalogue-title";
@@ -933,9 +989,7 @@
 
       const accessNote = document.createElement("div");
       accessNote.className = "card-access-note";
-      accessNote.textContent = language === "fr"
-        ? "INCLUS AVEC PREMIUM"
-        : "INCLUDED WITH PREMIUM";
+      accessNote.textContent = t("includedPremium");
 
       const favorite = document.createElement("button");
       const isFavorite = favoriteIds.has(favoriteKey(item));
@@ -958,11 +1012,7 @@
       grid.append(card);
     });
 
-    updateStatus(
-      language === "fr"
-        ? `${shown.length} / ${visible.length} contenu(s) affiché(s).`
-        : `${shown.length} / ${visible.length} item(s) shown.`
-    );
+    updateStatus(`${shown.length} / ${visible.length} ${t("itemsShown")}`);
   }
 
   async function loadSupabaseCatalogue() {
